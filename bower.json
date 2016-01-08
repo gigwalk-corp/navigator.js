@@ -1,5 +1,5 @@
 {
-	"name": "navigator.js",
+	"name": "@gigwalk/navigator.js",
 	"version": "0.4.3",
 	"description": "NavigatorJS is the ultimate solution to show/hide your dom-elements based on a single state string.",
 	"keywords": ["navigator.js","navigator","navigator-js","navigatorJS"],

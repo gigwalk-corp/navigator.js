@@ -382,7 +382,7 @@ this.navigatorjs.NavigationBehaviors.UPDATE = "update";
  */
 this.navigatorjs.NavigationBehaviors.SWAP = "swap";
 /**
- * Will ask for validation of the state, if a state can't be validated, it is denied
+ * Will ask for available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connectionvalidation of the state, if a state can't be validated, it is denied
  */
 this.navigatorjs.NavigationBehaviors.VALIDATE = "validate";
 /**
@@ -392,7 +392,8 @@ this.navigatorjs.NavigationBehaviors.AUTO = "auto";
 /**
  * Used for looping through when the AUTO behavior is used.
  */
-this.navigatorjs.NavigationBehaviors.ALL_AUTO = ["show", "update", "swap", "validate"];;this.navigatorjs = this.navigatorjs || {};
+this.navigatorjs.NavigationBehaviors.ALL_AUTO = ["show", "update", "swap", "validate"];
+;this.navigatorjs = this.navigatorjs || {};
 
 this.navigatorjs.NavigationResponderBehaviors = {};
 this.navigatorjs.NavigationResponderBehaviors.IHasStateInitialization = {name: "IHasStateInitialization", methods: ["initializeByNavigator"]};
@@ -405,13 +406,13 @@ this.navigatorjs.NavigationResponderBehaviors.IHasStateSwap = {name: "IHasStateS
 this.navigatorjs.NavigationResponderBehaviors.IHasStateTransition = {name: "IHasStateTransition", methods: ["transitionIn", "transitionOut"]};
 this.navigatorjs.NavigationResponderBehaviors.IHasStateUpdate = {name: "IHasStateUpdate", methods: ["updateState"]};
 
-this.navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface = function(object, interface) {
+this.navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface = function(object, _interface) {
 	if (object.navigatorBehaviors == undefined || !object.navigatorBehaviors instanceof Array) {
 		//The input interface is not set on object's navigatorBehaviors.
 		return false;
 	}
 
-	var inheritanceChain = navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain(interface),
+	var inheritanceChain = navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain(_interface),
 		methodsToBeImplemented = navigatorjs.NavigationResponderBehaviors.getInterfaceMethods(inheritanceChain),
 		i, method,
 		length = methodsToBeImplemented.length;
@@ -427,19 +428,19 @@ this.navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface = func
 	return true;
 };
 
-this.navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain = function(interface, existingChain) {
+this.navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain = function(_interface, existingChain) {
 	var chain = existingChain || [],
 		extendsArray,
 		extendingInterface,
 		i, length,
-		interfaceObject = navigatorjs.NavigationResponderBehaviors[interface];
+		interfaceObject = navigatorjs.NavigationResponderBehaviors[_interface];
 
 	if (interfaceObject == undefined || typeof interfaceObject !== 'object') {
 //		console.log('behaviorObject for interface is undefined ', interface );
 		return chain;
 	}
 
-	chain.push(interface);
+	chain.push(_interface);
 	extendsArray = interfaceObject["extends"];
 	if (extendsArray == undefined) {
 //		console.log('extendsArray for interface is undefined, the chain ends here ', interface, chain);
@@ -466,7 +467,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 	}
 
 	var combinedInterfacesChain = [],
-		interface, i,
+		_interface, i,
 		length = interfaces.length,
 		interfaceObject,
 		interfaceMethods,
@@ -474,14 +475,14 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 		methods = [];
 
 	for (i = 0; i < length; i++) {
-		interface = interfaces[i];
-		navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain(interface, combinedInterfacesChain);
+		_interface = interfaces[i];
+		navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain(_interface, combinedInterfacesChain);
 	}
 
 	length = combinedInterfacesChain.length;
 	for (i = 0; i < length; i++) {
-		interface = combinedInterfacesChain[i];
-		interfaceObject = navigatorjs.NavigationResponderBehaviors[interface];
+		_interface = combinedInterfacesChain[i];
+		interfaceObject = navigatorjs.NavigationResponderBehaviors[_interface];
 		interfaceMethods = interfaceObject.methods;
 		if (interfaceObject != undefined && typeof interfaceObject === 'object' && interfaceMethods != undefined && interfaceMethods instanceof Array) {
 			methodsLength = interfaceMethods.length;
@@ -495,7 +496,8 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 	}
 
 	return methods;
-};;this.navigatorjs = this.navigatorjs || {};
+};
+;this.navigatorjs = this.navigatorjs || {};
 
 (function() {
 	var NavigationState = function(pathStringOrArray) {
@@ -731,7 +733,6 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 	var _asyncValidationOccurred = false;
 	var _responderIDCount = 0;
 
-
 	var _modify = function(addition, responder, pathsOrStates, behaviorString) {
 		if (_relayModification(addition, responder, pathsOrStates, behaviorString)) {
 			return;
@@ -849,7 +850,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 		var i, length = _responders.all.length,
 			j, respondersLength, responder,
 			responders, respondersForPath, path;
-		
+
 		for(i=0; i<length; i++) {
 			responders = _responders.all[i];
 			for(path in responders) {
@@ -1640,7 +1641,8 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 	};
 
 	navigatorjs.Navigator = Navigator;
-}());;this.navigatorjs = this.navigatorjs || {};
+}());
+;this.navigatorjs = this.navigatorjs || {};
 
 this.navigatorjs.NavigatorEvent = {};
 this.navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED = "TRANSITION_STATUS_UPDATED";
@@ -2288,7 +2290,6 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 (function() {
-
 	var ViewRecipe = function() {
 		this._states = [];
 		this._viewClass = null;
@@ -2333,7 +2334,9 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 		getViewInstance: function() {
 			if (!this.isInstantiated()) {
+				if (this._viewClass instanceof React.Component) {
 
+				}
 				var params = this._viewArguments;
 				switch (params.length) {
 					default:
@@ -2396,7 +2399,8 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 	navigatorjs.integration.ViewRecipe = ViewRecipe;
 
-}());;if (!Array.prototype.indexOf) {
+}());
+;if (!Array.prototype.indexOf) {
 	Array.prototype.indexOf = function (elt /*, from*/) {
 		var len = this.length;
 		var from = Number(arguments[1]) || 0;

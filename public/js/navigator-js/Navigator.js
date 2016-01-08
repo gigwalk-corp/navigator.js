@@ -30,7 +30,6 @@ this.navigatorjs = this.navigatorjs || {};
 	var _asyncValidationOccurred = false;
 	var _responderIDCount = 0;
 
-
 	var _modify = function(addition, responder, pathsOrStates, behaviorString) {
 		if (_relayModification(addition, responder, pathsOrStates, behaviorString)) {
 			return;
@@ -148,7 +147,7 @@ this.navigatorjs = this.navigatorjs || {};
 		var i, length = _responders.all.length,
 			j, respondersLength, responder,
 			responders, respondersForPath, path;
-		
+
 		for(i=0; i<length; i++) {
 			responders = _responders.all[i];
 			for(path in responders) {

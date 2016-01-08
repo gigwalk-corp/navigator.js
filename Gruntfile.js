@@ -12,14 +12,14 @@ module.exports = function (grunt) {
 			},
 			dist: {
 				src: ['public/js/navigator-js/**/*.js'],
-				dest: '<%= pkg.name %>.js'
+				dest: 'navigator-js.js'
 			}
 		},
 
 		uglify: {
 			dist: {
 				files: {
-					'<%= pkg.name %>.min.js': '<%= pkg.name %>.js'
+					'navigator-js.min.js': 'navigator-js.js'
 				},
 				options: {
 					banner:'<%= banner %>'
@@ -29,21 +29,21 @@ module.exports = function (grunt) {
 
 		umd: {
 			dist: {
-				src: '<%= pkg.name %>.js',
+				src: 'navigator-js.js',
 				objectToExport: 'this.navigatorjs'
 			}
 		},
 
 		copy: {
 			navigator: {
-				src: ['<%= pkg.name %>.js', '<%= pkg.name %>.min.js'],
+				src: ['navigator-js.js', 'navigator-js.min.js'],
 				dest: 'public/js/dist/'
 			}
 		},
 
 		watch: {
-			files: ['public/js/*.js'],
-			tasks: ['concat:dist','uglify:dist', 'copy:navigator']
+			files: 'public/js/navigator-js/**/*.js',
+			tasks: ['default']
 		},
 
 		bump: {
@@ -52,7 +52,7 @@ module.exports = function (grunt) {
 				updateConfigs: ["pkg","banner"],
 				commit: true,
 				commitMessage: 'Release v%VERSION%',
-				commitFiles: ['package.json', 'bower.json', '<%= pkg.name %>.min.js', '<%= pkg.name %>.js', 'public/js/dist/<%= pkg.name %>.min.js', 'public/js/dist/<%= pkg.name %>.js'], // '-a' for all files
+				commitFiles: ['package.json', 'bower.json', 'navigator-js.min.js', 'navigator-js.js', 'public/js/dist/navigator-js.min.js', 'public/js/dist/navigator-js.js'], // '-a' for all files
 				createTag: true,
 				tagName: 'v%VERSION%',
 				tagMessage: 'Version %VERSION%',
