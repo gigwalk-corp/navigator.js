@@ -1,8 +1,11 @@
+var React = require('react');
+var ReactDOM = require('react-dom');
+var ReactTestUtils = require('react-addons-test-utils');
+
 this.navigatorjs = this.navigatorjs || {};
 this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 (function() {
-
 	var ViewRecipe = function() {
 		this._states = [];
 		this._viewClass = null;
@@ -10,6 +13,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		this._viewInstance = null;
 		this._insideSelector = null;
 		this._parentRecipe = null;
+		this._viewType = null;
 	};
 
 	//PUBLIC API
@@ -36,6 +40,12 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		toView: function(viewClass) {
+			// TODO: Find a more secure way to determine whether class
+			// extends react component
+
+			this._type = !!viewClass.prototype.setState ?
+				'REACT' : 'BACKBONE';
+
 			this._viewClass = viewClass;
 
 			return this;
@@ -46,33 +56,63 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		getViewInstance: function() {
-			if (!this.isInstantiated()) {
 
+			if (!this.isInstantiated()) {
 				var params = this._viewArguments;
-				switch (params.length) {
-					default:
-					case 0:
+
+				if (this._type === 'REACT') {
+					this._element = React.createElement(this._viewClass, params[0], null);
+				}
+				else if (this._type === 'BACKBONE') {
+					switch (params.length) {
+						default:
+						case 0:
 						this._viewInstance = new this._viewClass();
 						break;
-					case 1:
+						case 1:
 						this._viewInstance = new this._viewClass(params[0]);
 						break;
-					case 2:
+						case 2:
 						this._viewInstance = new this._viewClass(params[0], params[1]);
 						break;
-					case 3:
+						case 3:
 						this._viewInstance = new this._viewClass(params[0], params[1], params[2]);
 						break;
-					case 4:
+						case 4:
 						this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3]);
 						break;
-					case 5:
+						case 5:
 						this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3], params[4]);
 						break;
+					}
 				}
 
 			}
 			return this._viewInstance;
+		},
+
+		getRootEl: function() {
+				if (this._type === 'REACT') {
+					return $(ReactDOM.findDOMNode(this._viewInstance));
+				}
+				else if (this._type === 'BACKBONE') {
+					return $(this.$el);
+				}
+		},
+
+		isMounted: function() {
+			if (!this.isInstantiated()) {
+				this.getViewInstance();
+			}
+
+			if (this._type === 'REACT') {
+				return false;
+				// return this._viewInstance
+			}
+			else {
+				return this.isInstantiated() &&
+				       $.contains(document.documentElement, this.getViewInstance().$el);
+			}
 		},
 
 		isInstantiated: function() {

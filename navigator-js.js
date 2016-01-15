@@ -743,6 +743,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 			list, matchingInterface;
 
 		// Create, store and retrieve the list that matches the desired behavior.
+
 		switch (behaviorString) {
 			case navigatorjs.NavigationBehaviors.SHOW:
 				matchingInterface = "IHasStateTransition";
@@ -774,6 +775,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 		}
 		if (addition) {
 			// add
+
 			if (list.indexOf(responder) < 0) {
 				list.push(responder);
 
@@ -832,6 +834,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 				try {
 					_modify(addition, responder, pathsOrStates, navigatorjs.NavigationBehaviors.ALL_AUTO[i]);
 				} catch (e) {
+					// console.warn(e);
 					// ignore 'should implement xyz' errors
 				}
 			}
@@ -1097,6 +1100,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(int
 		_initializeIfNeccessary(respondersToShow);
 
 		//for each (var responder : IHasStateTransition in respondersToShow) {
+
 		for (i = 0; i < respondersToShow.length; i++) {
 			responder = respondersToShow[i];
 			status = _statusByResponderID[responder.__navigatorjs.id];
@@ -1893,7 +1897,7 @@ this.navigatorjs.features = this.navigatorjs.features || {};
 	};
 
 	navigatorjs.features.DebugConsole = DebugConsole;
-}());;this.navigatorjs = this.navigatorjs || {};
+}());;;;this.navigatorjs = this.navigatorjs || {};
 this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 (function() {
@@ -2176,7 +2180,9 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 	navigatorjs.integration.StateUrlSyncer = StateUrlSyncer;
 
-})();;this.navigatorjs = this.navigatorjs || {};
+})();;var ReactDOM = require('react-dom');
+
+this.navigatorjs = this.navigatorjs || {};
 this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 (function() {
@@ -2221,34 +2227,48 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				state = recipeStates[j];
 
 				if (requestedState.contains(state)) {
-					viewInstance = recipe.getViewInstance();
 
-					if (viewInstance.navigatorBehaviors instanceof Array) {
+					// if (viewInstance.navigatorBehaviors instanceof Array) {
 						_addViewElementToDOM(recipe);
+						viewInstance = recipe.getViewInstance();
 						_navigator.add(viewInstance, state);
-					}
+					// }
 				}
 			}
 		}
 	}
 
 	function _addViewElementToDOM(recipe) {
-		if (recipe.isInstantiated() && $.contains(document.documentElement, recipe.getViewInstance().$el)) {
+		// If element for this view is already initialized and in the DOM
+
+		if (recipe.isMounted()) {
 			return;
 		}
 
+		// if (recipe.isInstantiated() && $.contains(document.documentElement, recipe.getViewInstance().$el)) {
+		// 	return recipe.getViewInstance();
+		// }
+
+		// By default all views are added to default root element
+
+		var $container = _$root;
 		var parentRecipe = recipe.getParentRecipe(),
-			$container = _$root,
 			$inside,
 			insideSelector = recipe.getInsideSelector();
 
 		if (parentRecipe) {
+			// If parent view recipe has not been constructed, initialize
+			// the parent view and add it to the DOM correctly
+
 			if (!parentRecipe.isInstantiated()) {
 				_addViewElementToDOM(parentRecipe);
 			}
 
-			$container = parentRecipe.getViewInstance().$el;
+			$container = parentRecipe.getRootEl();
 		}
+
+		// If view has a DOM selector to be inserted with, save reference
+		// to this container element
 
 		if (insideSelector != null) {
 			$inside = $container.find(insideSelector);
@@ -2258,17 +2278,27 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		var i = _orderedRecipes.indexOf(recipe) + 1,
 			length = _orderedRecipes.length,
 			testRecipe;
-		for (i; i < length; i++) {
-			testRecipe = _orderedRecipes[i];
 
-			if (testRecipe.isInstantiated() && testRecipe.getViewInstance().$el.parent()[0] == $container[0]) {
-				testRecipe.getViewInstance().$el.before(recipe.getViewInstance().$el);
-				return;
+		if (recipe._type === 'BACKBONE') {
+			for (i; i < length; i++) {
+				testRecipe = _orderedRecipes[i];
+
+				// If any other views have the same parent, add this element before
+				// those elements in the container element
+
+				if (testRecipe.isInstantiated() && testRecipe.getRootEl().parent()[0] == $container[0]) {
+					testRecipe.getRootEl().before(recipe.getRootEl());
+					return;
+				}
 			}
 		}
 
 		// otherwise add on top
-		$container.append(recipe.getViewInstance().$el);
+		if (recipe._type === 'REACT') {
+			recipe._viewInstance = ReactDOM.render(recipe._element, $container[0]);
+		} else {
+			$container.append(recipe.getRootEl());
+		}
 	}
 
 	//PUBLIC API
@@ -2286,7 +2316,12 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 	navigatorjs.integration.StateViewMap = StateViewMap;
 
-}());;this.navigatorjs = this.navigatorjs || {};
+}());
+;var React = require('react');
+var ReactDOM = require('react-dom');
+var ReactTestUtils = require('react-addons-test-utils');
+
+this.navigatorjs = this.navigatorjs || {};
 this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 (function() {
@@ -2297,6 +2332,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		this._viewInstance = null;
 		this._insideSelector = null;
 		this._parentRecipe = null;
+		this._viewType = null;
 	};
 
 	//PUBLIC API
@@ -2323,6 +2359,12 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		toView: function(viewClass) {
+			// TODO: Find a more secure way to determine whether class
+			// extends react component
+
+			this._type = !!viewClass.prototype.setState ?
+				'REACT' : 'BACKBONE';
+
 			this._viewClass = viewClass;
 
 			return this;
@@ -2333,35 +2375,63 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		getViewInstance: function() {
-			if (!this.isInstantiated()) {
-				if (this._viewClass instanceof React.Component) {
 
-				}
+			if (!this.isInstantiated()) {
 				var params = this._viewArguments;
-				switch (params.length) {
-					default:
-					case 0:
+
+				if (this._type === 'REACT') {
+					this._element = React.createElement(this._viewClass, params[0], null);
+				}
+				else if (this._type === 'BACKBONE') {
+					switch (params.length) {
+						default:
+						case 0:
 						this._viewInstance = new this._viewClass();
 						break;
-					case 1:
+						case 1:
 						this._viewInstance = new this._viewClass(params[0]);
 						break;
-					case 2:
+						case 2:
 						this._viewInstance = new this._viewClass(params[0], params[1]);
 						break;
-					case 3:
+						case 3:
 						this._viewInstance = new this._viewClass(params[0], params[1], params[2]);
 						break;
-					case 4:
+						case 4:
 						this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3]);
 						break;
-					case 5:
+						case 5:
 						this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3], params[4]);
 						break;
+					}
 				}
 
 			}
 			return this._viewInstance;
+		},
+
+		getRootEl: function() {
+				if (this._type === 'REACT') {
+					return $(ReactDOM.findDOMNode(this._viewInstance));
+				}
+				else if (this._type === 'BACKBONE') {
+					return $(this.$el);
+				}
+		},
+
+		isMounted: function() {
+			if (!this.isInstantiated()) {
+				this.getViewInstance();
+			}
+
+			if (this._type === 'REACT') {
+				return false
+				// return this._viewInstance
+			}
+			else {
+				return this.isInstantiated() &&
+				       $.contains(document.documentElement, this.getViewInstance().$el);
+			}
 		},
 
 		isInstantiated: function() {

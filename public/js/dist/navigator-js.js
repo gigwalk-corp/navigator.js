@@ -867,12 +867,55 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 		};
 
+<<<<<<< HEAD
 		navigatorjs.NavigationState = NavigationState;
 	})();
 
 /***/ },
 /* 7 */
 /***/ function(module, exports) {
+=======
+		// Using the path variable as dictionary key to break instance referencing.
+		var path = navigatorjs.NavigationState.make(pathsOrStates).getPath(),
+			list, matchingInterface;
+
+		// Create, store and retrieve the list that matches the desired behavior.
+
+		switch (behaviorString) {
+			case navigatorjs.NavigationBehaviors.SHOW:
+				matchingInterface = "IHasStateTransition";
+				list = _responders.showByPath[path] = _responders.showByPath[path] || [];
+				break;
+			case navigatorjs.NavigationBehaviors.HIDE:
+				matchingInterface = "IHasStateTransition";
+				list = _responders.hideByPath[path] = _responders.hideByPath[path] || [];
+				break;
+			case navigatorjs.NavigationBehaviors.VALIDATE:
+				matchingInterface = "IHasStateValidation";
+				list = _responders.validateByPath[path] = _responders.validateByPath[path] || [];
+				break;
+			case navigatorjs.NavigationBehaviors.UPDATE:
+				matchingInterface = "IHasStateUpdate";
+				list = _responders.updateByPath[path] = _responders.updateByPath[path] || [];
+				break;
+			case navigatorjs.NavigationBehaviors.SWAP:
+				matchingInterface = "IHasStateSwap";
+				list = _responders.swapByPath[path] = _responders.swapByPath[path] || [];
+				break;
+			default:
+				throw new Error("Unknown behavior: " + behaviorString);
+		}
+
+		//TODO: Build in more strict validation?
+		if (!navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, matchingInterface)) {
+			throw new Error("Responder " + responder + " should implement " + matchingInterface + " to respond to " + behaviorString);
+		}
+		if (addition) {
+			// add
+
+			if (list.indexOf(responder) < 0) {
+				list.push(responder);
+>>>>>>> Update: WIP React integratoin
 
 	this.navigatorjs = this.navigatorjs || {};
 
@@ -942,9 +985,22 @@ return /******/ (function(modules) { // webpackBootstrap
 					throw new Error("Unknown behavior: " + behaviorString);
 			}
 
+<<<<<<< HEAD
 			//TODO: Build in more strict validation?
 			if (!navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, matchingInterface)) {
 				throw new Error("Responder " + responder + " should implement " + matchingInterface + " to respond to " + behaviorString);
+=======
+		behaviorString = behaviorString || navigatorjs.NavigationBehaviors.AUTO;
+		if (behaviorString == navigatorjs.NavigationBehaviors.AUTO) {
+			length = navigatorjs.NavigationBehaviors.ALL_AUTO.length;
+			for (i = 0; i < length; i++) {
+				try {
+					_modify(addition, responder, pathsOrStates, navigatorjs.NavigationBehaviors.ALL_AUTO[i]);
+				} catch (e) {
+					// console.warn(e);
+					// ignore 'should implement xyz' errors
+				}
+>>>>>>> Update: WIP React integratoin
 			}
 			if (addition) {
 				// add
@@ -1063,7 +1119,15 @@ return /******/ (function(modules) { // webpackBootstrap
 				return;
 			}
 
+<<<<<<< HEAD
 			var requestedState, path, fromState, toState;
+=======
+		//for each (var responder : IHasStateTransition in respondersToShow) {
+
+		for (i = 0; i < respondersToShow.length; i++) {
+			responder = respondersToShow[i];
+			status = _statusByResponderID[responder.__navigatorjs.id];
+>>>>>>> Update: WIP React integratoin
 
 			// Store and possibly mask the requested state
 			requestedState = navigatorjs.NavigationState.make(pathOrState);
@@ -1647,6 +1711,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				}
 			}
 
+<<<<<<< HEAD
 			if (_asyncValidationOccurred && _validateFirstValidatingAsynchResponderFromStack()) {
 				// If there are active async validators, stop the validation chain and wait for the prepration to finish.
 				// if (_validating.isBusy()) return false;
@@ -1657,6 +1722,11 @@ return /******/ (function(modules) { // webpackBootstrap
 				//			console.groupEnd();
 				return false;
 			}
+=======
+	navigatorjs.features.DebugConsole = DebugConsole;
+}());;;;this.navigatorjs = this.navigatorjs || {};
+this.navigatorjs.integration = this.navigatorjs.integration || {};
+>>>>>>> Update: WIP React integratoin
 
 			//		console.groupEnd();
 
@@ -1948,8 +2018,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 13 */
 /***/ function(module, exports) {
 
+<<<<<<< HEAD
 	this.navigatorjs = this.navigatorjs || {};
 	this.navigatorjs.transition = this.navigatorjs.transition || {};
+=======
+})();;var ReactDOM = require('react-dom');
+
+this.navigatorjs = this.navigatorjs || {};
+this.navigatorjs.integration = this.navigatorjs.integration || {};
+>>>>>>> Update: WIP React integratoin
 
 	(function () {
 		var ValidationPreparedDelegate = function (validatorResponder, truncatedState, fullState, navigator, validationNamespace) {
@@ -2033,6 +2110,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				this._commandsByState[state.getPath()] = commands;
 				this._navigator.add(this, state);
 
+<<<<<<< HEAD
 				if (this._hasCommand(commands, CommandClass)) {
 					throw new Error("Already mapped " + CommandClass + " to state " + state.getPath());
 					return;
@@ -2056,9 +2134,19 @@ return /******/ (function(modules) { // webpackBootstrap
 						commands.splice(i, 1);
 						return;
 					}
+=======
+				if (requestedState.contains(state)) {
+
+					// if (viewInstance.navigatorBehaviors instanceof Array) {
+						_addViewElementToDOM(recipe);
+						viewInstance = recipe.getViewInstance();
+						_navigator.add(viewInstance, state);
+					// }
+>>>>>>> Update: WIP React integratoin
 				}
 			},
 
+<<<<<<< HEAD
 			willValidate: function (truncatedState, fullState) {
 				// will only validate if the state matches a command.
 				return this.validate(truncatedState, fullState);
@@ -2111,6 +2199,70 @@ return /******/ (function(modules) { // webpackBootstrap
 
 							command = new wrapper.CommandClass({ injector: this._injector });
 							command.execute();
+=======
+	function _addViewElementToDOM(recipe) {
+		// If element for this view is already initialized and in the DOM
+
+		if (recipe.isMounted()) {
+			return;
+		}
+
+		// if (recipe.isInstantiated() && $.contains(document.documentElement, recipe.getViewInstance().$el)) {
+		// 	return recipe.getViewInstance();
+		// }
+
+		// By default all views are added to default root element
+
+		var $container = _$root;
+		var parentRecipe = recipe.getParentRecipe(),
+			$inside,
+			insideSelector = recipe.getInsideSelector();
+
+		if (parentRecipe) {
+			// If parent view recipe has not been constructed, initialize
+			// the parent view and add it to the DOM correctly
+
+			if (!parentRecipe.isInstantiated()) {
+				_addViewElementToDOM(parentRecipe);
+			}
+
+			$container = parentRecipe.getRootEl();
+		}
+
+		// If view has a DOM selector to be inserted with, save reference
+		// to this container element
+
+		if (insideSelector != null) {
+			$inside = $container.find(insideSelector);
+			$container = $inside.length > 0 ? $inside.first() : $container;
+		}
+
+		var i = _orderedRecipes.indexOf(recipe) + 1,
+			length = _orderedRecipes.length,
+			testRecipe;
+
+		if (recipe._type === 'BACKBONE') {
+			for (i; i < length; i++) {
+				testRecipe = _orderedRecipes[i];
+
+				// If any other views have the same parent, add this element before
+				// those elements in the container element
+
+				if (testRecipe.isInstantiated() && testRecipe.getRootEl().parent()[0] == $container[0]) {
+					testRecipe.getRootEl().before(recipe.getRootEl());
+					return;
+				}
+			}
+		}
+
+		// otherwise add on top
+		if (recipe._type === 'REACT') {
+			recipe._viewInstance = ReactDOM.render(recipe._element, $container[0]);
+		} else {
+			$container.append(recipe.getRootEl());
+		}
+	}
+>>>>>>> Update: WIP React integratoin
 
 							this._injector.unmap('fullState');
 							this._injector.unmap('truncatedState');
@@ -2150,12 +2302,33 @@ return /******/ (function(modules) { // webpackBootstrap
 		navigatorjs.integration.StateCommandMap = StateCommandMap;
 	})();
 
+<<<<<<< HEAD
 /***/ },
 /* 16 */
 /***/ function(module, exports) {
 
 	this.navigatorjs = this.navigatorjs || {};
 	this.navigatorjs.integration = this.navigatorjs.integration || {};
+=======
+}());
+;var React = require('react');
+var ReactDOM = require('react-dom');
+var ReactTestUtils = require('react-addons-test-utils');
+
+this.navigatorjs = this.navigatorjs || {};
+this.navigatorjs.integration = this.navigatorjs.integration || {};
+
+(function() {
+	var ViewRecipe = function() {
+		this._states = [];
+		this._viewClass = null;
+		this._viewArguments = [];
+		this._viewInstance = null;
+		this._insideSelector = null;
+		this._parentRecipe = null;
+		this._viewType = null;
+	};
+>>>>>>> Update: WIP React integratoin
 
 	(function () {
 		var _usingPushState, _rootUrl, _navigator, _started;
@@ -2188,9 +2361,20 @@ return /******/ (function(modules) { // webpackBootstrap
 				return _usingPushState;
 			},
 
+<<<<<<< HEAD
 			_redirectPushStateOrHashOnDeeplink: function () {
 				var pushUrl = this.parsePushStateUrl(window.location.pathname),
 				    hashUrl = this.parseHashUrl(window.location.hash);
+=======
+		toView: function(viewClass) {
+			// TODO: Find a more secure way to determine whether class
+			// extends react component
+
+			this._type = !!viewClass.prototype.setState ?
+				'REACT' : 'BACKBONE';
+
+			this._viewClass = viewClass;
+>>>>>>> Update: WIP React integratoin
 
 				if (this.supportsPushState && pushUrl == "" && hashUrl != "") {
 					//There is a hash and no push state.
@@ -2207,6 +2391,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					return;
 				}
 
+<<<<<<< HEAD
 				_started = true;
 				this._addListeners();
 			},
@@ -2216,12 +2401,74 @@ return /******/ (function(modules) { // webpackBootstrap
 					$(window).on('popstate', this._onUrlChange);
 				} else {
 					$(window).on('hashchange', this._onUrlChange);
+=======
+		getViewInstance: function() {
+
+			if (!this.isInstantiated()) {
+				var params = this._viewArguments;
+
+				if (this._type === 'REACT') {
+					this._element = React.createElement(this._viewClass, params[0], null);
+				}
+				else if (this._type === 'BACKBONE') {
+					switch (params.length) {
+						default:
+						case 0:
+						this._viewInstance = new this._viewClass();
+						break;
+						case 1:
+						this._viewInstance = new this._viewClass(params[0]);
+						break;
+						case 2:
+						this._viewInstance = new this._viewClass(params[0], params[1]);
+						break;
+						case 3:
+						this._viewInstance = new this._viewClass(params[0], params[1], params[2]);
+						break;
+						case 4:
+						this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3]);
+						break;
+						case 5:
+						this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3], params[4]);
+						break;
+					}
+>>>>>>> Update: WIP React integratoin
 				}
 
 				var STATE_CHANGED = navigatorjs.NavigatorEvent.STATE_CHANGED;
 
+<<<<<<< HEAD
 				_navigator.on(STATE_CHANGED, this._onStateChanged);
 			},
+=======
+		getRootEl: function() {
+				if (this._type === 'REACT') {
+					return $(ReactDOM.findDOMNode(this._viewInstance));
+				}
+				else if (this._type === 'BACKBONE') {
+					return $(this.$el);
+				}
+		},
+
+		isMounted: function() {
+			if (!this.isInstantiated()) {
+				this.getViewInstance();
+			}
+
+			if (this._type === 'REACT') {
+				return false
+				// return this._viewInstance
+			}
+			else {
+				return this.isInstantiated() &&
+				       $.contains(document.documentElement, this.getViewInstance().$el);
+			}
+		},
+
+		isInstantiated: function() {
+			return this._viewInstance != null;
+		},
+>>>>>>> Update: WIP React integratoin
 
 			_removeListeners: function () {
 				$(window).off('popstate', this._onUrlChange);
