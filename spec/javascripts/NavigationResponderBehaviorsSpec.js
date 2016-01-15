@@ -188,8 +188,8 @@ describe("Navigator responder behavior/interface validation", function() {
 
 				responder = new Responder();
 
-				spyOn(responder, 'transitionIn').andCallThrough();
-				spyOn(responder, 'transitionOut').andCallThrough();
+				spyOn(responder, 'transitionIn').and.callThrough();
+				spyOn(responder, 'transitionOut').and.callThrough();
 
 				njs.add({}, "/");
 				njs.add(responder, "home");
@@ -221,9 +221,9 @@ describe("Navigator responder behavior/interface validation", function() {
 
 			it("doesn't call the transitionIn of a new state before the previous state has transitioned out", function() {
 				var contact = new Responder();
-				spyOn(contact, 'transitionIn').andCallThrough();
-				spyOn(contact, 'transitionOut').andCallThrough();
-				
+				spyOn(contact, 'transitionIn').and.callThrough();
+				spyOn(contact, 'transitionOut').and.callThrough();
+
 				njs.add(contact, "contact");
 				njs.start("/");
 				njs.request("home");
@@ -355,9 +355,9 @@ describe("Navigator responder behavior/interface validation", function() {
 				};
 
 				responder = new Responder();
-				spyOn(responder, 'willSwapToState').andCallThrough();
-				spyOn(responder, 'swapOut').andCallThrough();
-				spyOn(responder, 'swapIn').andCallThrough();
+				spyOn(responder, 'willSwapToState').and.callThrough();
+				spyOn(responder, 'swapOut').and.callThrough();
+				spyOn(responder, 'swapIn').and.callThrough();
 
 				njs.add({}, "/");
 			});

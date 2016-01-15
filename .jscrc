@@ -1,0 +1,7 @@
+{
+    "preset": "airbnb",
+    "esnext": true,
+    "validateIndentation": 2,
+    "disallowTrailingComma": true,
+    "requireTrailingComma": false,
+}
