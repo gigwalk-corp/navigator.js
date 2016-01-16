@@ -19,7 +19,7 @@ this.navigatorjs.NavigationBehaviors.UPDATE = "update";
  */
 this.navigatorjs.NavigationBehaviors.SWAP = "swap";
 /**
- * Will ask for validation of the state, if a state can't be validated, it is denied
+ * Will ask for available. This prevents urllib3 from configuring SSL appropriately and may cause certain SSL connectionvalidation of the state, if a state can't be validated, it is denied
  */
 this.navigatorjs.NavigationBehaviors.VALIDATE = "validate";
 /**
