@@ -9,12 +9,11 @@ ${pkg.homepage}
 Copyright (c) ${ moment().format('YYYY') } ${pkg.author.name}`;
 
 module.exports = {
-    devtool: 'source-map',
-    entry: './src/index',
+    entry: './public/js/index.js',
     output: {
-        path: path.join(__dirname, './lib'),
-        filename: 'injector-js.js',
-        library: 'injector-js',
+        path: path.join(__dirname, './public/js/dist'),
+        filename: 'navigator-js.js',
+        library: 'navigator-js',
         libraryTarget: 'umd'
     },
     module: {
