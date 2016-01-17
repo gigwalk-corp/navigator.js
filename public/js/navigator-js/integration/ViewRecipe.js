@@ -56,6 +56,10 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		getViewInstance: function() {
+			return this._viewInstance;
+		},
+
+		initialize: function() {
 
 			if (!this.isInstantiated()) {
 				var params = this._viewArguments;
@@ -86,9 +90,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 						break;
 					}
 				}
-
 			}
-			return this._viewInstance;
 		},
 
 		getRootEl: function() {
@@ -102,7 +104,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 		isMounted: function() {
 			if (!this.isInstantiated()) {
-				this.getViewInstance();
+				this.initialize();
 			}
 
 			if (this._type === 'REACT') {

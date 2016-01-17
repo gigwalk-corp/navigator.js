@@ -59,9 +59,9 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 	function _addViewElementToDOM(recipe) {
 		// If element for this view is already initialized and in the DOM
 
-		if (recipe.isMounted()) {
-			return;
-		}
+		// if (recipe.isMounted()) {
+		// 	return;
+		// }
 
 		// if (recipe.isInstantiated() && $.contains(document.documentElement, recipe.getViewInstance().$el)) {
 		// 	return recipe.getViewInstance();
@@ -111,6 +111,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			}
 		}
 
+		console.log(111)
 		// otherwise add on top
 		if (recipe._type === 'REACT') {
 			recipe._viewInstance = ReactDOM.render(recipe._element, $container[0]);
