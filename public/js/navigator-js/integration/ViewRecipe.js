@@ -8,6 +8,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 (function() {
 	var ViewRecipe = function() {
 		this._states = [];
+		this._children = [];
 		this._viewClass = null;
 		this._viewArguments = [];
 		this._viewInstance = null;
@@ -48,6 +49,18 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 			this._viewClass = viewClass;
 
+			// if (this._viewClass.prototype.setState) {
+			// 	const _this = this;
+			// 	this._viewClass.prototype.componentDidMount = function() {
+			// 		console.log(222)
+			// 		_this._reactIsMounted = true
+			// 	}
+			//
+			// 	this._viewClass.prototype.componentWillUnmount = function() {
+			// 		_this._reactIsMounted = false
+			// 	}
+			// }
+
 			return this;
 		},
 
@@ -60,35 +73,45 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		initialize: function() {
+			var params = this._viewArguments;
 
-			if (!this.isInstantiated()) {
-				var params = this._viewArguments;
+			if (this._type === 'REACT') {
+				const props = Object.assign(
+					{
+						ref: function(c) {
+							this._viewInstance = c;
+						}.bind(this),
+					},
+					params[0]
+				)
 
-				if (this._type === 'REACT') {
-					this._element = React.createElement(this._viewClass, params[0], null);
-				}
-				else if (this._type === 'BACKBONE') {
-					switch (params.length) {
-						default:
-						case 0:
-						this._viewInstance = new this._viewClass();
-						break;
-						case 1:
-						this._viewInstance = new this._viewClass(params[0]);
-						break;
-						case 2:
-						this._viewInstance = new this._viewClass(params[0], params[1]);
-						break;
-						case 3:
-						this._viewInstance = new this._viewClass(params[0], params[1], params[2]);
-						break;
-						case 4:
-						this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3]);
-						break;
-						case 5:
-						this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3], params[4]);
-						break;
-					}
+				this._element = React.createElement(
+					this._viewClass,
+					props,
+					this._children[0] ? this._children[0]._element : null
+				);
+			}
+			else if (this._type === 'BACKBONE') {
+				switch (params.length) {
+					default:
+					case 0:
+					this._viewInstance = new this._viewClass();
+					break;
+					case 1:
+					this._viewInstance = new this._viewClass(params[0]);
+					break;
+					case 2:
+					this._viewInstance = new this._viewClass(params[0], params[1]);
+					break;
+					case 3:
+					this._viewInstance = new this._viewClass(params[0], params[1], params[2]);
+					break;
+					case 4:
+					this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3]);
+					break;
+					case 5:
+					this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3], params[4]);
+					break;
 				}
 			}
 		},
@@ -98,7 +121,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 					return $(ReactDOM.findDOMNode(this._viewInstance));
 				}
 				else if (this._type === 'BACKBONE') {
-					return $(this.$el);
+					return $(this._viewInstance.$el);
 				}
 		},
 
@@ -108,12 +131,14 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			}
 
 			if (this._type === 'REACT') {
-				return false;
-				// return this._viewInstance
+				return this._reactIsMounted;
 			}
-			else {
+			else if (this._type === 'BACKBONE') {
 				return this.isInstantiated() &&
-				       $.contains(document.documentElement, this.getViewInstance().$el);
+					$.contains(
+						document.documentElement,
+						this.getViewInstance().$el[0]
+					);
 			}
 		},
 
@@ -138,6 +163,14 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 		getInsideSelector: function() {
 			return this._insideSelector;
+		},
+
+		addChild: function(child) {
+			this._children.push(child);
+			if (!child.isInstantiated()) {
+				child.initialize();
+			}
+			this.initialize();
 		},
 
 		withParent: function(parentRecipe) {
