@@ -1,5 +1,5 @@
 /*!
- * @gigwalk/navigator-js - v0.5.0 - 2016-01-17
+ * @gigwalk/navigator-js - v0.5.0 - 2016-01-19
  * undefined
  * Copyright (c) 2016 Bigger Boat
  */
@@ -2416,8 +2416,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 						// if (viewInstance.navigatorBehaviors instanceof Array) {
 							_addViewElementToDOM(recipe);
-							viewInstance = recipe.getViewInstance();
-							_navigator.add(viewInstance, state);
+							// console.log('adding view instance ', viewInstance)
+							setTimeout(function(recipe, state) {
+								viewInstance = recipe.getViewInstance();
+
+								_navigator.add(viewInstance, state);
+							}.bind(null, recipe, state))
 						// }
 					} else {
 						if (recipe.isMounted()) {
@@ -2527,9 +2531,11 @@ return /******/ (function(modules) { // webpackBootstrap
 					break;
 				case 'REACT > REACT':
 					// re-render parent element
+
 					parentRecipe.addChild(recipe);
 					const $root = parentRecipe.getRootEl().parent();
 					ReactDOM.render(parentRecipe._element, $root[0]);
+
 					break;
 				default:
 					console.error('Invalid recipe type combination!');
@@ -21092,6 +21098,8 @@ return /******/ (function(modules) { // webpackBootstrap
 					const props = Object.assign(
 						{
 							ref: function(c) {
+								console.log(c, this._viewClass.name)
+								// if (!c) return;
 								this._viewInstance = c;
 							}.bind(this),
 						},
@@ -21101,7 +21109,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					this._element = React.createElement(
 						this._viewClass,
 						props,
-						this._children[0] ? this._children[0]._element : null
+						this._children.map(child => child._element)
 					);
 				}
 				else if (this._type === 'BACKBONE') {
@@ -21179,11 +21187,17 @@ return /******/ (function(modules) { // webpackBootstrap
 			},
 
 			addChild: function(child) {
+				if (this._children.includes(child)) {
+					return false;
+				}
 				this._children.push(child);
+
 				if (!child.isInstantiated()) {
 					child.initialize();
 				}
 				this.initialize();
+
+				return true;
 			},
 
 			withParent: function(parentRecipe) {

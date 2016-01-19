@@ -79,6 +79,8 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				const props = Object.assign(
 					{
 						ref: function(c) {
+							console.log(c, this._viewClass.name)
+							// if (!c) return;
 							this._viewInstance = c;
 						}.bind(this),
 					},
@@ -88,7 +90,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				this._element = React.createElement(
 					this._viewClass,
 					props,
-					this._children[0] ? this._children[0]._element : null
+					this._children.map(child => child._element)
 				);
 			}
 			else if (this._type === 'BACKBONE') {
@@ -166,11 +168,17 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		addChild: function(child) {
+			if (this._children.includes(child)) {
+				return false;
+			}
 			this._children.push(child);
+
 			if (!child.isInstantiated()) {
 				child.initialize();
 			}
 			this.initialize();
+
+			return true;
 		},
 
 		withParent: function(parentRecipe) {

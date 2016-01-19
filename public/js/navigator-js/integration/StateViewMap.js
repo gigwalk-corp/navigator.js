@@ -48,8 +48,12 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 					// if (viewInstance.navigatorBehaviors instanceof Array) {
 						_addViewElementToDOM(recipe);
-						viewInstance = recipe.getViewInstance();
-						_navigator.add(viewInstance, state);
+						// console.log('adding view instance ', viewInstance)
+						setTimeout(function(recipe, state) {
+							viewInstance = recipe.getViewInstance();
+
+							_navigator.add(viewInstance, state);
+						}.bind(null, recipe, state))
 					// }
 				} else {
 					if (recipe.isMounted()) {
@@ -159,9 +163,11 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				break;
 			case 'REACT > REACT':
 				// re-render parent element
+
 				parentRecipe.addChild(recipe);
 				const $root = parentRecipe.getRootEl().parent();
 				ReactDOM.render(parentRecipe._element, $root[0]);
+
 				break;
 			default:
 				console.error('Invalid recipe type combination!');
