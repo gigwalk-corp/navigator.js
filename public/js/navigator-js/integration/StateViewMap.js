@@ -46,15 +46,13 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 				if (requestedState.contains(state)) {
 
-					// if (viewInstance.navigatorBehaviors instanceof Array) {
-						_addViewElementToDOM(recipe);
-						// console.log('adding view instance ', viewInstance)
-						setTimeout(function(recipe, state) {
-							viewInstance = recipe.getViewInstance();
-
+					_addViewElementToDOM(recipe, function(state, recipe) {
+						var viewInstance = recipe.getViewInstance();
+						if (Array.isArray(viewInstance.navigatorBehaviors)) {
 							_navigator.add(viewInstance, state);
-						}.bind(null, recipe, state))
-					// }
+						}
+					}.bind(null, state));
+
 				} else {
 					if (recipe.isMounted()) {
 						_removeViewElementFromDOM(recipe);
@@ -70,7 +68,6 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				const rootEl = recipe.getRootEl();
 				rootEl.parent().remove();
 				ReactDOM.unmountComponentAtNode(rootEl.parent()[0]);
-				// rootEl.parent().remove();
 				recipe._reactIsMounted = false;
 				break;
 			case 'BACKBONE':
@@ -82,7 +79,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		}
 	}
 
-	function _addViewElementToDOM(recipe) {
+	function _addViewElementToDOM(recipe, instanceReady) {
 		// If element for this view is already initialized and in the DOM
 
 		if (recipe.isMounted()) {
@@ -102,14 +99,14 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			// the parent view and add it to the DOM correctly
 
 			if (!parentRecipe.isMounted()) {
-				_addViewElementToDOM(parentRecipe);
+				_addViewElementToDOM(parentRecipe, instanceReady);
 			}
 		}
 
-		_addRecipeToParent(parentRecipe, recipe);
+		_addRecipeToParent(parentRecipe, recipe, instanceReady);
 	}
 
-	function _addRecipeToParent(parentRecipe, recipe) {
+	function _addRecipeToParent(parentRecipe, recipe, instanceReady) {
 		var $container = _$root,
 			$inside,
 			insideSelector = recipe.getInsideSelector();
@@ -160,14 +157,16 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				} else {
 					$container.append(recipe.getRootEl());
 				}
+				instanceReady(recipe);
 				break;
 			case 'REACT > REACT':
 				// re-render parent element
 
 				parentRecipe.addChild(recipe);
 				const $root = parentRecipe.getRootEl().parent();
-				ReactDOM.render(parentRecipe._element, $root[0]);
-
+				ReactDOM.render(parentRecipe._element, $root[0], function() {
+					instanceReady(recipe);
+				});
 				break;
 			default:
 				console.error('Invalid recipe type combination!');

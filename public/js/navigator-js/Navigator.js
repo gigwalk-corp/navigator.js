@@ -183,7 +183,6 @@ this.navigatorjs = this.navigatorjs || {};
 			// logger.error("Requested a null state. Aborting request.");
 			return;
 		}
-
 		var requestedState,
 			path,
 			fromState,
@@ -665,6 +664,7 @@ this.navigatorjs = this.navigatorjs || {};
 
 
 	var _validate = function(stateToValidate, allowRedirection, allowAsyncValidation) {
+		debugger
 		var allowRedirection = allowRedirection == undefined ? true : allowRedirection,
 			allowAsyncValidation = allowAsyncValidation == undefined ? true : allowAsyncValidation,
 			unvalidatedState = stateToValidate,

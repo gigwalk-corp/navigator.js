@@ -1,5 +1,5 @@
 /*!
- * @gigwalk/navigator-js - v0.5.0 - 2016-01-19
+ * @gigwalk/navigator-js - v0.5.0 - 2016-01-20
  * undefined
  * Copyright (c) 2016 Bigger Boat
  */
@@ -287,7 +287,6 @@ return /******/ (function(modules) { // webpackBootstrap
 				// logger.error("Requested a null state. Aborting request.");
 				return;
 			}
-
 			var requestedState,
 				path,
 				fromState,
@@ -769,6 +768,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 		var _validate = function(stateToValidate, allowRedirection, allowAsyncValidation) {
+			debugger
 			var allowRedirection = allowRedirection == undefined ? true : allowRedirection,
 				allowAsyncValidation = allowAsyncValidation == undefined ? true : allowAsyncValidation,
 				unvalidatedState = stateToValidate,
@@ -2414,15 +2414,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 					if (requestedState.contains(state)) {
 
-						// if (viewInstance.navigatorBehaviors instanceof Array) {
-							_addViewElementToDOM(recipe);
-							// console.log('adding view instance ', viewInstance)
-							setTimeout(function(recipe, state) {
-								viewInstance = recipe.getViewInstance();
-
+						_addViewElementToDOM(recipe, function(state, recipe) {
+							var viewInstance = recipe.getViewInstance();
+							if (Array.isArray(viewInstance.navigatorBehaviors)) {
 								_navigator.add(viewInstance, state);
-							}.bind(null, recipe, state))
-						// }
+							}
+						}.bind(null, state));
+
 					} else {
 						if (recipe.isMounted()) {
 							_removeViewElementFromDOM(recipe);
@@ -2438,7 +2436,6 @@ return /******/ (function(modules) { // webpackBootstrap
 					const rootEl = recipe.getRootEl();
 					rootEl.parent().remove();
 					ReactDOM.unmountComponentAtNode(rootEl.parent()[0]);
-					// rootEl.parent().remove();
 					recipe._reactIsMounted = false;
 					break;
 				case 'BACKBONE':
@@ -2450,7 +2447,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 		}
 
-		function _addViewElementToDOM(recipe) {
+		function _addViewElementToDOM(recipe, instanceReady) {
 			// If element for this view is already initialized and in the DOM
 
 			if (recipe.isMounted()) {
@@ -2470,14 +2467,14 @@ return /******/ (function(modules) { // webpackBootstrap
 				// the parent view and add it to the DOM correctly
 
 				if (!parentRecipe.isMounted()) {
-					_addViewElementToDOM(parentRecipe);
+					_addViewElementToDOM(parentRecipe, instanceReady);
 				}
 			}
 
-			_addRecipeToParent(parentRecipe, recipe);
+			_addRecipeToParent(parentRecipe, recipe, instanceReady);
 		}
 
-		function _addRecipeToParent(parentRecipe, recipe) {
+		function _addRecipeToParent(parentRecipe, recipe, instanceReady) {
 			var $container = _$root,
 				$inside,
 				insideSelector = recipe.getInsideSelector();
@@ -2528,14 +2525,16 @@ return /******/ (function(modules) { // webpackBootstrap
 					} else {
 						$container.append(recipe.getRootEl());
 					}
+					instanceReady(recipe);
 					break;
 				case 'REACT > REACT':
 					// re-render parent element
 
 					parentRecipe.addChild(recipe);
 					const $root = parentRecipe.getRootEl().parent();
-					ReactDOM.render(parentRecipe._element, $root[0]);
-
+					ReactDOM.render(parentRecipe._element, $root[0], function() {
+						instanceReady(recipe);
+					});
 					break;
 				default:
 					console.error('Invalid recipe type combination!');
@@ -21098,10 +21097,8 @@ return /******/ (function(modules) { // webpackBootstrap
 					const props = Object.assign(
 						{
 							ref: function(c) {
-								console.log(c, this._viewClass.name)
-								// if (!c) return;
 								this._viewInstance = c;
-							}.bind(this),
+							}.bind(this)
 						},
 						params[0]
 					)

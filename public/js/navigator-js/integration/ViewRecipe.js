@@ -79,10 +79,8 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				const props = Object.assign(
 					{
 						ref: function(c) {
-							console.log(c, this._viewClass.name)
-							// if (!c) return;
 							this._viewInstance = c;
-						}.bind(this),
+						}.bind(this)
 					},
 					params[0]
 				)
