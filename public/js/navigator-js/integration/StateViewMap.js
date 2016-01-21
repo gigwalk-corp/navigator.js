@@ -46,12 +46,11 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 				if (requestedState.contains(state)) {
 
-					_addViewElementToDOM(recipe, function(state, recipe) {
-						var viewInstance = recipe.getViewInstance();
-						if (Array.isArray(viewInstance.navigatorBehaviors)) {
-							_navigator.add(viewInstance, state);
-						}
-					}.bind(null, state));
+					_addViewElementToDOM(recipe);
+					var viewInstance = recipe.getViewInstance();
+					if (Array.isArray(viewInstance.navigatorBehaviors)) {
+						_navigator.add(viewInstance, state);
+					}
 
 				} else {
 					if (recipe.isMounted()) {
@@ -106,7 +105,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		_addRecipeToParent(parentRecipe, recipe, instanceReady);
 	}
 
-	function _addRecipeToParent(parentRecipe, recipe, instanceReady) {
+	function _addRecipeToParent(parentRecipe, recipe) {
 		var $container = _$root,
 			$inside,
 			insideSelector = recipe.getInsideSelector();
@@ -157,16 +156,12 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				} else {
 					$container.append(recipe.getRootEl());
 				}
-				instanceReady(recipe);
 				break;
 			case 'REACT > REACT':
 				// re-render parent element
-
 				parentRecipe.addChild(recipe);
 				const $root = parentRecipe.getRootEl().parent();
-				ReactDOM.render(parentRecipe._element, $root[0], function() {
-					instanceReady(recipe);
-				});
+				ReactDOM.render(parentRecipe._element, $root[0]);
 				break;
 			default:
 				console.error('Invalid recipe type combination!');

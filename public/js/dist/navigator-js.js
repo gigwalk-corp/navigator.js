@@ -768,7 +768,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 		var _validate = function(stateToValidate, allowRedirection, allowAsyncValidation) {
-			debugger
 			var allowRedirection = allowRedirection == undefined ? true : allowRedirection,
 				allowAsyncValidation = allowAsyncValidation == undefined ? true : allowAsyncValidation,
 				unvalidatedState = stateToValidate,
@@ -2414,12 +2413,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 					if (requestedState.contains(state)) {
 
-						_addViewElementToDOM(recipe, function(state, recipe) {
-							var viewInstance = recipe.getViewInstance();
-							if (Array.isArray(viewInstance.navigatorBehaviors)) {
-								_navigator.add(viewInstance, state);
-							}
-						}.bind(null, state));
+						_addViewElementToDOM(recipe);
+						var viewInstance = recipe.getViewInstance();
+						if (Array.isArray(viewInstance.navigatorBehaviors)) {
+							_navigator.add(viewInstance, state);
+						}
 
 					} else {
 						if (recipe.isMounted()) {
@@ -2474,7 +2472,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			_addRecipeToParent(parentRecipe, recipe, instanceReady);
 		}
 
-		function _addRecipeToParent(parentRecipe, recipe, instanceReady) {
+		function _addRecipeToParent(parentRecipe, recipe) {
 			var $container = _$root,
 				$inside,
 				insideSelector = recipe.getInsideSelector();
@@ -2525,16 +2523,12 @@ return /******/ (function(modules) { // webpackBootstrap
 					} else {
 						$container.append(recipe.getRootEl());
 					}
-					instanceReady(recipe);
 					break;
 				case 'REACT > REACT':
 					// re-render parent element
-
 					parentRecipe.addChild(recipe);
 					const $root = parentRecipe.getRootEl().parent();
-					ReactDOM.render(parentRecipe._element, $root[0], function() {
-						instanceReady(recipe);
-					});
+					ReactDOM.render(parentRecipe._element, $root[0]);
 					break;
 				default:
 					console.error('Invalid recipe type combination!');
@@ -21087,6 +21081,17 @@ return /******/ (function(modules) { // webpackBootstrap
 			},
 
 			getViewInstance: function() {
+				switch (this._type) {
+					case 'REACT':
+						return {
+							navigatorBehaviors: ['IHasStateTransition'],
+							transitionIn: function(cb) { cb() },
+							transitionOut: function(cb) { cb() }
+						}
+					case 'BACKBONE':
+						return this._viewInstance;
+				}
+
 				return this._viewInstance;
 			},
 
@@ -21097,7 +21102,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					const props = Object.assign(
 						{
 							ref: function(c) {
-								this._viewInstance = c;
+								this._ref = c;
 							}.bind(this)
 						},
 						params[0]
@@ -21149,7 +21154,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				}
 
 				if (this._type === 'REACT') {
-					return this._reactIsMounted;
+					return !!this._ref;
 				}
 				else if (this._type === 'BACKBONE') {
 					return this.isInstantiated() &&

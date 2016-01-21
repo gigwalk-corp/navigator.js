@@ -69,6 +69,17 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		getViewInstance: function() {
+			switch (this._type) {
+				case 'REACT':
+					return {
+						navigatorBehaviors: ['IHasStateTransition'],
+						transitionIn: function(cb) { cb() },
+						transitionOut: function(cb) { cb() }
+					}
+				case 'BACKBONE':
+					return this._viewInstance;
+			}
+
 			return this._viewInstance;
 		},
 
@@ -79,7 +90,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				const props = Object.assign(
 					{
 						ref: function(c) {
-							this._viewInstance = c;
+							this._ref = c;
 						}.bind(this)
 					},
 					params[0]
@@ -131,7 +142,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			}
 
 			if (this._type === 'REACT') {
-				return this._reactIsMounted;
+				return !!this._ref;
 			}
 			else if (this._type === 'BACKBONE') {
 				return this.isInstantiated() &&
