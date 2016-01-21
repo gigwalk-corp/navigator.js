@@ -21,8 +21,7 @@ module.exports = {
             test: /\.js/,
             exclude: /(bower_components|node_modules)/,
             loader: 'imports?this=>window'
-        }
-      ]
+        }]
     },
     target: 'node',
     plugins: [
