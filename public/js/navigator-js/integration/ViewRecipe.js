@@ -41,25 +41,16 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		toView: function(viewClass) {
+			this._viewClass = viewClass;
+
+			// This is where the recipe adds a mixin depending on the type of viewClass
+			// added.  This allows for different handling for different type of
+			// view recipes.
+
 			// TODO: Find a more secure way to determine whether class
 			// extends react component
 
-			this._type = !!viewClass.prototype.setState ?
-				'REACT' : 'BACKBONE';
-
-			this._viewClass = viewClass;
-
-			// if (this._viewClass.prototype.setState) {
-			// 	const _this = this;
-			// 	this._viewClass.prototype.componentDidMount = function() {
-			// 		console.log(222)
-			// 		_this._reactIsMounted = true
-			// 	}
-			//
-			// 	this._viewClass.prototype.componentWillUnmount = function() {
-			// 		_this._reactIsMounted = false
-			// 	}
-			// }
+			_.extend(this, !!viewClass.prototype.setState ? ReactRecipe : BackboneRecipe);
 
 			return this;
 		},
@@ -69,88 +60,15 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		getViewInstance: function() {
-			switch (this._type) {
-				case 'REACT':
-					return {
-						navigatorBehaviors: ['IHasStateTransition'],
-						transitionIn: function(cb) { cb() },
-						transitionOut: function(cb) { cb() }
-					}
-				case 'BACKBONE':
-					return this._viewInstance;
-			}
-
 			return this._viewInstance;
 		},
 
-		initialize: function() {
-			var params = this._viewArguments;
-
-			if (this._type === 'REACT') {
-				const props = Object.assign(
-					{
-						ref: function(c) {
-							this._ref = c;
-						}.bind(this)
-					},
-					params[0]
-				)
-
-				this._element = React.createElement(
-					this._viewClass,
-					props,
-					this._children.map(child => child._element)
-				);
-			}
-			else if (this._type === 'BACKBONE') {
-				switch (params.length) {
-					default:
-					case 0:
-					this._viewInstance = new this._viewClass();
-					break;
-					case 1:
-					this._viewInstance = new this._viewClass(params[0]);
-					break;
-					case 2:
-					this._viewInstance = new this._viewClass(params[0], params[1]);
-					break;
-					case 3:
-					this._viewInstance = new this._viewClass(params[0], params[1], params[2]);
-					break;
-					case 4:
-					this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3]);
-					break;
-					case 5:
-					this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3], params[4]);
-					break;
-				}
-			}
-		},
-
 		getRootEl: function() {
-				if (this._type === 'REACT') {
-					return $(ReactDOM.findDOMNode(this._viewInstance));
-				}
-				else if (this._type === 'BACKBONE') {
-					return $(this._viewInstance.$el);
-				}
+			console.warn('Method getRootEl should be implemented by viewRecipe');
 		},
 
 		isMounted: function() {
-			if (!this.isInstantiated()) {
-				this.initialize();
-			}
-
-			if (this._type === 'REACT') {
-				return !!this._ref;
-			}
-			else if (this._type === 'BACKBONE') {
-				return this.isInstantiated() &&
-					$.contains(
-						document.documentElement,
-						this.getViewInstance().$el[0]
-					);
-			}
+			console.warn('Method getRootEl should be implemented by viewRecipe');
 		},
 
 		isInstantiated: function() {
@@ -174,20 +92,6 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 		getInsideSelector: function() {
 			return this._insideSelector;
-		},
-
-		addChild: function(child) {
-			if (this._children.includes(child)) {
-				return false;
-			}
-			this._children.push(child);
-
-			if (!child.isInstantiated()) {
-				child.initialize();
-			}
-			this.initialize();
-
-			return true;
 		},
 
 		withParent: function(parentRecipe) {
