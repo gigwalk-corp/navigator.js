@@ -1,6 +1,6 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
 var ReactTestUtils = require('react-addons-test-utils');
+var ReactRecipe = require('./ReactRecipe');
+var BackboneRecipe = require('./BackboneRecipe');
 
 this.navigatorjs = this.navigatorjs || {};
 this.navigatorjs.integration = this.navigatorjs.integration || {};
@@ -44,7 +44,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			this._viewClass = viewClass;
 
 			// This is where the recipe adds a mixin depending on the type of viewClass
-			// added.  This allows for different handling for different type of
+			// added.  This allows for different handling for different 'types' of
 			// view recipes.
 
 			// TODO: Find a more secure way to determine whether class
@@ -68,7 +68,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		isMounted: function() {
-			console.warn('Method getRootEl should be implemented by viewRecipe');
+			console.warn('Method isMounted should be implemented by viewRecipe');
 		},
 
 		isInstantiated: function() {

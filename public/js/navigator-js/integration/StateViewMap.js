@@ -64,7 +64,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 	function _removeViewElementFromDOM(recipe) {
 		switch (recipe._type) {
 			case 'REACT':
-				const rootEl = recipe.getRootEl();
+				var rootEl = recipe.getRootEl();
 				rootEl.parent().remove();
 				ReactDOM.unmountComponentAtNode(rootEl.parent()[0]);
 				recipe._reactIsMounted = false;
@@ -94,7 +94,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		var parentRecipe = recipe.getParentRecipe();
 
 		if (parentRecipe) {
-			// If parent view recipe has not been constructed, initialize
+			// If parent view recipe has not been varructed, initialize
 			// the parent view and add it to the DOM correctly
 
 			if (!parentRecipe.isMounted()) {
@@ -149,19 +149,22 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 				// otherwise add on top
 				if (recipe._type === 'REACT') {
-					const $proxy = $(document.createElement('div'));
+					var $proxy = $(document.createElement('div'));
 					$container.append($proxy);
-					recipe._viewInstance = ReactDOM.render(recipe._element, $proxy[0]);
-					recipe._reactIsMounted = true;
+					ReactDOM.render(recipe._viewInstance, $proxy[0]);
 				} else {
 					$container.append(recipe.getRootEl());
 				}
 				break;
 			case 'REACT > REACT':
-				// re-render parent element
-				parentRecipe.addChild(recipe);
-				const $root = parentRecipe.getRootEl().parent();
-				ReactDOM.render(parentRecipe._element, $root[0]);
+				// TODO: Here account for case where parentRecipe is not
+				// root element of render tree.
+
+				parentRecipe._showChild(recipe);
+				ReactDOM.render(
+					parentRecipe._viewInstance,
+					parentRecipe.getRootEl().parent()[0]
+				);
 				break;
 			default:
 				console.error('Invalid recipe type combination!');

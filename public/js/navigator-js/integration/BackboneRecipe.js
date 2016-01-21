@@ -27,7 +27,15 @@ var BackboneRecipe = {
     }
   },
 
-  getRootEl: getRootEl() {
+  isMounted: function isMounted() {
+    return this.isInstantiated() &&
+      $.contains(
+        document.documentElement,
+        this.getViewInstance().$el[0]
+      );
+  },
+
+  getRootEl: function getRootEl() {
     return $(this._viewInstance.$el);
   }
 };

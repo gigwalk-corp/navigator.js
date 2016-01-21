@@ -1,5 +1,8 @@
+var React = require('react');
+var ReactDOM = require('react-dom');
+
 var ReactRecipe = {
-  _type: 'BACKBONE',
+  _type: 'REACT',
 
   // Returns a fake proxy element due to the fact that
   // we do not use these transition functions within
