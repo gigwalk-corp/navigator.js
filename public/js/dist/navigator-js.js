@@ -2429,23 +2429,29 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 
 		function _removeViewElementFromDOM(recipe) {
-			switch (recipe._type) {
-				case 'REACT':
+			var parentRecipe = recipe.getParentRecipe();
+			var removalType = '' + (parentRecipe ? parentRecipe._type : 'BACKBONE') + ' > ' + recipe._type;
+
+			switch (removalType) {
+				case 'BACKBONE > REACT':
 					var rootEl = recipe.getRootEl();
 					rootEl.parent().remove();
 					ReactDOM.unmountComponentAtNode(rootEl.parent()[0]);
 					recipe._reactIsMounted = false;
 					break;
-				case 'BACKBONE':
+
+				case 'BACKBONE > BACKBONE':
 					recipe.getRootEl().remove();
 					break;
+
 				default:
 					console.error('unknown recipe type!');
 					break;
+
 			}
 		}
 
-		function _addViewElementToDOM(recipe, instanceReady) {
+		function _addViewElementToDOM(recipe) {
 			// If element for this view is already initialized and in the DOM
 
 			if (recipe.isMounted()) {
@@ -2465,11 +2471,11 @@ return /******/ (function(modules) { // webpackBootstrap
 				// the parent view and add it to the DOM correctly
 
 				if (!parentRecipe.isMounted()) {
-					_addViewElementToDOM(parentRecipe, instanceReady);
+					_addViewElementToDOM(parentRecipe);
 				}
 			}
 
-			_addRecipeToParent(parentRecipe, recipe, instanceReady);
+			_addRecipeToParent(parentRecipe, recipe);
 		}
 
 		function _addRecipeToParent(parentRecipe, recipe) {
@@ -2481,48 +2487,40 @@ return /******/ (function(modules) { // webpackBootstrap
 				$container = parentRecipe.getRootEl();
 			}
 
-			// If view has a DOM selector to be inserted with, save reference
-			// to this container element
-
 			if (insideSelector != null) {
 				$inside = $container.find(insideSelector);
 				$container = $inside.length > 0 ? $inside.first() : $container;
 			}
 
 			var i = _orderedRecipes.indexOf(recipe) + 1,
-				length = _orderedRecipes.length,
-				testRecipe;
+			length = _orderedRecipes.length,
+			testRecipe;
 
-			var additionType = '' + (parentRecipe ? parentRecipe._type : 'ROOT') + ' > ' + recipe._type;
+			var additionType = '' + (parentRecipe ? parentRecipe._type : 'BACKBONE') + ' > ' + recipe._type;
 
 			switch (additionType) {
-				case 'ROOT > BACKBONE':
-				case 'ROOT > REACT':
 				case 'BACKBONE > BACKBONE':
-				case 'BACKBONE > REACT':
-					if (recipe._type === 'BACKBONE') {
-						for (i; i < length; i++) {
-							testRecipe = _orderedRecipes[i];
+					for (i; i < length; i++) {
+						testRecipe = _orderedRecipes[i];
 
-							// If any other views have the same parent, add this element before
-							// those elements in the container element
+						// If any other views have the same parent, add this element before
+						// those elements in the container element
 
-							if (testRecipe.isInstantiated() && testRecipe.isMounted() && testRecipe.getRootEl().parent()[0] == $container[0]) {
-								testRecipe.getRootEl().before(recipe.getRootEl());
-								return;
-							}
+						if (testRecipe.isInstantiated() && testRecipe.isMounted() && testRecipe.getRootEl().parent()[0] == $container[0]) {
+							testRecipe.getRootEl().before(recipe.getRootEl());
+							return;
 						}
 					}
-
-					// otherwise add on top
-					if (recipe._type === 'REACT') {
-						var $proxy = $(document.createElement('div'));
-						$container.append($proxy);
-						ReactDOM.render(recipe._viewInstance, $proxy[0]);
-					} else {
-						$container.append(recipe.getRootEl());
-					}
+					$container.append(recipe.getRootEl());
 					break;
+
+				case 'BACKBONE > REACT':
+					var $proxy = $(document.createElement('div'));
+					$container.append($proxy);
+					ReactDOM.render(recipe._viewInstance, $proxy[0]);
+
+					break;
+
 				case 'REACT > REACT':
 					// TODO: Here account for case where parentRecipe is not
 					// root element of render tree.
@@ -2536,6 +2534,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				default:
 					console.error('Invalid recipe type combination!');
 					break;
+
 			}
 		}
 
