@@ -70,7 +70,18 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				var rootEl = recipe.getRootEl();
 				rootEl.parent().remove();
 				ReactDOM.unmountComponentAtNode(rootEl.parent()[0]);
-				recipe._reactIsMounted = false;
+				break;
+
+			case 'REACT > REACT':
+				parentRecipe._removeChild(recipe);
+				while (parentRecipe.getParentRecipe()) {
+					parentRecipe = parentRecipe.getParentRecipe();
+				}
+				// TODO: Batch this render call on state change
+				ReactDOM.render(
+					parentRecipe._viewInstance,
+					parentRecipe.getRootEl().parent()[0]
+				);
 				break;
 
 			case 'BACKBONE > BACKBONE':
@@ -78,7 +89,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				break;
 
 			default:
-				console.error('unknown recipe type!');
+				console.error('unknown recipe type: ' + removalType);
 				break;
 
 		}
@@ -125,14 +136,14 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			$container = $inside.length > 0 ? $inside.first() : $container;
 		}
 
-		var i = _orderedRecipes.indexOf(recipe) + 1,
-		length = _orderedRecipes.length,
-		testRecipe;
-
 		var additionType = '' + (parentRecipe ? parentRecipe._type : 'BACKBONE') + ' > ' + recipe._type;
 
 		switch (additionType) {
 			case 'BACKBONE > BACKBONE':
+				var i = _orderedRecipes.indexOf(recipe) + 1,
+				length = _orderedRecipes.length,
+				testRecipe;
+
 				for (i; i < length; i++) {
 					testRecipe = _orderedRecipes[i];
 
@@ -155,17 +166,19 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 				break;
 
 			case 'REACT > REACT':
-				// TODO: Here account for case where parentRecipe is not
-				// root element of render tree.
-
 				parentRecipe._showChild(recipe);
+
+				while (parentRecipe.getParentRecipe()) {
+					parentRecipe = parentRecipe.getParentRecipe();
+				}
+				// TODO: Batch this render call on state change
 				ReactDOM.render(
 					parentRecipe._viewInstance,
 					parentRecipe.getRootEl().parent()[0]
 				);
 				break;
 			default:
-				console.error('Invalid recipe type combination!');
+				console.error('Invalid recipe type combination: ' + additionType);
 				break;
 
 		}
