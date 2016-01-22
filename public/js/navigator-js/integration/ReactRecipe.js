@@ -34,7 +34,11 @@ var ReactRecipe = {
     this._viewInstance = React.createElement(
       this._viewClass,
       props,
-      this._children.map(child => child._viewInstance)
+      this._children.map(
+        function(child) {
+          return child._viewInstance;
+        }
+      )
     );
   },
 

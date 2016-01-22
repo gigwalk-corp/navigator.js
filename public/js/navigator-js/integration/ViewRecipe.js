@@ -1,4 +1,3 @@
-var ReactTestUtils = require('react-addons-test-utils');
 var ReactRecipe = require('./ReactRecipe');
 var BackboneRecipe = require('./BackboneRecipe');
 
