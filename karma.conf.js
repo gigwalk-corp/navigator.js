@@ -41,6 +41,7 @@ module.exports = function karmaConfig(config) {
 
         // list of files / patterns to load in the browser
         files: [
+            './node_modules/phantomjs-polyfill/bind-polyfill.js',
             'public/js/vendors/jquery/dist/jquery.js',
             'public/js/vendors/underscore/underscore.js',
             'public/js/vendors/backbone/backbone.js',
@@ -82,7 +83,7 @@ module.exports = function karmaConfig(config) {
 
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['PhantomJS2'],
+        browsers: ['PhantomJS'],
 
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
@@ -112,8 +113,7 @@ module.exports = function karmaConfig(config) {
         plugins: [
             require('karma-webpack'),
             require('karma-jasmine'),
-            // require('karma-phantomjs-launcher'),
-            require('karma-phantomjs2-launcher'),
+            require('karma-phantomjs-launcher'),
             require('karma-sourcemap-loader'),
             require('karma-coverage')
         ]
