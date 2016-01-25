@@ -22,7 +22,7 @@ var ReactRecipe = {
   initialize: function initialize() {
     var params = this._viewArguments;
 
-    var props = Object.assign(
+    var props = _.extend(
       {
         ref: function(c) {
           this._ref = c;

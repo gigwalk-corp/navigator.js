@@ -36,7 +36,7 @@ var BackboneRecipe = {
   },
 
   getRootEl: function getRootEl() {
-    return $(this._viewInstance.$el);
+    return this._viewInstance.$el;
   }
 };
 

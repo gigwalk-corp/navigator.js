@@ -1,5 +1,5 @@
 /*!
- * @gigwalk/navigator-js - v0.5.0 - 2016-01-22
+ * @gigwalk/navigator-js - v0.5.0 - 2016-01-25
  * undefined
  * Copyright (c) 2016 Bigger Boat
  */
@@ -21167,7 +21167,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  initialize: function initialize() {
 	    var params = this._viewArguments;
 
-	    var props = Object.assign(
+	    var props = _.extend(
 	      {
 	        ref: function(c) {
 	          this._ref = c;
@@ -22268,7 +22268,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 
 	  getRootEl: function getRootEl() {
-	    return $(this._viewInstance.$el);
+	    return this._viewInstance.$el;
 	  }
 	};
 
