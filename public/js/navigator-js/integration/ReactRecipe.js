@@ -64,7 +64,7 @@ var ReactRecipe = {
   // in this element's props.children
 
   _showChild: function(child) {
-    if (this._children.includes(child)) {
+    if (this._children.indexOf(child) !== -1) {
       return;
     }
     this._children.push(child);

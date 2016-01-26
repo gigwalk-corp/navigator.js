@@ -25,7 +25,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			for (i = 0; i < length; i++) {
 				existingState = this._states[i];
 
-				if (existingState.getPath() == navigationState.getPath()) {
+				if (existingState.getPath() === navigationState.getPath()) {
 					return;
 				}
 			}

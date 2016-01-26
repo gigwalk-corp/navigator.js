@@ -1,4 +1,4 @@
-$(function() {
+// $(function() {
 	var View = function(className) {
 		this.instantiationArguments = arguments;
 		this.$el = $('<div class="view">View</div>');
@@ -59,6 +59,7 @@ $(function() {
 
 				expect(viewRecipe.isInstantiated()).toBe(false);
 
+				viewRecipe.initialize();
 				var viewInstance = viewRecipe.getViewInstance();
 
 				expect(viewInstance instanceof View).toBe(true);
@@ -78,6 +79,8 @@ $(function() {
 				var viewRecipe = new navigatorjs.integration.ViewRecipe()
 					.toView(View)
 					.withArguments("red", "circle");
+
+				viewRecipe.initialize();
 
 				expect(viewRecipe.getViewInstance().instantiationArguments[0]).toEqual("red");
 				expect(viewRecipe.getViewInstance().instantiationArguments[1]).toEqual("circle");
@@ -113,6 +116,12 @@ $(function() {
 				stateViewMap = new navigatorjs.integration.StateViewMap(navigator);
 
 				navigator.start("");
+			});
+
+			it("should call getStates on all recipes", function() {
+				stateViewMap._orderedRecipes.forEach(function(recipe) {
+					expect(recipe.getStates).toHaveBeenCalled();
+				});
 			});
 
 			it("can map a state, which returns an instance of view recipe", function() {
@@ -309,7 +318,6 @@ $(function() {
 					expect(blackRecipe.getViewInstance().$el.index()).toEqual(2);
 				});
 			});
-
 		});
 	})
-});
+// });

@@ -54,4 +54,66 @@ describe('React Recipe', function() {
 
 		expect(ReactTestUtils.isElement(viewRecipe._viewInstance)).toBe(true);
 	});
+
+  it('should push child if and only not already in children array', function() {
+    var childView = {
+      isInstantiated: function() {
+        return true;
+      }
+    };
+
+    expect(viewRecipe._children.length).toEqual(0);
+    viewRecipe._showChild(childView);
+    expect(viewRecipe._children.length).toEqual(1);
+    viewRecipe._showChild(childView);
+    expect(viewRecipe._children.length).toEqual(1);
+  });
+
+  it('should initialize child if and only if not initialized already', function() {
+    var isInstantiated = false
+    var childView = {
+      isInstantiated: function() {
+        return isInstantiated;
+      },
+
+      initialize: function() {
+        return null;
+      }
+    };
+
+    spyOn(childView, 'initialize');
+
+    isInstantiated = true;
+    viewRecipe._showChild(childView);
+    expect(childView.initialize).not.toHaveBeenCalled();
+
+    isInstantiated = false;
+    viewRecipe._children = [];
+    viewRecipe._showChild(childView);
+    expect(childView.initialize).toHaveBeenCalled();
+  });
+
+  it('should reinitialize the react element on showChild', function() {
+    spyOn(viewRecipe, 'initialize');
+    viewRecipe._showChild({
+      isInstantiated: function() {
+        return true;
+      }
+    });
+    expect(viewRecipe.initialize).toHaveBeenCalled();
+  });
+
+  it('should remove the child from the children array', function() {
+    var child = {};
+    viewRecipe._children = [child];
+    expect(viewRecipe._children.length).toBe(1);
+    viewRecipe._removeChild(child);
+    expect(viewRecipe._children.length).toBe(0);
+  });
+
+  it('should reinitialize the react element on removeChild', function() {
+    spyOn(viewRecipe, 'initialize');
+    viewRecipe._removeChild();
+    expect(viewRecipe.initialize).toHaveBeenCalled();
+  });
 });

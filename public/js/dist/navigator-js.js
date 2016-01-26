@@ -1,5 +1,5 @@
 /*!
- * @gigwalk/navigator-js - v0.5.0 - 2016-01-25
+ * @gigwalk/navigator-js - v0.5.0 - 2016-01-26
  * undefined
  * Copyright (c) 2016 Bigger Boat
  */
@@ -2371,196 +2371,191 @@ return /******/ (function(modules) { // webpackBootstrap
 	this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 	(function() {
-		var _navigator = null;
-		var _orderedRecipes = null;
-		var _$root = null;
+		function StateViewMap(navigator, $root) {
+			this._navigator = navigator;
+			this._orderedRecipes = [];
+			this._$root = $root || $('body');
 
-
-		var StateViewMap = function(navigator, $root) {
-			_navigator = navigator;
-			_orderedRecipes = [];
-			_$root = $root || $('body');
-
-			_navigator.on(navigatorjs.NavigatorEvent.STATE_REQUESTED, _handleStateRequested);
+			this._navigator.on(navigatorjs.NavigatorEvent.STATE_REQUESTED, this._handleStateRequested.bind(this));
 		};
-
-		function _addRecipe(statesOrPaths) {
-			var recipe = new navigatorjs.integration.ViewRecipe();
-
-			var i, length = statesOrPaths.length;
-			for (i = 0; i < length; i++) {
-				recipe.addState(navigatorjs.NavigationState.make(statesOrPaths[i]));
-			}
-
-			_orderedRecipes.push(recipe);
-
-			return recipe;
-		}
-
-		function _handleStateRequested(e, eventData) {
-			var requestedState = eventData.state,
-				index, recipe, recipeStates, recipesLength = _orderedRecipes.length,
-				j, state, statesLength,
-				viewInstance;
-
-			for (index = 0; index < recipesLength; index++) {
-				recipe = _orderedRecipes[index];
-				recipeStates = recipe.getStates();
-				statesLength = recipeStates.length;
-
-				for (j = 0; j < statesLength; j++) {
-					state = recipeStates[j];
-
-					if (requestedState.contains(state)) {
-
-						_addViewElementToDOM(recipe);
-						var viewInstance = recipe.getViewInstance();
-						if (Array.isArray(viewInstance.navigatorBehaviors)) {
-							_navigator.add(viewInstance, state);
-						}
-
-					} else {
-						if (recipe.isMounted()) {
-							_removeViewElementFromDOM(recipe);
-						}
-					}
-				}
-			}
-		}
-
-		function _removeViewElementFromDOM(recipe) {
-			var parentRecipe = recipe.getParentRecipe();
-			var removalType = '' + (parentRecipe ? parentRecipe._type : 'BACKBONE') + ' > ' + recipe._type;
-
-			switch (removalType) {
-				case 'BACKBONE > REACT':
-					var rootEl = recipe.getRootEl();
-					rootEl.parent().remove();
-					ReactDOM.unmountComponentAtNode(rootEl.parent()[0]);
-					break;
-
-				case 'REACT > REACT':
-					parentRecipe._removeChild(recipe);
-					while (parentRecipe.getParentRecipe()) {
-						parentRecipe = parentRecipe.getParentRecipe();
-					}
-					// TODO: Batch this render call on state change
-					ReactDOM.render(
-						parentRecipe._viewInstance,
-						parentRecipe.getRootEl().parent()[0]
-					);
-					break;
-
-				case 'BACKBONE > BACKBONE':
-					recipe.getRootEl().remove();
-					break;
-
-				default:
-					console.error('unknown recipe type: ' + removalType);
-					break;
-
-			}
-		}
-
-		function _addViewElementToDOM(recipe) {
-			// If element for this view is already initialized and in the DOM
-
-			if (recipe.isMounted()) {
-				return;
-			}
-
-			if (!recipe.isInstantiated()) {
-				recipe.initialize();
-			}
-
-			// By default all views are added to default root element
-
-			var parentRecipe = recipe.getParentRecipe();
-
-			if (parentRecipe) {
-				// If parent view recipe has not been varructed, initialize
-				// the parent view and add it to the DOM correctly
-
-				if (!parentRecipe.isMounted()) {
-					_addViewElementToDOM(parentRecipe);
-				}
-			}
-
-			_addRecipeToParent(parentRecipe, recipe);
-		}
-
-		function _addRecipeToParent(parentRecipe, recipe) {
-			var $container = _$root,
-				$inside,
-				insideSelector = recipe.getInsideSelector();
-
-			if (parentRecipe) {
-				$container = parentRecipe.getRootEl();
-			}
-
-			if (insideSelector != null) {
-				$inside = $container.find(insideSelector);
-				$container = $inside.length > 0 ? $inside.first() : $container;
-			}
-
-			var additionType = '' + (parentRecipe ? parentRecipe._type : 'BACKBONE') + ' > ' + recipe._type;
-
-			switch (additionType) {
-				case 'BACKBONE > BACKBONE':
-					var i = _orderedRecipes.indexOf(recipe) + 1,
-					length = _orderedRecipes.length,
-					testRecipe;
-
-					for (i; i < length; i++) {
-						testRecipe = _orderedRecipes[i];
-
-						// If any other views have the same parent, add this element before
-						// those elements in the container element
-
-						if (testRecipe.isInstantiated() && testRecipe.isMounted() && testRecipe.getRootEl().parent()[0] == $container[0]) {
-							testRecipe.getRootEl().before(recipe.getRootEl());
-							return;
-						}
-					}
-					$container.append(recipe.getRootEl());
-					break;
-
-				case 'BACKBONE > REACT':
-					var $proxy = $(document.createElement('div'));
-					$container.append($proxy);
-					ReactDOM.render(recipe._viewInstance, $proxy[0]);
-
-					break;
-
-				case 'REACT > REACT':
-					parentRecipe._showChild(recipe);
-
-					while (parentRecipe.getParentRecipe()) {
-						parentRecipe = parentRecipe.getParentRecipe();
-					}
-					// TODO: Batch this render call on state change
-					ReactDOM.render(
-						parentRecipe._viewInstance,
-						parentRecipe.getRootEl().parent()[0]
-					);
-					break;
-				default:
-					console.error('Invalid recipe type combination: ' + additionType);
-					break;
-
-			}
-		}
 
 		//PUBLIC API
 		StateViewMap.prototype = {
-			mapState: function(statesOrPaths) {
+			mapState: function mapState(statesOrPaths) {
 				var allArgumentsAsOneFlatArray = [];
 				allArgumentsAsOneFlatArray = allArgumentsAsOneFlatArray.concat.apply(allArgumentsAsOneFlatArray, arguments);
-				return _addRecipe(allArgumentsAsOneFlatArray);
+				return this._addRecipe(allArgumentsAsOneFlatArray);
 			},
 
-			get$Root: function() {
-				return _$root;
+			get$Root: function get$Root() {
+				return this._$root;
+			},
+
+			_addRecipe: function _addRecipe(statesOrPaths) {
+				var recipe = new navigatorjs.integration.ViewRecipe();
+
+				var i, length = statesOrPaths.length;
+				for (i = 0; i < length; i++) {
+					recipe.addState(navigatorjs.NavigationState.make(statesOrPaths[i]));
+				}
+
+				this._orderedRecipes.push(recipe);
+
+				return recipe;
+			},
+
+			_handleStateRequested: function _handleStateRequested(e, eventData) {
+				var requestedState = eventData.state,
+					index, recipe, recipeStates, recipesLength = this._orderedRecipes.length,
+					j, state, statesLength,
+					viewInstance;
+
+				for (index = 0; index < recipesLength; index++) {
+					recipe = this._orderedRecipes[index];
+					recipeStates = recipe.getStates();
+					statesLength = recipeStates.length;
+
+					for (j = 0; j < statesLength; j++) {
+						state = recipeStates[j];
+
+						if (requestedState.contains(state)) {
+
+							this._addViewElementToDOM(recipe);
+							var viewInstance = recipe.getViewInstance();
+							if (Array.isArray(viewInstance.navigatorBehaviors)) {
+								this._navigator.add(viewInstance, state);
+							}
+
+						} else {
+							if (recipe.isMounted()) {
+								this._removeViewElementFromDOM(recipe);
+							}
+						}
+					}
+				}
+			},
+
+			_removeViewElementFromDOM: function _removeViewElementFromDOM(recipe) {
+				var parentRecipe = recipe.getParentRecipe();
+				var removalType = '' + (parentRecipe ? parentRecipe._type : 'BACKBONE') + ' > ' + recipe._type;
+
+				switch (removalType) {
+					case 'BACKBONE > REACT':
+						var rootEl = recipe.getRootEl();
+						rootEl.parent().remove();
+						ReactDOM.unmountComponentAtNode(rootEl.parent()[0]);
+						break;
+
+					case 'REACT > REACT':
+						parentRecipe._removeChild(recipe);
+						while (parentRecipe.getParentRecipe()) {
+							parentRecipe = parentRecipe.getParentRecipe();
+						}
+						// TODO: Batch this render call on state change
+						ReactDOM.render(
+							parentRecipe._viewInstance,
+							parentRecipe.getRootEl().parent()[0]
+						);
+						break;
+
+					case 'BACKBONE > BACKBONE':
+						recipe.getRootEl().remove();
+						break;
+
+					default:
+						console.error('unknown recipe type: ' + removalType);
+						break;
+
+				}
+			},
+
+			_addRecipeToParent: function _addRecipeToParent(parentRecipe, recipe) {
+				var $container = this._$root,
+					$inside,
+					insideSelector = recipe.getInsideSelector();
+
+				if (parentRecipe) {
+					$container = parentRecipe.getRootEl();
+				}
+
+				if (insideSelector != null) {
+					$inside = $container.find(insideSelector);
+					$container = $inside.length > 0 ? $inside.first() : $container;
+				}
+
+				var additionType = '' + (parentRecipe ? parentRecipe._type : 'BACKBONE') + ' > ' + recipe._type;
+
+				switch (additionType) {
+					case 'BACKBONE > BACKBONE':
+						var i = this._orderedRecipes.indexOf(recipe) + 1,
+						length = this._orderedRecipes.length,
+						testRecipe;
+
+						for (i; i < length; i++) {
+							testRecipe = this._orderedRecipes[i];
+
+							// If any other views have the same parent, add this element before
+							// those elements in the container element
+
+							if (testRecipe.isInstantiated() && testRecipe.isMounted() && testRecipe.getRootEl().parent()[0] == $container[0]) {
+								testRecipe.getRootEl().before(recipe.getRootEl());
+								return;
+							}
+						}
+						$container.append(recipe.getRootEl());
+						break;
+
+					case 'BACKBONE > REACT':
+						var $proxy = $(document.createElement('div'));
+						$container.append($proxy);
+						ReactDOM.render(recipe._viewInstance, $proxy[0]);
+
+						break;
+
+					case 'REACT > REACT':
+						parentRecipe._showChild(recipe);
+
+						while (parentRecipe.getParentRecipe()) {
+							parentRecipe = parentRecipe.getParentRecipe();
+						}
+						// TODO: Batch this render call on state change
+						ReactDOM.render(
+							parentRecipe._viewInstance,
+							parentRecipe.getRootEl().parent()[0]
+						);
+						break;
+					default:
+						console.error('Invalid recipe type combination: ' + additionType);
+						break;
+
+				}
+			},
+
+			_addViewElementToDOM: function _addViewElementToDOM(recipe) {
+				// If element for this view is already initialized and in the DOM
+
+				if (recipe.isMounted()) {
+					return;
+				}
+
+				if (!recipe.isInstantiated()) {
+					recipe.initialize();
+				}
+
+				// By default all views are added to default root element
+
+				var parentRecipe = recipe.getParentRecipe();
+
+				if (parentRecipe) {
+					// If parent view recipe has not been varructed, initialize
+					// the parent view and add it to the DOM correctly
+
+					if (!parentRecipe.isMounted()) {
+						this._addViewElementToDOM(parentRecipe);
+					}
+				}
+
+				this._addRecipeToParent(parentRecipe, recipe);
 			}
 		};
 
@@ -21052,7 +21047,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				for (i = 0; i < length; i++) {
 					existingState = this._states[i];
 
-					if (existingState.getPath() == navigationState.getPath()) {
+					if (existingState.getPath() === navigationState.getPath()) {
 						return;
 					}
 				}
@@ -21209,7 +21204,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // in this element's props.children
 
 	  _showChild: function(child) {
-	    if (this._children.includes(child)) {
+	    if (this._children.indexOf(child) !== -1) {
 	      return;
 	    }
 	    this._children.push(child);
