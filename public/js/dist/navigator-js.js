@@ -21110,20 +21110,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // our react components
 
 	  getViewInstance: function getViewInstance() {
-	    return {
-	      navigatorBehaviors: ['IHasStateTransition'],
-	      transitionIn: function(cb) {
-	        if (this.isMounted()) {
-	          this._ref.transitionIn(cb)
-	        } else {
-	          this._queuedCallback = cb;
-	        }
-	      }.bind(this),
+	    if (!this._refProxy) {
 
-	      transitionOut: function(cb) {
-	        this._ref.transitionOut(cb);
-	      }.bind(this)
+	      // Create proxy object to call methods on the react
+	      // component instance (ref).  This allows us to queue
+	      // the transition callbacks if the ref is not immediately
+	      // available.
+
+	      this._refProxy = {
+	        navigatorBehaviors: this._viewClass.navigatorBehaviors,
+
+	        transitionIn: function transitionIn(cb) {
+	          if (this.isMounted()) {
+	            this._ref.transitionIn(cb)
+	          } else {
+	            this._queuedCallback = cb;
+	          }
+	        }.bind(this),
+
+	        transitionOut: function transitionOut(cb) {
+	          this._ref.transitionOut(cb);
+	        }.bind(this)
+	      };
 	    }
+	    return this._refProxy
 	  },
 
 	  // Save reference to our react element instead of
