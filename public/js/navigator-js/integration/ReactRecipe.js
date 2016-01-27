@@ -9,11 +9,7 @@ var ReactRecipe = {
   // our react components
 
   getViewInstance: function getViewInstance() {
-    return {
-      navigatorBehaviors: ['IHasStateTransition'],
-      transitionIn: function(cb) { cb() },
-      transitionOut: function(cb) { cb() }
-    }
+    return this._refProxy;
   },
 
   // Save reference to our react element instead of
@@ -22,10 +18,30 @@ var ReactRecipe = {
   initialize: function initialize() {
     var params = this._viewArguments;
 
+    this._refProxy = {
+      navigatorBehaviors: this._viewClass.navigatorBehaviors,
+      transitionIn: function transitionIn(cb) {
+        if (this.isMounted()) {
+          this._ref.transitionIn(cb)
+        } else {
+          this._queuedCallback = cb;
+        }
+      }.bind(this),
+
+      transitionOut: function transitionOut(cb) {
+        this._ref.transitionOut(cb);
+      }.bind(this)
+    };
+
     var props = _.extend(
       {
         ref: function(c) {
           this._ref = c;
+
+          if (this._queuedCallback) {
+            this._ref.transitionIn(this._queuedCallback);
+            this._queuedCallback = null;
+          }
         }.bind(this)
       },
       params[0]

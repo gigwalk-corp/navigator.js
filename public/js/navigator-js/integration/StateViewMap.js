@@ -58,47 +58,8 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 						if (Array.isArray(viewInstance.navigatorBehaviors)) {
 							this._navigator.add(viewInstance, state);
 						}
-
-					} else {
-						if (recipe.isMounted()) {
-							this._removeViewElementFromDOM(recipe);
-						}
 					}
 				}
-			}
-		},
-
-		_removeViewElementFromDOM: function _removeViewElementFromDOM(recipe) {
-			var parentRecipe = recipe.getParentRecipe();
-			var removalType = '' + (parentRecipe ? parentRecipe._type : 'BACKBONE') + ' > ' + recipe._type;
-
-			switch (removalType) {
-				case 'BACKBONE > REACT':
-					var rootEl = recipe.getRootEl();
-					rootEl.parent().remove();
-					ReactDOM.unmountComponentAtNode(rootEl.parent()[0]);
-					break;
-
-				case 'REACT > REACT':
-					parentRecipe._removeChild(recipe);
-					while (parentRecipe.getParentRecipe()) {
-						parentRecipe = parentRecipe.getParentRecipe();
-					}
-					// TODO: Batch this render call on state change
-					ReactDOM.render(
-						parentRecipe._viewInstance,
-						parentRecipe.getRootEl().parent()[0]
-					);
-					break;
-
-				case 'BACKBONE > BACKBONE':
-					recipe.getRootEl().remove();
-					break;
-
-				default:
-					console.error('unknown recipe type: ' + removalType);
-					break;
-
 			}
 		},
 
@@ -130,7 +91,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 						// If any other views have the same parent, add this element before
 						// those elements in the container element
 
-						if (testRecipe.isInstantiated() && testRecipe.isMounted() && testRecipe.getRootEl().parent()[0] == $container[0]) {
+						if (testRecipe.isInstantiated() && testRecipe.isMounted() && testRecipe.getRootEl().parent()[0] === $container[0]) {
 							testRecipe.getRootEl().before(recipe.getRootEl());
 							return;
 						}

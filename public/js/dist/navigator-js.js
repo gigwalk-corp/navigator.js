@@ -1,5 +1,5 @@
 /*!
- * @gigwalk/navigator-js - v0.5.0 - 2016-01-26
+ * @gigwalk/navigator-js - v0.5.0 - 2016-01-27
  * undefined
  * Copyright (c) 2016 Bigger Boat
  */
@@ -2425,47 +2425,8 @@ return /******/ (function(modules) { // webpackBootstrap
 							if (Array.isArray(viewInstance.navigatorBehaviors)) {
 								this._navigator.add(viewInstance, state);
 							}
-
-						} else {
-							if (recipe.isMounted()) {
-								this._removeViewElementFromDOM(recipe);
-							}
 						}
 					}
-				}
-			},
-
-			_removeViewElementFromDOM: function _removeViewElementFromDOM(recipe) {
-				var parentRecipe = recipe.getParentRecipe();
-				var removalType = '' + (parentRecipe ? parentRecipe._type : 'BACKBONE') + ' > ' + recipe._type;
-
-				switch (removalType) {
-					case 'BACKBONE > REACT':
-						var rootEl = recipe.getRootEl();
-						rootEl.parent().remove();
-						ReactDOM.unmountComponentAtNode(rootEl.parent()[0]);
-						break;
-
-					case 'REACT > REACT':
-						parentRecipe._removeChild(recipe);
-						while (parentRecipe.getParentRecipe()) {
-							parentRecipe = parentRecipe.getParentRecipe();
-						}
-						// TODO: Batch this render call on state change
-						ReactDOM.render(
-							parentRecipe._viewInstance,
-							parentRecipe.getRootEl().parent()[0]
-						);
-						break;
-
-					case 'BACKBONE > BACKBONE':
-						recipe.getRootEl().remove();
-						break;
-
-					default:
-						console.error('unknown recipe type: ' + removalType);
-						break;
-
 				}
 			},
 
@@ -2497,7 +2458,7 @@ return /******/ (function(modules) { // webpackBootstrap
 							// If any other views have the same parent, add this element before
 							// those elements in the container element
 
-							if (testRecipe.isInstantiated() && testRecipe.isMounted() && testRecipe.getRootEl().parent()[0] == $container[0]) {
+							if (testRecipe.isInstantiated() && testRecipe.isMounted() && testRecipe.getRootEl().parent()[0] === $container[0]) {
 								testRecipe.getRootEl().before(recipe.getRootEl());
 								return;
 							}
@@ -21151,8 +21112,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  getViewInstance: function getViewInstance() {
 	    return {
 	      navigatorBehaviors: ['IHasStateTransition'],
-	      transitionIn: function(cb) { cb() },
-	      transitionOut: function(cb) { cb() }
+	      transitionIn: function(cb) {
+	        if (this.isMounted()) {
+	          this._ref.transitionIn(cb)
+	        } else {
+	          this._queuedCallback = cb;
+	        }
+	      }.bind(this),
+
+	      transitionOut: function(cb) {
+	        this._ref.transitionOut(cb);
+	      }.bind(this)
 	    }
 	  },
 
@@ -21166,6 +21136,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      {
 	        ref: function(c) {
 	          this._ref = c;
+
+	          if (this._queuedCallback) {
+	            this._ref.transitionIn(this._queuedCallback);
+	            this._queuedCallback = null;
+	          }
 	        }.bind(this)
 	      },
 	      params[0]
