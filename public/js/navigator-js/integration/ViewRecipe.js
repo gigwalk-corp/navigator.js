@@ -1,5 +1,6 @@
 var ReactRecipe = require('./ReactRecipe');
 var BackboneRecipe = require('./BackboneRecipe');
+var ReactTestUtils = require('react-addons-test-utils');
 
 this.navigatorjs = this.navigatorjs || {};
 this.navigatorjs.integration = this.navigatorjs.integration || {};
@@ -39,17 +40,18 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			return this._states;
 		},
 
-		toView: function(viewClass) {
+		toView: function() {
 			this._viewClass = viewClass;
 
-			// This is where the recipe adds a mixin depending on the type of viewClass
-			// added.  This allows for different handling for different 'types' of
-			// view recipes.
+			_.extend(this, BackboneRecipe);
 
-			// TODO: Find a more secure way to determine whether class
-			// extends react component
+			return this;
+		},
 
-			_.extend(this, !!viewClass.prototype.setState ? ReactRecipe : BackboneRecipe);
+		toComponent: function (viewClass) {
+			this._viewClass = viewClass;
+
+			_.extend(this, ReactRecipe);
 
 			return this;
 		},

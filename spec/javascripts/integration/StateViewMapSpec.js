@@ -254,7 +254,7 @@ describe("StateViewMapSpec", function() {
 				}
 			});
 			var parent = new navigatorjs.integration.ViewRecipe().toView(Backbone.View.extend({}));
-			var recipe = new navigatorjs.integration.ViewRecipe().toView(ReactClass);
+			var recipe = new navigatorjs.integration.ViewRecipe().toComponent(ReactClass);
 
 			recipe.initialize();
 			parent.initialize();
@@ -270,8 +270,8 @@ describe("StateViewMapSpec", function() {
 					return React.createElement('div', null, this.props.children);
 				}
 			});
-			var parent = new navigatorjs.integration.ViewRecipe().toView(ReactClass);
-			var recipe = new navigatorjs.integration.ViewRecipe().toView(ReactClass);
+			var parent = new navigatorjs.integration.ViewRecipe().toComponent(ReactClass);
+			var recipe = new navigatorjs.integration.ViewRecipe().toComponent(ReactClass);
 
 			recipe.initialize();
 			parent.initialize();
