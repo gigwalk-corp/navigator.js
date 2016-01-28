@@ -15,7 +15,7 @@ describe('React Recipe', function() {
 
 	beforeEach(function() {
 		viewRecipe = new ViewRecipe();
-		viewRecipe.toView(ReactComponent);
+		viewRecipe.toComponent(ReactComponent);
 	});
 
   it('should have a type', function() {
