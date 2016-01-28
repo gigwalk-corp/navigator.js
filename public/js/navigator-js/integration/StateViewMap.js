@@ -110,7 +110,8 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
         case 'REACT > REACT':
           parentRecipe._showChild(recipe);
 
-          while (parentRecipe.getParentRecipe()) {
+          // Find root react element
+          while (parentRecipe.getParentRecipe() && parentRecipe.getParentRecipe()._type === 'REACT') {
             parentRecipe = parentRecipe.getParentRecipe();
           }
           // TODO: Batch this render call on state change
