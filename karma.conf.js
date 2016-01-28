@@ -9,7 +9,7 @@ const webpackConfig = {
             include: path.resolve('spec/'),
             exclude: [
                 path.resolve('src/'),
-                path.resolve('node_modules/'),
+                path.resolve('node_modules/')
             ],
             loader: 'babel'
         }, {
