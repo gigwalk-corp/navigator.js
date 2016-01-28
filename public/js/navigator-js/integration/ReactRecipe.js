@@ -21,7 +21,7 @@ var ReactRecipe = {
 
         transitionIn: function transitionIn(cb) {
           if (this.isMounted()) {
-            this._ref.transitionIn(cb)
+            this._ref.transitionIn(cb);
           } else {
             this._queuedCallback = cb;
           }

@@ -2408,7 +2408,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				var requestedState = eventData.state,
 					index, recipe, recipeStates, recipesLength = this._orderedRecipes.length,
 					j, state, statesLength,
-					viewInstance;
+					viewInstance, $reactRoot;
 
 				for (index = 0; index < recipesLength; index++) {
 					recipe = this._orderedRecipes[index];
@@ -2434,7 +2434,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				var $container = this._$root,
 					$inside,
 					insideSelector = recipe.getInsideSelector();
-
+				var _recipe = recipe;
 				if (parentRecipe) {
 					$container = parentRecipe.getRootEl();
 				}
@@ -2467,9 +2467,10 @@ return /******/ (function(modules) { // webpackBootstrap
 						break;
 
 					case 'BACKBONE > REACT':
-						var $proxy = $(document.createElement('div'));
-						$container.append($proxy);
-						ReactDOM.render(recipe._viewInstance, $proxy[0]);
+						$reactRoot = $(document.createElement('div'));
+						$reactRoot.addClass('react-root');
+						$container.append($reactRoot);
+						ReactDOM.render(recipe._viewInstance, $reactRoot[0]);
 
 						break;
 
@@ -2502,6 +2503,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				if (!recipe.isInstantiated()) {
 					recipe.initialize();
 				}
+
 
 				// By default all views are added to default root element
 
@@ -21122,7 +21124,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        transitionIn: function transitionIn(cb) {
 	          if (this.isMounted()) {
-	            this._ref.transitionIn(cb)
+	            this._ref.transitionIn(cb);
 	          } else {
 	            this._queuedCallback = cb;
 	          }

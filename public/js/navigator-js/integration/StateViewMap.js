@@ -41,7 +41,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			var requestedState = eventData.state,
 				index, recipe, recipeStates, recipesLength = this._orderedRecipes.length,
 				j, state, statesLength,
-				viewInstance;
+				viewInstance, $reactRoot;
 
 			for (index = 0; index < recipesLength; index++) {
 				recipe = this._orderedRecipes[index];
@@ -67,7 +67,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			var $container = this._$root,
 				$inside,
 				insideSelector = recipe.getInsideSelector();
-
+			var _recipe = recipe;
 			if (parentRecipe) {
 				$container = parentRecipe.getRootEl();
 			}
@@ -100,9 +100,10 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 					break;
 
 				case 'BACKBONE > REACT':
-					var $proxy = $(document.createElement('div'));
-					$container.append($proxy);
-					ReactDOM.render(recipe._viewInstance, $proxy[0]);
+					$reactRoot = $(document.createElement('div'));
+					$reactRoot.addClass('react-root');
+					$container.append($reactRoot);
+					ReactDOM.render(recipe._viewInstance, $reactRoot[0]);
 
 					break;
 
@@ -135,6 +136,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			if (!recipe.isInstantiated()) {
 				recipe.initialize();
 			}
+
 
 			// By default all views are added to default root element
 
