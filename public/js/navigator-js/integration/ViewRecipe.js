@@ -40,7 +40,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			return this._states;
 		},
 
-		toView: function() {
+		toView: function(viewClass) {
 			this._viewClass = viewClass;
 
 			_.extend(this, BackboneRecipe);

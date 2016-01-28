@@ -21025,7 +21025,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				return this._states;
 			},
 
-			toView: function() {
+			toView: function(viewClass) {
 				this._viewClass = viewClass;
 
 				_.extend(this, BackboneRecipe);
