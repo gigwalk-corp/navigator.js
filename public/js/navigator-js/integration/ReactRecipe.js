@@ -23,12 +23,16 @@ var ReactRecipe = {
           if (this.isMounted()) {
             this._ref.transitionIn(cb);
           } else {
-            this._queuedCallback = cb;
+            this._queuedTransitionIn = cb;
           }
         }.bind(this),
 
         transitionOut: function transitionOut(cb) {
-          this._ref.transitionOut(cb);
+          if (this.isMounted()) {
+            this._ref.transitionOut(cb);
+          } else {
+            this._queuedTransitionOut = cb;
+          }
         }.bind(this)
       };
     }
@@ -46,9 +50,13 @@ var ReactRecipe = {
         ref: function(c) {
           this._ref = c;
 
-          if (this._queuedCallback) {
-            this._ref.transitionIn(this._queuedCallback);
-            this._queuedCallback = null;
+          if (this._queuedTransitionIn) {
+            this._ref.transitionIn(this._queuedTransitionIn);
+            this._queuedTransitionIn = null;
+          }
+          if (this._queuedTransitionOut) {
+            this._ref.transitionOut(this._queuedTransitionOut);
+            this._queuedTransitionOut = null;
           }
         }.bind(this)
       },
