@@ -6,7 +6,10 @@ var React = require('react');
 const ReactComponent = React.createClass({
     render: function render() {
         return React.createElement('div')
-    }
+    },
+    transitionIn: function transitionIn(cb) { cb() },
+    transitionOut: function transitionOut(cb) { cb(); },
+    updateState: function updateState() {}
 });
 
 describe('React Recipe', function() {
@@ -115,5 +118,39 @@ describe('React Recipe', function() {
     spyOn(viewRecipe, 'initialize');
     viewRecipe._removeChild();
     expect(viewRecipe.initialize).toHaveBeenCalled();
+  });
+
+  it('should queue transitionIn, transitionOut, and updateState commands if _ref is not ready', function() {
+    var refProxy = viewRecipe.getViewInstance();
+    refProxy.transitionIn(function() {});
+    refProxy.transitionOut(function() {});
+    refProxy.updateState(function() {});
+
+    expect(viewRecipe._queuedTransitionIn).toBeTruthy();
+    expect(viewRecipe._queuedTransitionOut).toBeTruthy();
+    expect(viewRecipe._queuedStateUpdate).toBeTruthy();
+  });
+
+  it('should call queued methods on ref', function() {
+    // TODO: Get tests working for updateState and spying on prototype
+
+    viewRecipe.initialize();
+    // spyOn(viewRecipe._viewClass.prototype, 'transitionIn').and.callThrough();
+    // spyOn(viewRecipe._viewClass.prototype, 'transitionOut').and.callThrough();
+    // spyOn(viewRecipe._viewClass.prototype, 'updateState').and.callThrough();
+
+    var refProxy = viewRecipe.getViewInstance();
+
+    var transitionIn = jasmine.createSpy();
+    var transitionOut = jasmine.createSpy();
+    refProxy.transitionIn(transitionIn);
+    refProxy.transitionOut(transitionOut);
+    // refProxy.updateState(null, null);
+
+    ReactTestUtils.renderIntoDocument(viewRecipe._viewInstance);
+
+    expect(transitionIn).toHaveBeenCalled();
+    expect(transitionOut).toHaveBeenCalled();
+    // expect(viewRecipe._viewClass.prototype.updateState).toHaveBeenCalled();
   });
 });

@@ -21142,7 +21142,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          } else {
 	            this._queuedStateUpdate = [truncated, full];
 	          }
-	        },
+	        }.bind(this),
 
 	        transitionOut: function transitionOut(cb) {
 	          if (this.isMounted()) {
