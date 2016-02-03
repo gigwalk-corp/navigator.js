@@ -1,6 +1,5 @@
 var ReactRecipe = require('./ReactRecipe');
 var BackboneRecipe = require('./BackboneRecipe');
-var ReactTestUtils = require('react-addons-test-utils');
 
 this.navigatorjs = this.navigatorjs || {};
 this.navigatorjs.integration = this.navigatorjs.integration || {};
