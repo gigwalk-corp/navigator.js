@@ -32,6 +32,14 @@ var ReactRecipe = {
           }
         }.bind(this),
 
+        updateState: function updateState(truncated, full) {
+          if (this.isMounted()) {
+            this._ref.updateState(truncated, full);
+          } else {
+            this._queuedStateUpdate = [truncated, full];
+          }
+        },
+
         transitionOut: function transitionOut(cb) {
           if (this.isMounted()) {
             this._ref.transitionOut(cb);
@@ -55,13 +63,20 @@ var ReactRecipe = {
         ref: function(c) {
           this._ref = c;
 
-          if (this._queuedTransitionIn) {
+          if (this._queuedTransitionIn && this._ref.transitionIn) {
             this._ref.transitionIn(this._queuedTransitionIn);
             this._queuedTransitionIn = null;
           }
-          if (this._queuedTransitionOut) {
+          if (this._queuedTransitionOut && this._ref.transitionOut) {
             this._ref.transitionOut(this._queuedTransitionOut);
             this._queuedTransitionOut = null;
+          }
+          if (this._queuedStateUpdate && this._ref.updateState) {
+            this._ref.updateState(
+              this._queuedStateUpdate[0],
+              this._queuedStateUpdate[1]
+            );
+            this._queuedStateUpdate = null;
           }
         }.bind(this)
       },
