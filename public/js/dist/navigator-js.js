@@ -1,5 +1,5 @@
 /*!
- * @gigwalk/navigator-js - v0.5.0 - 2016-01-28
+ * @gigwalk/navigator-js - v0.5.0 - 2016-02-02
  * undefined
  * Copyright (c) 2016 Bigger Boat
  */
@@ -20994,7 +20994,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	(function() {
 		var ViewRecipe = function() {
 			this._states = [];
-			this._children = [];
 			this._viewClass = null;
 			this._viewArguments = [];
 			this._viewInstance = null;
@@ -21109,6 +21108,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var ReactRecipe = {
 	  _type: 'REACT',
+
+	  // Children array so react element can render with
+	  // correct child elements.
+
+	  _children: [],
 
 	  // Returns a fake proxy element due to the fact that
 	  // we do not use these transition functions within

@@ -4,6 +4,11 @@ var ReactDOM = require('react-dom');
 var ReactRecipe = {
   _type: 'REACT',
 
+  // Children array so react element can render with
+  // correct child elements.
+
+  _children: [],
+
   // Returns a fake proxy element due to the fact that
   // we do not use these transition functions within
   // our react components

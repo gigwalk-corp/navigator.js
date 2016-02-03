@@ -8,7 +8,6 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 (function() {
 	var ViewRecipe = function() {
 		this._states = [];
-		this._children = [];
 		this._viewClass = null;
 		this._viewArguments = [];
 		this._viewInstance = null;
