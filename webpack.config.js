@@ -18,12 +18,9 @@ module.exports = {
     },
     module: {
         loaders: [{
-            test: /(\.jsx?)$/,
+            test: /\.js/,
             exclude: /(bower_components|node_modules)/,
-            loader: 'babel',
-            query: {
-                cacheDirectory: true
-            }
+            loader: 'imports?this=>window'
         }]
     },
     target: 'node',

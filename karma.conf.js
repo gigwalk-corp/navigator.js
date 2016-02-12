@@ -41,12 +41,13 @@ module.exports = function karmaConfig(config) {
 
         // list of files / patterns to load in the browser
         files: [
+            './node_modules/phantomjs-polyfill/bind-polyfill.js',
             'public/js/vendors/jquery/dist/jquery.js',
             'public/js/vendors/underscore/underscore.js',
             'public/js/vendors/backbone/backbone.js',
             'public/js/vendors/injector.js/injector-js.js',
             'public/js/vendors/backbone-command/backbone-command.js',
-            'public/js/navigator-js/**/*.js',
+            'public/js/dist/navigator-js.js',
             'spec/**/*Spec.js'
         ],
 
@@ -56,6 +57,7 @@ module.exports = function karmaConfig(config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
+            'public/js/dist/navigator-js.js': ['webpack', 'sourcemap'],
             'spec/**/*Spec.js': ['webpack', 'sourcemap']
         },
 

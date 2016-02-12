@@ -1,11 +1,11 @@
 // navigator-main
+require('./navigator-js/Navigator');
 require('./navigator-js/ResponderLists');
 require('./navigator-js/AsynchResponders');
 require('./navigator-js/History');
 require('./navigator-js/NavigationBehaviors');
 require('./navigator-js/NavigationResponderBehaviors');
 require('./navigator-js/NavigationState');
-require('./navigator-js/Navigator');
 require('./navigator-js/NavigatorEvent');
 
 // utils

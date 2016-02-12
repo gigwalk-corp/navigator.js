@@ -1,8 +1,10 @@
+var ReactRecipe = require('./ReactRecipe');
+var BackboneRecipe = require('./BackboneRecipe');
+
 this.navigatorjs = this.navigatorjs || {};
 this.navigatorjs.integration = this.navigatorjs.integration || {};
 
 (function() {
-
 	var ViewRecipe = function() {
 		this._states = [];
 		this._viewClass = null;
@@ -10,6 +12,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		this._viewInstance = null;
 		this._insideSelector = null;
 		this._parentRecipe = null;
+		this._viewType = null;
 	};
 
 	//PUBLIC API
@@ -21,7 +24,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 			for (i = 0; i < length; i++) {
 				existingState = this._states[i];
 
-				if (existingState.getPath() == navigationState.getPath()) {
+				if (existingState.getPath() === navigationState.getPath()) {
 					return;
 				}
 			}
@@ -38,6 +41,16 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		toView: function(viewClass) {
 			this._viewClass = viewClass;
 
+			_.extend(this, BackboneRecipe);
+
+			return this;
+		},
+
+		toComponent: function (viewClass) {
+			this._viewClass = viewClass;
+
+			_.extend(this, ReactRecipe);
+
 			return this;
 		},
 
@@ -46,33 +59,15 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 		},
 
 		getViewInstance: function() {
-			if (!this.isInstantiated()) {
-
-				var params = this._viewArguments;
-				switch (params.length) {
-					default:
-					case 0:
-						this._viewInstance = new this._viewClass();
-						break;
-					case 1:
-						this._viewInstance = new this._viewClass(params[0]);
-						break;
-					case 2:
-						this._viewInstance = new this._viewClass(params[0], params[1]);
-						break;
-					case 3:
-						this._viewInstance = new this._viewClass(params[0], params[1], params[2]);
-						break;
-					case 4:
-						this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3]);
-						break;
-					case 5:
-						this._viewInstance = new this._viewClass(params[0], params[1], params[2], params[3], params[4]);
-						break;
-				}
-
-			}
 			return this._viewInstance;
+		},
+
+		getRootEl: function() {
+			console.warn('Method getRootEl should be implemented by viewRecipe');
+		},
+
+		isMounted: function() {
+			console.warn('Method isMounted should be implemented by viewRecipe');
 		},
 
 		isInstantiated: function() {

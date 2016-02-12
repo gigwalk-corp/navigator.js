@@ -40,6 +40,7 @@ this.navigatorjs = this.navigatorjs || {};
 			list, matchingInterface;
 
 		// Create, store and retrieve the list that matches the desired behavior.
+
 		switch (behaviorString) {
 			case navigatorjs.NavigationBehaviors.SHOW:
 				matchingInterface = "IHasStateTransition";
@@ -71,6 +72,7 @@ this.navigatorjs = this.navigatorjs || {};
 		}
 		if (addition) {
 			// add
+
 			if (list.indexOf(responder) < 0) {
 				list.push(responder);
 
@@ -129,6 +131,7 @@ this.navigatorjs = this.navigatorjs || {};
 				try {
 					_modify(addition, responder, pathsOrStates, navigatorjs.NavigationBehaviors.ALL_AUTO[i]);
 				} catch (e) {
+					// console.warn(e);
 					// ignore 'should implement xyz' errors
 				}
 			}
@@ -180,7 +183,6 @@ this.navigatorjs = this.navigatorjs || {};
 			// logger.error("Requested a null state. Aborting request.");
 			return;
 		}
-
 		var requestedState,
 			path,
 			fromState,
@@ -394,6 +396,7 @@ this.navigatorjs = this.navigatorjs || {};
 		_initializeIfNeccessary(respondersToShow);
 
 		//for each (var responder : IHasStateTransition in respondersToShow) {
+
 		for (i = 0; i < respondersToShow.length; i++) {
 			responder = respondersToShow[i];
 			status = _statusByResponderID[responder.__navigatorjs.id];
