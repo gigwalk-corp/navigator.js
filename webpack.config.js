@@ -23,7 +23,6 @@ module.exports = {
             loader: 'imports?this=>window'
         }]
     },
-    target: 'node',
     plugins: [
         new webpack.BannerPlugin(banner)
     ]

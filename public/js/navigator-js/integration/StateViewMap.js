@@ -41,7 +41,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
       var requestedState = eventData.state,
         index, recipe, recipeStates, recipesLength = this._orderedRecipes.length,
         j, state, statesLength,
-        viewInstance, $reactRoot;
+        viewInstance;
 
       for (index = 0; index < recipesLength; index++) {
         recipe = this._orderedRecipes[index];
@@ -65,7 +65,7 @@ this.navigatorjs.integration = this.navigatorjs.integration || {};
 
     _addRecipeToParent: function _addRecipeToParent(parentRecipe, recipe) {
       var $container = this._$root,
-        $inside,
+        $inside, $reactRoot,
         insideSelector = recipe.getInsideSelector();
       var _recipe = recipe;
       if (parentRecipe) {
