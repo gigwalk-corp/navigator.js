@@ -1,6 +1,6 @@
 {
   "name": "@gigwalk/navigator-js",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "main": "./public/js/dist/navigator-js.js",
   "author": {
     "name": "Bigger Boat",
