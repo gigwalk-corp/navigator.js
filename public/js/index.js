@@ -28,3 +28,5 @@ require('./navigator-js/integration/ViewRecipe');
 
 // features
 require('./navigator-js/features/DebugConsole');
+
+module.exports = navigatorjs;
