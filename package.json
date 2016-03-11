@@ -19,8 +19,9 @@
     "webpack-dist": "webpack --progress -p --config ./webpack.dist.config.js",
     "build": "npm run webpack && npm run webpack-dist"
   },
-  "engines": {
-    "node": "0.8.x"
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*"
   },
   "devDependencies": {
     "babel-core": "^6.4.0",
@@ -50,6 +51,7 @@
     "react-addons-test-utils": "^0.14.6",
     "react-dom": "^0.14.6",
     "release-it": "^2.3.1",
-    "webpack": "^1.12.11"
+    "webpack": "^1.12.11",
+    "webpack-umd-external": "^1.0.2"
   }
 }

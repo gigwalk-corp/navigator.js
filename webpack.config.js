@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const moment = require('moment');
 const pkg = require('./package');
+const transformUMDExternal = require('webpack-umd-external');
 
 const banner =
 `${pkg.name} - v${pkg.version} - ${ moment().format('YYYY-MM-DD')}
@@ -9,13 +10,19 @@ ${pkg.homepage}
 Copyright (c) ${ moment().format('YYYY') } ${pkg.author.name}`;
 
 module.exports = {
-    entry: './public/js/index.js',
+    entry: {
+        'navigator-js': './public/js/index.js'
+    },
     output: {
         path: path.join(__dirname, './public/js/dist'),
-        filename: 'navigator-js.js',
+        filename: '[name].js',
         library: 'navigator-js',
         libraryTarget: 'umd'
     },
+    externals: transformUMDExternal({
+        'react-dom': 'ReactDOM',
+        react: 'React'
+    }),
     module: {
         loaders: [{
             test: /\.js/,
