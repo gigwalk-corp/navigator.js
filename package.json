@@ -1,7 +1,7 @@
 {
   "name": "@gigwalk/navigator-js",
   "version": "0.6.1",
-  "main": "./public/js/index.js",
+  "main": "./public/js/dist/navigator-js.js",
   "author": {
     "name": "Bigger Boat",
     "email": "paul@paultondeur.nl",
