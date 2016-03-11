@@ -19,7 +19,7 @@
     "webpack-dist": "webpack --progress -p --config ./webpack.dist.config.js",
     "build": "npm run webpack && npm run webpack-dist"
   },
-  "peedDependencies": {
+  "peerDependencies": {
     "react": "*",
     "react-dom": "*"
   },
