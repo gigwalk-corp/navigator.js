@@ -2,6 +2,7 @@
 // navigator-main
 import * as NavigatorEvent from './NavigatorEvent';
 import * as NavigationBehaviors from './NavigationBehaviors';
+import ResponderLists from './ResponderLists';
 require('./Navigator');
 require('./ResponderLists');
 require('./AsynchResponders');
@@ -35,6 +36,7 @@ navigatorjs = {
     ...navigatorjs,
     NavigatorEvent,
     NavigationBehaviors,
+    ResponderLists,
 };
 
 module.exports = navigatorjs;
