@@ -1,6 +1,7 @@
 // @flow
 // navigator-main
 import * as NavigatorEvent from './NavigatorEvent';
+import * as NavigationBehaviors from './NavigationBehaviors';
 require('./Navigator');
 require('./ResponderLists');
 require('./AsynchResponders');
@@ -33,6 +34,7 @@ require('./features/DebugConsole');
 navigatorjs = {
     ...navigatorjs,
     NavigatorEvent,
+    NavigationBehaviors,
 };
 
 module.exports = navigatorjs;
