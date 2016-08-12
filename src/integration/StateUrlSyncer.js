@@ -2,134 +2,134 @@ window.navigatorjs = window.navigatorjs || {};
 window.navigatorjs.integration = window.navigatorjs.integration || {};
 
 (function () {
-	                                    let _usingPushState,
-		                                        _rootUrl,
-		                                        _navigator,
-		                                        _started;
+	                                                                            let _usingPushState,
+		                                                                                _rootUrl,
+		                                                                                _navigator,
+		                                                                                _started;
 
-	                                const StateUrlSyncer = function (navigator) {
-		                                        navigatorjs.utils.AutoBind(this, this);
+	                                                                        const StateUrlSyncer = function (navigator) {
+		                                                                                navigatorjs.utils.AutoBind(this, this);
 
-		                                        _usingPushState = false;
-		                                        _rootUrl = '/';
-		                                        _navigator = navigator;
-		                                        _started = false;
+		                                                                                _usingPushState = false;
+		                                                                                _rootUrl = '/';
+		                                                                                _navigator = navigator;
+		                                                                                _started = false;
 	};
 
-	                                        StateUrlSyncer.prototype = {
-		                                        supportsPushState: !!(window && window.history && window.history.pushState),
+	                                                                                StateUrlSyncer.prototype = {
+		                                                                                supportsPushState: !!(window && window.history && window.history.pushState),
 
-		                                        usePushState(rootUrl) {
-			                                        if (_started) {
-				                                        throw new Error('Cannot switch to using push states after start was called');
-				                                        return;
+		                                                                                usePushState(rootUrl) {
+			                                                                                if (_started) {
+				                                                                                throw new Error('Cannot switch to using push states after start was called');
+				                                                                                return;
 			}
 
-			                                        _usingPushState = this.supportsPushState;
-			                                        _rootUrl = rootUrl || _rootUrl;
+			                                                                                _usingPushState = this.supportsPushState;
+			                                                                                _rootUrl = rootUrl || _rootUrl;
 
-			                                        this._redirectPushStateOrHashOnDeeplink();
+			                                                                                this._redirectPushStateOrHashOnDeeplink();
 		},
 
-		                                        isUsingPushState() {
-			                                        return _usingPushState;
+		                                                                                isUsingPushState() {
+			                                                                                return _usingPushState;
 		},
 
-		                                        _redirectPushStateOrHashOnDeeplink() {
-			                                    let pushUrl = this.parsePushStateUrl(window.location.pathname),
-				                                        hashUrl = this.parseHashUrl(window.location.hash);
+		                                                                                _redirectPushStateOrHashOnDeeplink() {
+			                                                                            let pushUrl = this.parsePushStateUrl(window.location.pathname),
+				                                                                                hashUrl = this.parseHashUrl(window.location.hash);
 
-			                                        if (this.supportsPushState && pushUrl == '' && hashUrl != '') {
+			                                                                                if (this.supportsPushState && pushUrl == '' && hashUrl != '') {
 				// There is a hash and no push state.
-				                                        window.history.replaceState(null, '', new navigatorjs.NavigationState(_rootUrl + hashUrl).getPath());
+				                                                                                window.history.replaceState(null, '', new navigatorjs.NavigationState(_rootUrl + hashUrl).getPath());
 			} else if (!this.supportsPushState && pushUrl != '') {
 				// There is a push state deeplink, but we don't support it. Redirect back.
-				                                        window.location.href = _rootUrl + '#/' + pushUrl;
+				                                                                                window.location.href = _rootUrl + '#/' + pushUrl;
 			}
 		},
 
-		                                        start() {
-			                                        if (_started) {
-				                                        throw new Error('Already started');
-				                                        return;
+		                                                                                start() {
+			                                                                                if (_started) {
+				                                                                                throw new Error('Already started');
+				                                                                                return;
 			}
 
-			                                        _started = true;
-			                                        this._addListeners();
+			                                                                                _started = true;
+			                                                                                this._addListeners();
 		},
 
-		                                        _addListeners() {
-			                                        if (_usingPushState) {
-				                                        $(window).on('popstate', this._onUrlChange);
+		                                                                                _addListeners() {
+			                                                                                if (_usingPushState) {
+				                                                                                $(window).on('popstate', this._onUrlChange);
 			} else {
-				                                        $(window).on('hashchange', this._onUrlChange);
+				                                                                                $(window).on('hashchange', this._onUrlChange);
 			}
 
-			                                const STATE_CHANGED = navigatorjs.NavigatorEvent.STATE_CHANGED;
+			                                                                        const STATE_CHANGED = navigatorjs.NavigatorEvent.STATE_CHANGED;
 
-			                                        _navigator.on(STATE_CHANGED, this._onStateChanged);
+			                                                                                _navigator.on(STATE_CHANGED, this._onStateChanged);
 		},
 
-		                                        _removeListeners() {
-			                                        $(window).off('popstate', this._onUrlChange);
-			                                        $(window).off('hashchange', this._onUrlChange);
+		                                                                                _removeListeners() {
+			                                                                                $(window).off('popstate', this._onUrlChange);
+			                                                                                $(window).off('hashchange', this._onUrlChange);
 		},
 
-		                                        setUrl(url) {
-			                                    let newState,
-				                                        urlState = this.getUrlState();
-			                                        if (_usingPushState) {
-				                                        newState = new navigatorjs.NavigationState(_rootUrl + url);
-				                                        if (newState.equals(urlState)) {
-					                                        window.history.replaceState(null, '', newState.getPath());
+		                                                                                setUrl(url) {
+			                                                                            let newState,
+				                                                                                urlState = this.getUrlState();
+			                                                                                if (_usingPushState) {
+				                                                                                newState = new navigatorjs.NavigationState(_rootUrl + url);
+				                                                                                if (newState.equals(urlState)) {
+					                                                                                window.history.replaceState(null, '', newState.getPath());
 				} else {
-					                                        window.history.pushState(null, '', newState.getPath());
+					                                                                                window.history.pushState(null, '', newState.getPath());
 				}
 			} else {
-				                                        newState = new navigatorjs.NavigationState(url);
-				                                        if (!newState.equals(urlState)) {
-					                                        window.location.hash = newState.getPath();
+				                                                                                newState = new navigatorjs.NavigationState(url);
+				                                                                                if (!newState.equals(urlState)) {
+					                                                                                window.location.hash = newState.getPath();
 				}
 			}
 		},
 
-		                                        getRawUrl() {
-			                                        if (_usingPushState) {
-				                                        return this.parsePushStateUrl(window.location.pathname);
+		                                                                                getRawUrl() {
+			                                                                                if (_usingPushState) {
+				                                                                                return this.parsePushStateUrl(window.location.pathname);
 			} else {
-				                                        return this.parseHashUrl(window.location.hash);
+				                                                                                return this.parseHashUrl(window.location.hash);
 			}
 		},
 
-		                                        getUrlState() {
-			                                        return new navigatorjs.NavigationState(this.getRawUrl());
+		                                                                                getUrlState() {
+			                                                                                return new navigatorjs.NavigationState(this.getRawUrl());
 		},
 
-		                                        _onStateChanged() {
-			                                        this.setUrl(_navigator.getCurrentState().getPath());
+		                                                                                _onStateChanged() {
+			                                                                                this.setUrl(_navigator.getCurrentState().getPath());
 		},
 
-		                                        _onUrlChange() {
-			                                        _navigator.request(this.getUrlState());
+		                                                                                _onUrlChange() {
+			                                                                                _navigator.request(this.getUrlState());
 		},
 
-		                                        resetUrl() {
-			                                        this.setUrl('');
+		                                                                                resetUrl() {
+			                                                                                this.setUrl('');
 		},
 
-		                                        parseHashUrl(hashUrl) {
-			                                        return hashUrl.replace(/^#|$/g, '');
+		                                                                                parseHashUrl(hashUrl) {
+			                                                                                return hashUrl.replace(/^#|$/g, '');
 		},
 
-		                                        parsePushStateUrl(pushStateUrl) {
-			                                        return pushStateUrl.replace(_rootUrl, '');
+		                                                                                parsePushStateUrl(pushStateUrl) {
+			                                                                                return pushStateUrl.replace(_rootUrl, '');
 		},
 
-		                                        dispose() {
-			                                        this._removeListeners();
+		                                                                                dispose() {
+			                                                                                this._removeListeners();
 		}
 
 	};
 
-	                                        navigatorjs.integration.StateUrlSyncer = StateUrlSyncer;
+	                                                                                navigatorjs.integration.StateUrlSyncer = StateUrlSyncer;
 })();
