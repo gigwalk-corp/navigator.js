@@ -1,4 +1,6 @@
+// @flow
 // navigator-main
+import * as NavigatorEvent from './NavigatorEvent';
 require('./Navigator');
 require('./ResponderLists');
 require('./AsynchResponders');
@@ -6,7 +8,6 @@ require('./History');
 require('./NavigationBehaviors');
 require('./NavigationResponderBehaviors');
 require('./NavigationState');
-require('./NavigatorEvent');
 
 // utils
 require('./utils/Bind');
@@ -28,5 +29,10 @@ require('./integration/ViewRecipe');
 
 // features
 require('./features/DebugConsole');
+
+navigatorjs = {
+    ...navigatorjs,
+    NavigatorEvent,
+};
 
 module.exports = navigatorjs;
