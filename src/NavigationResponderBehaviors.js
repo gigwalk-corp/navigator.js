@@ -1,17 +1,17 @@
-this.navigatorjs = this.navigatorjs || {};
+window.navigatorjs = window.navigatorjs || {};
 
-this.navigatorjs.NavigationResponderBehaviors = {};
-this.navigatorjs.NavigationResponderBehaviors.IHasStateInitialization = {name: "IHasStateInitialization", methods: ["initializeByNavigator"]};
-this.navigatorjs.NavigationResponderBehaviors.IHasStateValidation = {name: "IHasStateValidation", methods: ["validate"]};
-this.navigatorjs.NavigationResponderBehaviors.IHasStateValidationAsync = {name: "IHasStateValidationAsync", "extends": ["IHasStateValidation"], methods: ["prepareValidation"]};
-this.navigatorjs.NavigationResponderBehaviors.IHasStateValidationOptional = {name: "IHasStateValidationOptional", "extends": ["IHasStateValidation"], methods: ["willValidate"]};
-this.navigatorjs.NavigationResponderBehaviors.IHasStateValidationOptionalAsync = {name: "IHasStateValidationOptionalAsync", "extends": ["IHasStateValidationAsync", "IHasStateValidationOptional"], methods: []};
-this.navigatorjs.NavigationResponderBehaviors.IHasStateRedirection = {name: "IHasStateRedirection", "extends": ["IHasStateValidation"], methods: ["redirect"]};
-this.navigatorjs.NavigationResponderBehaviors.IHasStateSwap = {name: "IHasStateSwap", methods: ["willSwapToState", "swapOut", "swapIn"]};
-this.navigatorjs.NavigationResponderBehaviors.IHasStateTransition = {name: "IHasStateTransition", methods: ["transitionIn", "transitionOut"]};
-this.navigatorjs.NavigationResponderBehaviors.IHasStateUpdate = {name: "IHasStateUpdate", methods: ["updateState"]};
+window.navigatorjs.NavigationResponderBehaviors = {};
+window.navigatorjs.NavigationResponderBehaviors.IHasStateInitialization = {name: "IHasStateInitialization", methods: ["initializeByNavigator"]};
+window.navigatorjs.NavigationResponderBehaviors.IHasStateValidation = {name: "IHasStateValidation", methods: ["validate"]};
+window.navigatorjs.NavigationResponderBehaviors.IHasStateValidationAsync = {name: "IHasStateValidationAsync", "extends": ["IHasStateValidation"], methods: ["prepareValidation"]};
+window.navigatorjs.NavigationResponderBehaviors.IHasStateValidationOptional = {name: "IHasStateValidationOptional", "extends": ["IHasStateValidation"], methods: ["willValidate"]};
+window.navigatorjs.NavigationResponderBehaviors.IHasStateValidationOptionalAsync = {name: "IHasStateValidationOptionalAsync", "extends": ["IHasStateValidationAsync", "IHasStateValidationOptional"], methods: []};
+window.navigatorjs.NavigationResponderBehaviors.IHasStateRedirection = {name: "IHasStateRedirection", "extends": ["IHasStateValidation"], methods: ["redirect"]};
+window.navigatorjs.NavigationResponderBehaviors.IHasStateSwap = {name: "IHasStateSwap", methods: ["willSwapToState", "swapOut", "swapIn"]};
+window.navigatorjs.NavigationResponderBehaviors.IHasStateTransition = {name: "IHasStateTransition", methods: ["transitionIn", "transitionOut"]};
+window.navigatorjs.NavigationResponderBehaviors.IHasStateUpdate = {name: "IHasStateUpdate", methods: ["updateState"]};
 
-this.navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface = function(object, _interface) {
+window.navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface = function(object, _interface) {
 	if (object.navigatorBehaviors == undefined || !object.navigatorBehaviors instanceof Array) {
 		//The input interface is not set on object's navigatorBehaviors.
 		return false;
@@ -33,7 +33,7 @@ this.navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface = func
 	return true;
 };
 
-this.navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain = function(_interface, existingChain) {
+window.navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain = function(_interface, existingChain) {
 	var chain = existingChain || [],
 		extendsArray,
 		extendingInterface,
@@ -65,7 +65,7 @@ this.navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain = fun
 	return chain;
 };
 
-this.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(interfaces) {
+window.navigatorjs.NavigationResponderBehaviors.getInterfaceMethods = function(interfaces) {
 	if (interfaces == undefined || !interfaces instanceof Array) {
 		//No valid input
 		return [];

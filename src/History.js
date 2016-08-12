@@ -1,4 +1,4 @@
-this.navigatorjs = this.navigatorjs || {};
+window.navigatorjs = window.navigatorjs || {};
 
 (function() {
 

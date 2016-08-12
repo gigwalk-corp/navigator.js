@@ -1,7 +1,7 @@
-this.navigatorjs = this.navigatorjs || {};
-this.navigatorjs.utils = this.navigatorjs.utils || {};
+window.navigatorjs = window.navigatorjs || {};
+window.navigatorjs.utils = window.navigatorjs.utils || {};
 
-this.navigatorjs.utils.Bind = function(functionOrArray, context) {
+window.navigatorjs.utils.Bind = function(functionOrArray, context) {
 	var bind = function (method, context) {
 		if (typeof method === 'function') {
 			$.proxy(method, context);

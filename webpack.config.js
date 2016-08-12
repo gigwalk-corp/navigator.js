@@ -11,7 +11,7 @@ Copyright (c) ${ moment().format('YYYY') } ${pkg.author.name}`;
 
 module.exports = {
     entry: {
-        'navigator-js': './public/js/index.js'
+        'navigator-js': './srs/index.js'
     },
     output: {
         path: path.join(__dirname, './public/js/dist'),

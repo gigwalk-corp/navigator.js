@@ -1,5 +1,5 @@
-this.navigatorjs = this.navigatorjs || {};
-this.navigatorjs.features = this.navigatorjs.features || {};
+window.navigatorjs = window.navigatorjs || {};
+window.navigatorjs.features = window.navigatorjs.features || {};
 
 (function() {
 

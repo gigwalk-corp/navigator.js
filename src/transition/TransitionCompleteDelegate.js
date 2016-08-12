@@ -1,5 +1,5 @@
-this.navigatorjs = this.navigatorjs || {};
-this.navigatorjs.transition = this.navigatorjs.transition || {};
+window.navigatorjs = window.navigatorjs || {};
+window.navigatorjs.transition = window.navigatorjs.transition || {};
 
 (function() {
 	var TransitionCompleteDelegate = function(responder, status, behavior, navigator, transitionNamespace) {

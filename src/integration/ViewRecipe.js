@@ -1,8 +1,8 @@
 var ReactRecipe = require('./ReactRecipe');
 var BackboneRecipe = require('./BackboneRecipe');
 
-this.navigatorjs = this.navigatorjs || {};
-this.navigatorjs.integration = this.navigatorjs.integration || {};
+window.navigatorjs = window.navigatorjs || {};
+window.navigatorjs.integration = window.navigatorjs.integration || {};
 
 (function() {
 	var ViewRecipe = function() {
