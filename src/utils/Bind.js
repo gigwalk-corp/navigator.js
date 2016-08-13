@@ -1,19 +1,16 @@
-window.navigatorjs = window.navigatorjs || {};
-window.navigatorjs.utils = window.navigatorjs.utils || {};
+// @flow
+import $ from 'jquery';
 
-window.navigatorjs.utils.Bind = function (functionOrArray, context) {
-	                                                                        const bind = function (method, context) {
-		                                                                                if (typeof method === 'function') {
-			                                                                                $.proxy(method, context);
-		}
-	};
+export default function Bind(functionOrArray: Function | Function[], context: Object) {
+    function bind(method: Object, _context: Object) {
+        if (typeof method === 'function') {
+            $.proxy(method, _context);
+        }
+    }
 
-	                                                                                if (typeof functionOrArray === 'array') {
-		                                                                            let i, length = functionOrArray.length;
-		                                                                                for (i = 0; i < length; i++) {
-			                                                                                bind(functionOrArray[i], context);
-		}
-	} else {
-		                                                                                bind(functionOrArray, context);
-	}
-};
+    if (Array.isArray(functionOrArray)) {
+        functionOrArray.forEach((item) => { bind(item, context); });
+    } else {
+        bind(functionOrArray, context);
+    }
+}

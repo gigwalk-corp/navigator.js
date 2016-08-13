@@ -8,22 +8,13 @@ import NavigationResponderBehaviors from './NavigationResponderBehaviors';
 import History from './History';
 import AsynchResponders from './AsynchResponders';
 import Navigator from './Navigator';
-
-require('./ResponderLists');
-require('./NavigationBehaviors');
-require('./NavigationResponderBehaviors');
-
-// utils
-require('./utils/Bind');
-require('./utils/AutoBind');
+import Bind from './utils/Bind';
+import AutoBind from './utils/AutoBind';
 
 // transition
 require('./transition/TransitionCompleteDelegate');
 require('./transition/TransitionStatus');
 require('./transition/ValidationPreparedDelegate');
-
-// polyfills
-require('./polyfills/array');
 
 // integration
 require('./integration/StateCommandMap');
@@ -34,7 +25,7 @@ require('./integration/ViewRecipe');
 // features
 require('./features/DebugConsole');
 
-window.navigatorjs = {
+module.exports = window.navigatorjs = {
     ...window.navigatorjs,
     NavigatorEvent,
     NavigationBehaviors,
@@ -44,6 +35,8 @@ window.navigatorjs = {
     History,
     AsynchResponders,
     Navigator,
+    utils: {
+        Bind,
+        AutoBind,
+    },
 };
-
-module.exports = navigatorjs;
