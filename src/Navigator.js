@@ -931,7 +931,9 @@ Navigator.prototype = {
     },
 
     logResponders() {
-            //			console.log(_responders.toString());
+        try {
+            console.log(_responders.toString());
+        } catch (e) { console.error(e); }
     }
 };
 
