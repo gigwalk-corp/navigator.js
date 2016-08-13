@@ -5,10 +5,10 @@ import * as NavigationBehaviors from './NavigationBehaviors';
 import ResponderLists from './ResponderLists';
 import NavigationState from './NavigationState';
 import NavigationResponderBehaviors from './NavigationResponderBehaviors';
+import History from './History';
 require('./Navigator');
 require('./ResponderLists');
 require('./AsynchResponders');
-require('./History');
 require('./NavigationBehaviors');
 require('./NavigationResponderBehaviors');
 
@@ -39,7 +39,8 @@ navigatorjs = {
     NavigationBehaviors,
     ResponderLists,
     NavigationState,
-    NavigationResponderBehaviors
+    NavigationResponderBehaviors,
+    History,
 };
 
 module.exports = navigatorjs;
