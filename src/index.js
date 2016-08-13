@@ -6,9 +6,10 @@ import ResponderLists from './ResponderLists';
 import NavigationState from './NavigationState';
 import NavigationResponderBehaviors from './NavigationResponderBehaviors';
 import History from './History';
-require('./Navigator');
+import AsynchResponders from './AsynchResponders';
+import Navigator from './Navigator';
+
 require('./ResponderLists');
-require('./AsynchResponders');
 require('./NavigationBehaviors');
 require('./NavigationResponderBehaviors');
 
@@ -33,14 +34,16 @@ require('./integration/ViewRecipe');
 // features
 require('./features/DebugConsole');
 
-navigatorjs = {
-    ...navigatorjs,
+window.navigatorjs = {
+    ...window.navigatorjs,
     NavigatorEvent,
     NavigationBehaviors,
     ResponderLists,
     NavigationState,
     NavigationResponderBehaviors,
     History,
+    AsynchResponders,
+    Navigator,
 };
 
 module.exports = navigatorjs;
