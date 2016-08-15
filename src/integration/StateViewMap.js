@@ -72,7 +72,7 @@ StateViewMap.prototype = {
             $container = parentRecipe.getRootEl();
         }
 
-        if (insideSelector != null) {
+        if (insideSelector !== null) {
             $inside = $container.find(insideSelector);
             $container = $inside.length > 0 ? $inside.first() : $container;
         }

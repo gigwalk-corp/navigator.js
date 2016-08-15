@@ -69,7 +69,7 @@ ViewRecipe.prototype = {
     },
 
     isInstantiated() {
-        return this._viewInstance != null;
+        return this._viewInstance !== null;
     },
 
     withArguments() {

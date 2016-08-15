@@ -12,7 +12,7 @@ NavigationResponderBehaviors.IHasStateTransition = { name: 'IHasStateTransition'
 NavigationResponderBehaviors.IHasStateUpdate = { name: 'IHasStateUpdate', methods: ['updateState'] };
 
 NavigationResponderBehaviors.implementsBehaviorInterface = function (object, _interface) {
-    if (object.navigatorBehaviors == undefined || !object.navigatorBehaviors instanceof Array) {
+    if (object.navigatorBehaviors === undefined || !object.navigatorBehaviors instanceof Array) {
         // The input interface is not set on object's navigatorBehaviors.
         return false;
     }
@@ -25,7 +25,7 @@ NavigationResponderBehaviors.implementsBehaviorInterface = function (object, _in
     for (i = 0; i < length; i++) {
         method = methodsToBeImplemented[i];
 
-        if (object[method] == undefined || typeof object[method] !== 'function') {
+        if (object[method] === undefined || typeof object[method] !== 'function') {
             return false;
         }
     }
@@ -40,14 +40,14 @@ NavigationResponderBehaviors.getInterfaceInheritanceChain = function (_interface
         i, length,
         interfaceObject = NavigationResponderBehaviors[_interface];
 
-    if (interfaceObject == undefined || typeof interfaceObject !== 'object') {
+    if (interfaceObject === undefined || typeof interfaceObject !== 'object') {
         //		console.log('behaviorObject for interface is undefined ', interface );
         return chain;
     }
 
     chain.push(_interface);
     extendsArray = interfaceObject['extends'];
-    if (extendsArray == undefined) {
+    if (extendsArray === undefined) {
         //		console.log('extendsArray for interface is undefined, the chain ends here ', interface, chain);
         return chain;
     }
@@ -56,7 +56,7 @@ NavigationResponderBehaviors.getInterfaceInheritanceChain = function (_interface
 
     for (i = 0; i < length; i++) {
         extendingInterface = extendsArray[i];
-        if (chain.indexOf(extendingInterface) == -1) {
+        if (chain.indexOf(extendingInterface) === -1) {
             // We did not yet extend this interface, so continue to follow the chain
             NavigationResponderBehaviors.getInterfaceInheritanceChain(extendingInterface, chain);
         }
@@ -66,7 +66,7 @@ NavigationResponderBehaviors.getInterfaceInheritanceChain = function (_interface
 };
 
 NavigationResponderBehaviors.getInterfaceMethods = function (interfaces) {
-    if (interfaces == undefined || !interfaces instanceof Array) {
+    if (interfaces === undefined || !interfaces instanceof Array) {
         // No valid input
         return [];
     }
@@ -89,11 +89,11 @@ NavigationResponderBehaviors.getInterfaceMethods = function (interfaces) {
         _interface = combinedInterfacesChain[i];
         interfaceObject = NavigationResponderBehaviors[_interface];
         interfaceMethods = interfaceObject.methods;
-        if (interfaceObject != undefined && typeof interfaceObject === 'object' && interfaceMethods != undefined && interfaceMethods instanceof Array) {
+        if (interfaceObject !== undefined && typeof interfaceObject === 'object' && interfaceMethods !== undefined && interfaceMethods instanceof Array) {
             methodsLength = interfaceMethods.length;
             for (j = 0; j < methodsLength; j++) {
                 method = interfaceMethods[j];
-                if (methods.indexOf(method) == -1) {
+                if (methods.indexOf(method) === -1) {
                     methods.push(method);
                 }
             }

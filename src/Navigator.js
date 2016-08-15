@@ -1,4 +1,6 @@
 // @flow weak
+
+import $ from 'jquery';
 import NavigationState from './NavigationState';
 import NavigationResponderBehaviors from './NavigationResponderBehaviors';
 import * as NavigationBehaviors from './NavigationBehaviors';
@@ -9,7 +11,6 @@ import TransitionCompleteDelegate from './transition/TransitionCompleteDelegate'
 import ValidationPreparedDelegate from './transition/ValidationPreparedDelegate';
 import ResponderLists from './ResponderLists';
 import autoBind from './utils/AutoBind';
-import $ from 'jquery';
 
 let _$eventDispatcher = null;
 // internal namespaces
@@ -85,7 +86,7 @@ const _modify = function (addition, responder, pathsOrStates, behaviorString) {
         if (list.indexOf(responder) < 0) {
             list.push(responder);
 
-            if (responder.__navigatorjs == undefined) {
+            if (responder.__navigatorjs === undefined) {
                 // Create new hidden navigatorjs data
                 _responderIDCount++;
                 responder.__navigatorjs = { id: _responderIDCount };
@@ -109,7 +110,7 @@ const _modify = function (addition, responder, pathsOrStates, behaviorString) {
             return;
         }
 
-        if (matchingInterface == 'IHasStateSwap' && _responders.swappedBefore[responder]) {
+        if (matchingInterface === 'IHasStateSwap' && _responders.swappedBefore[responder]) {
             // cleanup after the special swap case
             delete _responders.swappedBefore[responder];
         }
@@ -134,7 +135,7 @@ let _relayModification = function (addition, responder, pathsOrStates, behaviorS
     }
 
     behaviorString = behaviorString || NavigationBehaviors.AUTO;
-    if (behaviorString == NavigationBehaviors.AUTO) {
+    if (behaviorString === NavigationBehaviors.AUTO) {
         length = NavigationBehaviors.ALL_AUTO.length;
         for (i = 0; i < length; i++) {
             try {
@@ -187,7 +188,7 @@ const _hasRegisteredResponder = function (state, optionalInterface) {
 };
 
 const _request = function (pathOrState) {
-    if (pathOrState == null) {
+    if (pathOrState === null) {
         // logger.error("Requested a null state. Aborting request.");
         return;
     }
@@ -203,7 +204,7 @@ const _request = function (pathOrState) {
     }
 
     // Check for exact match of the requested and the current state
-    if (_currentState && _currentState.getPath() == requestedState.getPath()) {
+    if (_currentState && _currentState.getPath() === requestedState.getPath()) {
         // logger.info("Already at the requested state: " + requested);
         return;
     }
@@ -236,7 +237,7 @@ let _performRequestCascade = function (requestedState, startAsyncValidation) {
     //
     //		console.groupEnd();
     //		console.group('_performRequestCascade', requestedState.getPath(), startAsyncValidation);
-    if (requestedState.getPath() == _defaultState.getPath() && !_defaultState.hasWildcard()) {
+    if (requestedState.getPath() === _defaultState.getPath() && !_defaultState.hasWildcard()) {
         //			console.log('exact match');
         // Exact match on default state bypasses validation.
         _grantRequest(_defaultState);
@@ -296,7 +297,7 @@ let _notifyStateChange = function (state) {
     // logger.notice(state);
 
     // Do call the super.notifyStateChange() when overriding.
-    if (state != _previousState) {
+    if (state !== _previousState) {
         _$eventDispatcher.trigger(NavigatorEvent.STATE_CHANGED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID, state: _currentState });
     }
 };
@@ -327,7 +328,7 @@ _flow.transitionOut = function () {
 
     for (responderID in _statusByResponderID) {
         responder = _respondersByID[responderID];
-        if (respondersToShow.indexOf(responder) == -1) {
+        if (respondersToShow.indexOf(responder) === -1) {
             // if the responder is not already hidden or disappearing, trigger the transitionOut:
             if (TransitionStatus.HIDDEN < _statusByResponderID[responderID] && _statusByResponderID[responderID] < TransitionStatus.DISAPPEARING &&
                 // We could also not be hidden or disappearing but performing a state swap.
@@ -346,7 +347,7 @@ _flow.transitionOut = function () {
 
         // loop backwards so we can splice elements off the array while in the loop.
     for (i = waitForResponders.length; --i >= 0;) {
-        if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] == TransitionStatus.HIDDEN) {
+        if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] === TransitionStatus.HIDDEN) {
             waitForResponders.splice(i, 1);
         }
     }
@@ -420,7 +421,7 @@ _flow.transitionIn = function () {
 
         // loop backwards so we can splice elements off the array while in the loop.
     for (i = respondersToWaitFor.length; --i >= 0;) {
-        if (_statusByResponderID[respondersToWaitFor[i].__navigatorjs.id] == TransitionStatus.SHOWN) {
+        if (_statusByResponderID[respondersToWaitFor[i].__navigatorjs.id] === TransitionStatus.SHOWN) {
             respondersToWaitFor.splice(i, 1);
         }
     }
@@ -482,7 +483,7 @@ _flow.swapOut = function () {
 
         // loop backwards so we can splice elements off the array while in the loop.
     for (i = waitForResponders.length; --i >= 0;) {
-        if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] == TransitionStatus.SHOWN) {
+        if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] === TransitionStatus.SHOWN) {
             waitForResponders.splice(i, 1);
         }
     }
@@ -659,7 +660,7 @@ _validation.notifyValidationPrepared = function (validatorResponder, truncatedSt
     // VALIDATION NAMESPACE END
 
 let _validateFirstValidatingAsynchResponderFromStack = function () {
-    if (_preparedValidatingAsynchRespondersStack.length == 0) {
+    if (_preparedValidatingAsynchRespondersStack.length === 0) {
         return false;
     }
 
@@ -671,8 +672,8 @@ let _validateFirstValidatingAsynchResponderFromStack = function () {
 
 
 let _validate = function (stateToValidate, allowRedirection, allowAsyncValidation) {
-    var allowRedirection = allowRedirection == undefined ? true : allowRedirection,
-        allowAsyncValidation = allowAsyncValidation == undefined ? true : allowAsyncValidation,
+    var allowRedirection = allowRedirection === undefined ? true : allowRedirection,
+        allowAsyncValidation = allowAsyncValidation === undefined ? true : allowAsyncValidation,
         unvalidatedState = stateToValidate,
         callOnPrepared = null,
         implicit,
@@ -857,7 +858,7 @@ let _initializeIfNeccessary = function (responderList) {
         //			for each (var responder : INavigationResponder in responderList) {
     for (i = 0; i < responderList.length; i++) {
         responder = responderList[i];
-        if (_statusByResponderID[responder.__navigatorjs.id] == TransitionStatus.UNINITIALIZED && NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateInitialization')) {
+        if (_statusByResponderID[responder.__navigatorjs.id] === TransitionStatus.UNINITIALIZED && NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateInitialization')) {
                 // first initialize the responder.
             responder.initializeByNavigator();
             _statusByResponderID[responder.__navigatorjs.id] = TransitionStatus.INITIALIZED;

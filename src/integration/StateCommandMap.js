@@ -24,8 +24,8 @@ StateCommandMap.prototype = {
     },
 
     mapCommand(stateOrPath, CommandClass, aExactMatch, aOneShot) {
-        let exactMatch = aExactMatch == undefined ? false : aExactMatch,
-            oneShot = aOneShot == undefined ? false : aOneShot,
+        let exactMatch = aExactMatch === undefined ? false : aExactMatch,
+            oneShot = aOneShot === undefined ? false : aOneShot,
             state = NavigationState.make(stateOrPath),
             commands = this._commandsByState[state.getPath()] || [];
 
@@ -49,7 +49,7 @@ StateCommandMap.prototype = {
         this._navigator.remove(this, state);
         for (i = commands.length; --i >= 0;) {
             wrapper = commands[i];
-            if (wrapper.CommandClass == CommandClass) {
+            if (wrapper.CommandClass === CommandClass) {
                 commands.splice(i, 1);
                 return;
             }
@@ -124,7 +124,7 @@ StateCommandMap.prototype = {
         let i, commandWrapper, length = wrappedCommandsList.length;
         for (i = 0; i < length; i++) {
             commandWrapper = wrappedCommandsList[i];
-            if (commandWrapper.CommandClass == testForCommandClass) {
+            if (commandWrapper.CommandClass === testForCommandClass) {
                 return true;
             }
         }

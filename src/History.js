@@ -94,7 +94,7 @@ History.prototype = {
     */
     back(steps) {
         // Check if we know history
-        if (this._historyPosition == this._history.length - 1) {
+        if (this._historyPosition === this._history.length - 1) {
             return false;
         }
 
@@ -137,7 +137,7 @@ History.prototype = {
     */
     getPreviousState(steps) {
         // Cannot go beyond the first entry in history
-        if (this._history.length === 0 || this._historyPosition == Math.max(0, this._history.length - 1)) {
+        if (this._history.length === 0 || this._historyPosition === Math.max(0, this._history.length - 1)) {
             return null;
         }
 
@@ -227,7 +227,7 @@ History.prototype = {
     getPositionByPath(path) {
         const count = this.getLength();
         for (let i = 0; i < count; i++) {
-            if (this._history[i].getPath() == path) {
+            if (this._history[i].getPath() === path) {
                 return i;
             }
         }

@@ -36,11 +36,11 @@ NavigationState.prototype = {
         for (i = 0; i < length; i++) {
             segment = segments[i];
 
-            if (segment == '**') {
+            if (segment === '**') {
                 // match any character, including slashes (multiple segments)
                 // eg: bla or bla/bla or bla/bla/bla
                 regexPath = regexPath + '(.*)';
-            } else if (segment == '*') {
+            } else if (segment === '*') {
                 // match anything expect slashes and end with a slash (1 segment only).
                 // eg: bla/ but not /bla/ or bla/bla/
                 regexPath = regexPath + '([^/]*)\/';
@@ -91,8 +91,8 @@ NavigationState.prototype = {
             nativeSegments = this.getSegments(),
             foreignMatch = this.getPath().match(foreignState.getPathRegex()),
             nativeMatch = foreignState.getPath().match(this.getPathRegex()),
-            isForeignMatch = foreignMatch && foreignMatch.index == 0 ? true : false,
-            isNativeMatch = nativeMatch && nativeMatch.index == 0 ? true : false,
+            isForeignMatch = foreignMatch && foreignMatch.index === 0 ? true : false,
+            isNativeMatch = nativeMatch && nativeMatch.index === 0 ? true : false,
             foreignSegmentDoubleWildcardsMatch = foreignState.getPath().match(/\*\*/g),
             doubleWildcardsLength = foreignSegmentDoubleWildcardsMatch ? foreignSegmentDoubleWildcardsMatch.length : 0,
             tooManyForeignSegments = foreignSegments.length > (nativeSegments.length + doubleWildcardsLength),
@@ -175,7 +175,7 @@ NavigationState.prototype = {
     },
 
     hasWildcard() {
-        return this.getPath().indexOf('/*/') != -1;
+        return this.getPath().indexOf('/*/') !== -1;
     },
 
     mask(sourceStateOrPath) {

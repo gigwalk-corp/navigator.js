@@ -40,10 +40,10 @@ StateUrlSyncer.prototype = {
         let pushUrl = this.parsePushStateUrl(window.location.pathname),
             hashUrl = this.parseHashUrl(window.location.hash);
 
-        if (this.supportsPushState && pushUrl == '' && hashUrl != '') {
+        if (this.supportsPushState && pushUrl === '' && hashUrl !== '') {
             // There is a hash and no push state.
             window.history.replaceState(null, '', new NavigationState(_rootUrl + hashUrl).getPath());
-        } else if (!this.supportsPushState && pushUrl != '') {
+        } else if (!this.supportsPushState && pushUrl !== '') {
             // There is a push state deeplink, but we don't support it. Redirect back.
             window.location.href = _rootUrl + '#/' + pushUrl;
         }

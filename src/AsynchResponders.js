@@ -14,7 +14,7 @@ AsynchResponders.prototype = {
     },
 
     hasResponder(responder) {
-        return this._responders.indexOf(responder) != -1;
+        return this._responders.indexOf(responder) !== -1;
     },
 
     addResponder(responder) {
@@ -29,7 +29,7 @@ AsynchResponders.prototype = {
 
     takeOutResponder(responder) {
         const index = this._responders.indexOf(responder);
-        if (index != -1) {
+        if (index !== -1) {
             this._responders.splice(index, 1);
             return true;
         }

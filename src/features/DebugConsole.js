@@ -97,7 +97,7 @@ let _updateDisplay = function () {
 let _getResponderString = function (responder) {
     let responderString = responder.toString();
 
-    if (responderString == '[object Object]' && responder.$el) {
+    if (responderString === '[object Object]' && responder.$el) {
         let tagName = responder.$el.prop('tagName').toLowerCase(),
             classes = responder.$el.attr('class').split(' ').join('.');
 
