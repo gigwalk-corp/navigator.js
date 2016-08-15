@@ -11,19 +11,15 @@ import Navigator from './Navigator';
 import Bind from './utils/Bind';
 import AutoBind from './utils/AutoBind';
 import DebugConsole from './features/DebugConsole';
-
-// transition
-require('./transition/TransitionCompleteDelegate');
-require('./transition/TransitionStatus');
-require('./transition/ValidationPreparedDelegate');
+import * as TransitionStatus from './transition/TransitionStatus';
+import TransitionCompleteDelegate from './transition/TransitionCompleteDelegate';
+import ValidationPreparedDelegate from './transition/ValidationPreparedDelegate';
 
 // integration
 require('./integration/StateCommandMap');
 require('./integration/StateUrlSyncer');
 require('./integration/StateViewMap');
 require('./integration/ViewRecipe');
-
-
 
 module.exports = window.navigatorjs = {
     ...window.navigatorjs,
@@ -40,6 +36,11 @@ module.exports = window.navigatorjs = {
         AutoBind,
     },
     features: {
-        DebugConsole
-    }
+        DebugConsole,
+    },
+    transition: {
+        TransitionStatus,
+        TransitionCompleteDelegate,
+        ValidationPreparedDelegate,
+    },
 };
