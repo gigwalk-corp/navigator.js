@@ -19,7 +19,28 @@ import ViewRecipe from './integration/ViewRecipe';
 import StateUrlSyncer from './integration/StateUrlSyncer';
 import StateViewMap from './integration/StateViewMap';
 
-module.exports = {
+const utils = Object.freeze({
+    Bind,
+    AutoBind,
+});
+const features = Object.freeze({
+    DebugConsole,
+});
+
+const transition = Object.freeze({
+    TransitionStatus,
+    TransitionCompleteDelegate,
+    ValidationPreparedDelegate,
+});
+
+const integration = Object.freeze({
+    ViewRecipe,
+    StateCommandMap,
+    StateUrlSyncer,
+    StateViewMap,
+});
+
+module.exports = Object.freeze({
     NavigatorEvent,
     NavigationBehaviors,
     ResponderLists,
@@ -28,22 +49,8 @@ module.exports = {
     History,
     AsynchResponders,
     Navigator,
-    utils: {
-        Bind,
-        AutoBind,
-    },
-    features: {
-        DebugConsole,
-    },
-    transition: {
-        TransitionStatus,
-        TransitionCompleteDelegate,
-        ValidationPreparedDelegate,
-    },
-    integration: {
-        ViewRecipe,
-        StateCommandMap,
-        StateUrlSyncer,
-        StateViewMap,
-    }
-};
+    utils,
+    features,
+    transition,
+    integration,
+});

@@ -1,4 +1,4 @@
-// @flow
+// @flow weak
 import NavigationState from './NavigationState';
 import NavigationResponderBehaviors from './NavigationResponderBehaviors';
 import * as NavigationBehaviors from './NavigationBehaviors';

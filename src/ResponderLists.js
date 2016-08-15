@@ -27,7 +27,7 @@ ResponderLists.prototype = {
     swappedBefore: null, // []
     all: null, // []
 
-    toString() {
+    toString(): string {
         let s = 'ResponderLists [',
             variable,
             list, contents, key;
