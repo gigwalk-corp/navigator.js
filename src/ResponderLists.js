@@ -28,19 +28,17 @@ ResponderLists.prototype = {
     all: null, // []
 
     toString(): string {
-        let s = 'ResponderLists [',
-            variable,
-            list, contents, key;
+        let s: string = 'ResponderLists [';
 
-        for (variable in this) {
-            list = this[variable];
+        for (const variable in this) {
+            const list = this[variable];
 
             if (this.all.indexOf(list) > -1) {
-                contents = [];
-                for (key in list) {
-                    contents.push('[' + key + ' = ' + list[key] + ']');
+                const contents = [];
+                for (const key in list) {
+                    contents.push('[' + key + ' = ' + list[key] + ']'); // eslint-disable-line prefer-template
                 }
-                s += '\n\t[' + variable + ': ' + contents.join(', ') + '], ';
+                s += '\n\t[' + variable + ': ' + contents.join(', ') + '], '; // eslint-disable-line prefer-template
             }
         }
 
