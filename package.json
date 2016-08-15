@@ -1,6 +1,6 @@
 {
   "name": "@gigwalk/navigator-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "./lib/index.js",
   "author": {
     "name": "Bigger Boat",
@@ -20,7 +20,6 @@
     "build": "npm run webpack && npm run webpack-dist && npm run build:babel && npm run build:flow",
     "build:babel": "babel src --out-dir lib --source-maps",
     "build:flow": "gulp flow",
-    "prepublish": "rm -rf lib",
     "prepublish": "npm run build:babel && npm run build:flow"
   },
   "peerDependencies": {
