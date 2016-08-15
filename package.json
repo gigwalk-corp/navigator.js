@@ -8,10 +8,8 @@
     "url": "http://biggerboat.nl"
   },
   "description": "A tiny yet powerful library to deal with navigation and flow in your JavaScript projects.",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/BiggerBoat/navigator.js"
-  },
+  "repository": "gigwalk/navigator-js",
+  "license": "MIT",
   "scripts": {
     "test": "karma start",
     "tdd": "karma start --no-single-run",
