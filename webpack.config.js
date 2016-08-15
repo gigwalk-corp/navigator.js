@@ -11,7 +11,7 @@ Copyright (c) ${ moment().format('YYYY') } ${pkg.author.name}`;
 
 module.exports = {
     entry: {
-        'navigator-js': './public/js/index.js'
+        'navigator-js': './src/index.js'
     },
     output: {
         path: path.join(__dirname, './public/js/dist'),
@@ -21,13 +21,15 @@ module.exports = {
     },
     externals: transformUMDExternal({
         'react-dom': 'ReactDOM',
-        react: 'React'
+        react: 'React',
+        jquery: 'jQuery',
+        underscore: '_'
     }),
     module: {
         loaders: [{
             test: /\.js/,
             exclude: /(bower_components|node_modules)/,
-            loader: 'imports?this=>window'
+            loader: 'babel-loader'
         }]
     },
     plugins: [

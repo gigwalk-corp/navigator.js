@@ -1,94 +1,96 @@
-describe("DebugConsole", function() {
+describe('DebugConsole', () => {
+    let navigator,
+        debugConsole,
+        $debugConsole,
+        responder;
 
-	var navigator,
-		debugConsole,
-		$debugConsole,
-		responder;
+    beforeEach(() => {
+        navigator = new navigatorjs.Navigator(),
+        debugConsole = new navigatorjs.features.DebugConsole(navigator),
+        $debugConsole = debugConsole.get$El();
+        $debugConsole.css({
+            position: 'fixed',
+            left: 10,
+            bottom: 10
+        });
+        $('body').append($debugConsole);
 
-	beforeEach(function() {
-		navigator = new navigatorjs.Navigator(),
-			debugConsole = new navigatorjs.features.DebugConsole(navigator),
-			$debugConsole = debugConsole.get$El();
-		$debugConsole.css({position: 'fixed', left: 10, bottom: 10});
-		$('body').append($debugConsole);
+        responder = {
+            navigatorBehaviors: ['IHasStateInitialization', 'IHasStateTransition'],
+            initializeByNavigator() {
+                console.log('responder -> initializeByNavigator');
+            },
 
-		responder = {
-			navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
-			initializeByNavigator: function() {
-				console.log("responder -> initializeByNavigator");
-			},
+            transitionIn(callOnComplete) {
+                console.log('responder -> transitionIn');
+                callOnComplete();
+            },
 
-			transitionIn: function(callOnComplete) {
-				console.log("responder -> transitionIn");
-				callOnComplete();
-			},
+            transitionOut(callOnComplete) {
+                console.log('responder -> transitionOut');
+                callOnComplete();
+            },
 
-			transitionOut: function(callOnComplete) {
-				console.log("responder -> transitionOut");
-				callOnComplete();
-			},
+            toString() {
+                return '[object responder]';
+            }
+        };
+    });
 
-			toString: function() {
-				return "[object responder]";
-			}
-		};
-	});
+    afterEach(() => {
+        $debugConsole.remove();
+    });
 
-	afterEach(function() {
-		$debugConsole.remove();
-	});
+    it('Automatically adjusts the width based on its content', () => {
+        const wideStatePath = '/this/is/a/relatively/long/state/causing/the/console/to/be/very/wide/';
 
-	it("Automatically adjusts the width based on its content", function() {
-		var wideStatePath = "/this/is/a/relatively/long/state/causing/the/console/to/be/very/wide/";
+        navigator.add(responder, wideStatePath);
+        let $input = $debugConsole.find('input'),
+            startInputWidth = $input.width();
 
-		navigator.add(responder, wideStatePath);
-		var $input = $debugConsole.find('input'),
-			startInputWidth = $input.width();
+        navigator.start('');
+        navigator.request(wideStatePath);
 
-		navigator.start("");
-		navigator.request(wideStatePath);
+        expect($input.width()).toBeGreaterThan(startInputWidth);
+    });
 
-		expect($input.width()).toBeGreaterThan(startInputWidth);
-	});
+    describe('Responder names', () => {
+        it('uses the toString method as a reference to the responder in the list', () => {
+            navigator.add(responder, '/');
+            navigator.start('');
 
-	describe("Responder names", function() {
-		it("uses the toString method as a reference to the responder in the list", function() {
-			navigator.add(responder, "/");
-			navigator.start("");
+            expect($debugConsole.find('.names span:first').text()).toEqual(responder.toString());
+        });
 
-			expect($debugConsole.find(".names span:first").text()).toEqual(responder.toString());
-		});
+        it('uses the $el tagName and classes when the toString method is not implemented', () => {
+            const responder = {
+                navigatorBehaviors: ['IHasStateInitialization', 'IHasStateTransition'],
+                $el: $('<div class="a b"></div>'),
+                initializeByNavigator() {},
+                transitionIn(callOnComplete) {},
+                transitionOut(callOnComplete) {}
+            };
+            navigator.add(responder, '/');
+            navigator.start('');
 
-		it("uses the $el tagName and classes when the toString method is not implemented", function() {
-			var responder = {
-				navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
-				$el: $('<div class="a b"></div>'),
-				initializeByNavigator: function() {},
-				transitionIn: function(callOnComplete) {},
-				transitionOut: function(callOnComplete) {}
-			};
-			navigator.add(responder, "/");
-			navigator.start("");
+            expect($debugConsole.find('.names span:first').text()).toEqual('div.a.b');
+        });
 
-			expect($debugConsole.find(".names span:first").text()).toEqual("div.a.b");
-		});
+        it('uses the toString over a generated $el name', () => {
+            const responder = {
+                navigatorBehaviors: ['IHasStateInitialization', 'IHasStateTransition'],
+                $el: $('<div class="a b"></div>'),
+                initializeByNavigator() {},
+                transitionIn(callOnComplete) {},
+                transitionOut(callOnComplete) {},
+                toString() {
+                    return 'myResponder';
+                }
+            };
+            navigator.add(responder, '/');
+            navigator.start('');
 
-		it("uses the toString over a generated $el name", function() {
-			var responder = {
-				navigatorBehaviors: ["IHasStateInitialization", "IHasStateTransition"],
-				$el: $('<div class="a b"></div>'),
-				initializeByNavigator: function() {},
-				transitionIn: function(callOnComplete) {},
-				transitionOut: function(callOnComplete) {},
-				toString: function() {
-					return "myResponder"
-				}
-			};
-			navigator.add(responder, "/");
-			navigator.start("");
-
-			expect($debugConsole.find(".names span:first").text()).toEqual(responder.toString());
-		});
-	});
-
+            expect($debugConsole.find('.names span:first').text()).toEqual(responder.toString());
+        });
+    });
 });

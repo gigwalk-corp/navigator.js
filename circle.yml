@@ -1,0 +1,15 @@
+## Customize the test machine
+machine:
+  node:
+    version: v6.2.2
+dependencies:
+  pre:
+    - npm set progress=false
+    - npm prune
+  override:
+    - npm install
+
+test:
+  post:
+    - ./node_modules/.bin/eslint --quiet ./src
+    - ./node_modules/.bin/flow check --show-all-errors
