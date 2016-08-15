@@ -1,26 +1,19 @@
 // @flow weak
 import NavigationState from '../NavigationState';
+import Navigator from '../Navigator';
 
-function StateCommandMap(navigator, injector) {
-    this._navigator = navigator;
-    this._injector = injector;
-    this._commandsByState = {};
-    this._verifiedCommandClasses = {};
-
-    // this._navigator.add(this, "");
-
-    this.initialize();
-}
-
-StateCommandMap.prototype = {
-    navigatorBehaviors: ['IHasStateValidationOptional', 'IHasStateUpdate'],
-
-    _navigator: null,
-    _injector: null,
-    _commandsByState: null, // {}
-    _verifiedCommandClasses: null, // {}
-
-    initialize() {},
+export default class StateCommandMap {
+    constructor(navigator: Navigator, injector: any) {
+        this._navigator = navigator;
+        this._injector = injector;
+        this._commandsByState = {};
+        this._verifiedCommandClasses = {};
+    }
+    _navigator: Navigator;
+    _injector: any;
+    _commandsByState: Object;
+    _verifiedCommandClasses: Object;
+    navigatorBehaviors = ['IHasStateValidationOptional', 'IHasStateUpdate'];
 
     mapCommand(stateOrPath, CommandClass, aExactMatch, aOneShot) {
         const exactMatch = aExactMatch === undefined ? false : aExactMatch;
@@ -38,7 +31,7 @@ StateCommandMap.prototype = {
         this._verifyCommandClass(CommandClass);
 
         commands.push({ CommandClass, state, exactMatch, oneShot });
-    },
+    }
 
     unmapCommand(stateOrPath, CommandClass) {
         const state = NavigationState.make(stateOrPath);
@@ -54,12 +47,12 @@ StateCommandMap.prototype = {
                 return;
             }
         }
-    },
+    }
 
     willValidate(truncatedState, fullState) {
         // will only validate if the state matches a command.
         return this.validate(truncatedState, fullState);
-    },
+    }
 
     validate(truncatedState, fullState) {
         let path;
@@ -89,7 +82,7 @@ StateCommandMap.prototype = {
         }
 
         return false;
-    },
+    }
 
     updateState(truncatedState, fullState) {
         let path;
@@ -129,7 +122,7 @@ StateCommandMap.prototype = {
                 }
             }
         }
-    },
+    }
 
     _hasCommand(wrappedCommandsList, testForCommandClass) {
         let i;
@@ -142,7 +135,7 @@ StateCommandMap.prototype = {
             }
         }
         return false;
-    },
+    }
 
     _verifyCommandClass(CommandClass) {
         if (this._verifiedCommandClasses[CommandClass]) {
@@ -153,6 +146,4 @@ StateCommandMap.prototype = {
         }
         this._verifiedCommandClasses[CommandClass] = true;
     }
-};
-
-export default StateCommandMap;
+}
