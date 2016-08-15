@@ -1,4 +1,5 @@
 // @flow weak
+/* eslint no-case-declarations: 1 */
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import { STATE_REQUESTED } from '../NavigatorEvent';
@@ -15,9 +16,9 @@ function StateViewMap(navigator, $root) {
 
   // PUBLIC API
 StateViewMap.prototype = {
-    mapState: function mapState(statesOrPaths) {
+    mapState() {
         let allArgumentsAsOneFlatArray = [];
-        allArgumentsAsOneFlatArray = allArgumentsAsOneFlatArray.concat.apply(allArgumentsAsOneFlatArray, arguments);
+        allArgumentsAsOneFlatArray = allArgumentsAsOneFlatArray.concat.apply(allArgumentsAsOneFlatArray, arguments); // eslint-disable-line
         return this._addRecipe(allArgumentsAsOneFlatArray);
     },
 
@@ -28,7 +29,8 @@ StateViewMap.prototype = {
     _addRecipe: function _addRecipe(statesOrPaths) {
         const recipe = new ViewRecipe();
 
-        let i, length = statesOrPaths.length;
+        let i;
+        const length = statesOrPaths.length;
         for (i = 0; i < length; i++) {
             recipe.addState(NavigationState.make(statesOrPaths[i]));
         }
@@ -39,10 +41,14 @@ StateViewMap.prototype = {
     },
 
     _handleStateRequested: function _handleStateRequested(e, eventData) {
-        var requestedState = eventData.state,
-            index, recipe, recipeStates, recipesLength = this._orderedRecipes.length,
-            j, state, statesLength,
-            viewInstance;
+        const requestedState = eventData.state;
+        let index;
+        let recipe;
+        let recipeStates;
+        const recipesLength = this._orderedRecipes.length;
+        let j;
+        let state;
+        let statesLength;
 
         for (index = 0; index < recipesLength; index++) {
             recipe = this._orderedRecipes[index];
@@ -54,7 +60,7 @@ StateViewMap.prototype = {
 
                 if (requestedState.contains(state)) {
                     this._addViewElementToDOM(recipe);
-                    var viewInstance = recipe.getViewInstance();
+                    const viewInstance = recipe.getViewInstance();
                     if (Array.isArray(viewInstance.navigatorBehaviors)) {
                         this._navigator.add(viewInstance, state);
                     }
@@ -64,10 +70,10 @@ StateViewMap.prototype = {
     },
 
     _addRecipeToParent: function _addRecipeToParent(parentRecipe, recipe) {
-        let $container = this._$root,
-            $inside, $reactRoot,
-            insideSelector = recipe.getInsideSelector();
-        const _recipe = recipe;
+        let $container = this._$root;
+        let $inside;
+        let $reactRoot;
+        const insideSelector = recipe.getInsideSelector();
         if (parentRecipe) {
             $container = parentRecipe.getRootEl();
         }
@@ -77,13 +83,13 @@ StateViewMap.prototype = {
             $container = $inside.length > 0 ? $inside.first() : $container;
         }
 
-        const additionType = '' + (parentRecipe ? parentRecipe._type : 'BACKBONE') + ' > ' + recipe._type;
+        const additionType = `${parentRecipe ? parentRecipe._type : 'BACKBONE'} > ${recipe._type}`;
 
         switch (additionType) {
             case 'BACKBONE > BACKBONE':
-                var i = this._orderedRecipes.indexOf(recipe) + 1,
-                    length = this._orderedRecipes.length,
-                    testRecipe;
+                let i = this._orderedRecipes.indexOf(recipe) + 1;
+                const length = this._orderedRecipes.length;
+                let testRecipe;
 
                 for (i; i < length; i++) {
                     testRecipe = this._orderedRecipes[i];
@@ -121,7 +127,7 @@ StateViewMap.prototype = {
           );
                 break;
             default:
-                console.error('Invalid recipe type combination: ' + additionType);
+                console.error(`Invalid recipe type combination: ${additionType}`);
                 break;
 
         }
