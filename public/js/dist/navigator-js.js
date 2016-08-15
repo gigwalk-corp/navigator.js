@@ -1,5 +1,5 @@
 /*!
- * @gigwalk/navigator-js - v0.6.2 - 2016-08-15
+ * @gigwalk/navigator-js - v1.0.0 - 2016-08-15
  * undefined
  * Copyright (c) 2016 Bigger Boat
  */
@@ -2869,31 +2869,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // FIXME: What do we do in the mean time, dispatch an event or sth?
 	        // logger.notice("waiting for async validation to complete");
 	    } else if (startAsyncValidation && _asyncValidationOccurred) {
-	            //			console.log('any async prepration happened instantaneuously');
-	            // any async prepration happened instantaneuously
-	        } else if (_inlineRedirectionState) {
-	                //			console.log('_inlineRedirectionState');
-	                _request(_inlineRedirectionState);
-	            } else if (_currentState) {
-	                //			console.log('_inlineRedirectionState');
-	                // If validation fails, the notifyStateChange() is called with the current state as a parameter,
-	                // mainly for subclasses to respond to the blocked navigation (e.g. SWFAddress).
-	                _notifyStateChange(_currentState);
-	            } else if (requestedState.hasWildcard()) {
-	                //			console.log('wildcard error');
-	                // If we get here, after validateWithWildcards has failed, this means there are still
-	                // wildcards in the requested state that didn't match the previous state. This,
-	                // unfortunately means your application has a logic error. Go fix it!
-	                throw new Error('Check wildcard masking: ' + requestedState.getPath());
-	            } else if (_defaultState) {
-	                //			console.log('everything failed, use default state');
-	                // If all else fails, we'll put up the default state.
-	                _grantRequest(_defaultState);
-	            } else {
-	                //			console.log('everything failed without default state');
-	                // If you don't provide a default state, at least make sure your first request makes sense!
-	                throw new Error('First request is invalid: ' + requestedState.getPath());
-	            }
+	        //			console.log('any async prepration happened instantaneuously');
+	        // any async prepration happened instantaneuously
+	    } else if (_inlineRedirectionState) {
+	        //			console.log('_inlineRedirectionState');
+	        _request(_inlineRedirectionState);
+	    } else if (_currentState) {
+	        //			console.log('_inlineRedirectionState');
+	        // If validation fails, the notifyStateChange() is called with the current state as a parameter,
+	        // mainly for subclasses to respond to the blocked navigation (e.g. SWFAddress).
+	        _notifyStateChange(_currentState);
+	    } else if (requestedState.hasWildcard()) {
+	        //			console.log('wildcard error');
+	        // If we get here, after validateWithWildcards has failed, this means there are still
+	        // wildcards in the requested state that didn't match the previous state. This,
+	        // unfortunately means your application has a logic error. Go fix it!
+	        throw new Error('Check wildcard masking: ' + requestedState.getPath());
+	    } else if (_defaultState) {
+	        //			console.log('everything failed, use default state');
+	        // If all else fails, we'll put up the default state.
+	        _grantRequest(_defaultState);
+	    } else {
+	        //			console.log('everything failed without default state');
+	        // If you don't provide a default state, at least make sure your first request makes sense!
+	        throw new Error('First request is invalid: ' + requestedState.getPath());
+	    }
 	};
 
 	var _grantRequest = function _grantRequest(state) {
@@ -3991,159 +3991,178 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 
+	var _classCallCheck2 = __webpack_require__(26);
+
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+	var _createClass2 = __webpack_require__(27);
+
+	var _createClass3 = _interopRequireDefault(_createClass2);
+
 	var _NavigationState = __webpack_require__(31);
 
 	var _NavigationState2 = _interopRequireDefault(_NavigationState);
 
+	var _Navigator = __webpack_require__(87);
+
+	var _Navigator2 = _interopRequireDefault(_Navigator);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function StateCommandMap(navigator, injector) {
-	    this._navigator = navigator;
-	    this._injector = injector;
-	    this._commandsByState = {};
-	    this._verifiedCommandClasses = {};
+	//  weak
+	var StateCommandMap = function () {
+	    function StateCommandMap(navigator, injector) {
+	        (0, _classCallCheck3.default)(this, StateCommandMap);
+	        this.navigatorBehaviors = ['IHasStateValidationOptional', 'IHasStateUpdate'];
 
-	    // this._navigator.add(this, "");
+	        this._navigator = navigator;
+	        this._injector = injector;
+	        this._commandsByState = {};
+	        this._verifiedCommandClasses = {};
+	    }
 
-	    this.initialize();
-	} //  weak
+	    (0, _createClass3.default)(StateCommandMap, [{
+	        key: 'mapCommand',
+	        value: function mapCommand(stateOrPath, CommandClass, aExactMatch, aOneShot) {
+	            var exactMatch = aExactMatch === undefined ? false : aExactMatch;
+	            var oneShot = aOneShot === undefined ? false : aOneShot;
+	            var state = _NavigationState2.default.make(stateOrPath);
+	            var commands = this._commandsByState[state.getPath()] || [];
 
+	            this._commandsByState[state.getPath()] = commands;
+	            this._navigator.add(this, state);
 
-	StateCommandMap.prototype = {
-	    navigatorBehaviors: ['IHasStateValidationOptional', 'IHasStateUpdate'],
+	            if (this._hasCommand(commands, CommandClass)) {
+	                throw new Error('Already mapped ' + CommandClass + ' to state ' + state.getPath());
+	            }
 
-	    _navigator: null,
-	    _injector: null,
-	    _commandsByState: null, // {}
-	    _verifiedCommandClasses: null, // {}
+	            this._verifyCommandClass(CommandClass);
 
-	    initialize: function initialize() {},
-	    mapCommand: function mapCommand(stateOrPath, CommandClass, aExactMatch, aOneShot) {
-	        var exactMatch = aExactMatch === undefined ? false : aExactMatch;
-	        var oneShot = aOneShot === undefined ? false : aOneShot;
-	        var state = _NavigationState2.default.make(stateOrPath);
-	        var commands = this._commandsByState[state.getPath()] || [];
-
-	        this._commandsByState[state.getPath()] = commands;
-	        this._navigator.add(this, state);
-
-	        if (this._hasCommand(commands, CommandClass)) {
-	            throw new Error('Already mapped ' + CommandClass + ' to state ' + state.getPath());
+	            commands.push({ CommandClass: CommandClass, state: state, exactMatch: exactMatch, oneShot: oneShot });
 	        }
-
-	        this._verifyCommandClass(CommandClass);
-
-	        commands.push({ CommandClass: CommandClass, state: state, exactMatch: exactMatch, oneShot: oneShot });
-	    },
-	    unmapCommand: function unmapCommand(stateOrPath, CommandClass) {
-	        var state = _NavigationState2.default.make(stateOrPath);
-	        var commands = this._commandsByState[state.getPath()] || [];
-	        var i = void 0;
-	        var wrapper = void 0;
-	        this._commandsByState[state.getPath()] = commands;
-	        this._navigator.remove(this, state);
-	        for (i = commands.length; --i >= 0;) {
-	            wrapper = commands[i];
-	            if (wrapper.CommandClass === CommandClass) {
-	                commands.splice(i, 1);
-	                return;
+	    }, {
+	        key: 'unmapCommand',
+	        value: function unmapCommand(stateOrPath, CommandClass) {
+	            var state = _NavigationState2.default.make(stateOrPath);
+	            var commands = this._commandsByState[state.getPath()] || [];
+	            var i = void 0;
+	            var wrapper = void 0;
+	            this._commandsByState[state.getPath()] = commands;
+	            this._navigator.remove(this, state);
+	            for (i = commands.length; --i >= 0;) {
+	                wrapper = commands[i];
+	                if (wrapper.CommandClass === CommandClass) {
+	                    commands.splice(i, 1);
+	                    return;
+	                }
 	            }
 	        }
-	    },
-	    willValidate: function willValidate(truncatedState, fullState) {
-	        // will only validate if the state matches a command.
-	        return this.validate(truncatedState, fullState);
-	    },
-	    validate: function validate(truncatedState, fullState) {
-	        var path = void 0;
-	        var mappedState = void 0;
-	        var commands = void 0;
-	        var isExact = void 0;
-	        var i = void 0;
-	        var wrapper = void 0;
+	    }, {
+	        key: 'willValidate',
+	        value: function willValidate(truncatedState, fullState) {
+	            // will only validate if the state matches a command.
+	            return this.validate(truncatedState, fullState);
+	        }
+	    }, {
+	        key: 'validate',
+	        value: function validate(truncatedState, fullState) {
+	            var path = void 0;
+	            var mappedState = void 0;
+	            var commands = void 0;
+	            var isExact = void 0;
+	            var i = void 0;
+	            var wrapper = void 0;
 
-	        for (path in this._commandsByState) {
-	            mappedState = _NavigationState2.default.make(path);
+	            for (path in this._commandsByState) {
+	                mappedState = _NavigationState2.default.make(path);
 
-	            if (fullState.contains(mappedState)) {
-	                commands = this._commandsByState[path];
-	                isExact = fullState.equals(mappedState);
+	                if (fullState.contains(mappedState)) {
+	                    commands = this._commandsByState[path];
+	                    isExact = fullState.equals(mappedState);
 
-	                // reverse loop to accomodate for oneshot removal
-	                i = commands.length;
-	                for (i; --i >= 0;) {
-	                    wrapper = commands[i];
-	                    if (!isExact && wrapper.exactMatch) {
-	                        continue; // eslint-disable-line no-continue
+	                    // reverse loop to accomodate for oneshot removal
+	                    i = commands.length;
+	                    for (i; --i >= 0;) {
+	                        wrapper = commands[i];
+	                        if (!isExact && wrapper.exactMatch) {
+	                            continue; // eslint-disable-line no-continue
+	                        }
+	                        return true;
 	                    }
+	                }
+	            }
+
+	            return false;
+	        }
+	    }, {
+	        key: 'updateState',
+	        value: function updateState(truncatedState, fullState) {
+	            var path = void 0;
+	            var mappedState = void 0;
+	            var commands = void 0;
+	            var isExact = void 0;
+	            var i = void 0;
+	            var wrapper = void 0;
+	            var command = void 0;
+
+	            for (path in this._commandsByState) {
+	                mappedState = _NavigationState2.default.make(path);
+	                if (fullState.contains(mappedState)) {
+	                    commands = this._commandsByState[path];
+	                    isExact = fullState.equals(mappedState);
+
+	                    // reverse loop to accomodate for oneshot removal
+	                    i = commands.length;
+	                    for (i; --i >= 0;) {
+	                        wrapper = commands[i];
+	                        if (!isExact && wrapper.exactMatch) {
+	                            continue; // eslint-disable-line no-continue
+	                        }
+
+	                        this._injector.map('fullState').toValue(fullState);
+	                        this._injector.map('truncatedState').toValue(fullState.subtract(wrapper.state));
+
+	                        command = new wrapper.CommandClass({ injector: this._injector });
+	                        command.execute();
+
+	                        this._injector.unmap('fullState');
+	                        this._injector.unmap('truncatedState');
+
+	                        if (wrapper.oneShot) {
+	                            this.unmapCommand(wrapper.state, wrapper.CommandClass);
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    }, {
+	        key: '_hasCommand',
+	        value: function _hasCommand(wrappedCommandsList, testForCommandClass) {
+	            var i = void 0;
+	            var commandWrapper = void 0;
+	            var length = wrappedCommandsList.length;
+	            for (i = 0; i < length; i++) {
+	                commandWrapper = wrappedCommandsList[i];
+	                if (commandWrapper.CommandClass === testForCommandClass) {
 	                    return true;
 	                }
 	            }
+	            return false;
 	        }
-
-	        return false;
-	    },
-	    updateState: function updateState(truncatedState, fullState) {
-	        var path = void 0;
-	        var mappedState = void 0;
-	        var commands = void 0;
-	        var isExact = void 0;
-	        var i = void 0;
-	        var wrapper = void 0;
-	        var command = void 0;
-
-	        for (path in this._commandsByState) {
-	            mappedState = _NavigationState2.default.make(path);
-	            if (fullState.contains(mappedState)) {
-	                commands = this._commandsByState[path];
-	                isExact = fullState.equals(mappedState);
-
-	                // reverse loop to accomodate for oneshot removal
-	                i = commands.length;
-	                for (i; --i >= 0;) {
-	                    wrapper = commands[i];
-	                    if (!isExact && wrapper.exactMatch) {
-	                        continue; // eslint-disable-line no-continue
-	                    }
-
-	                    this._injector.map('fullState').toValue(fullState);
-	                    this._injector.map('truncatedState').toValue(fullState.subtract(wrapper.state));
-
-	                    command = new wrapper.CommandClass({ injector: this._injector });
-	                    command.execute();
-
-	                    this._injector.unmap('fullState');
-	                    this._injector.unmap('truncatedState');
-
-	                    if (wrapper.oneShot) {
-	                        this.unmapCommand(wrapper.state, wrapper.CommandClass);
-	                    }
-	                }
+	    }, {
+	        key: '_verifyCommandClass',
+	        value: function _verifyCommandClass(CommandClass) {
+	            if (this._verifiedCommandClasses[CommandClass]) {
+	                return;
 	            }
-	        }
-	    },
-	    _hasCommand: function _hasCommand(wrappedCommandsList, testForCommandClass) {
-	        var i = void 0;
-	        var commandWrapper = void 0;
-	        var length = wrappedCommandsList.length;
-	        for (i = 0; i < length; i++) {
-	            commandWrapper = wrappedCommandsList[i];
-	            if (commandWrapper.CommandClass === testForCommandClass) {
-	                return true;
+	            if (CommandClass.prototype.execute === undefined) {
+	                throw new Error('Command doesn\'t implement an execute method - ' + CommandClass);
 	            }
+	            this._verifiedCommandClasses[CommandClass] = true;
 	        }
-	        return false;
-	    },
-	    _verifyCommandClass: function _verifyCommandClass(CommandClass) {
-	        if (this._verifiedCommandClasses[CommandClass]) {
-	            return;
-	        }
-	        if (CommandClass.prototype.execute === undefined) {
-	            throw new Error('Command doesn\'t implement an execute method - ' + CommandClass);
-	        }
-	        this._verifiedCommandClasses[CommandClass] = true;
-	    }
-	};
+	    }]);
+	    return StateCommandMap;
+	}();
 
 	exports.default = StateCommandMap;
 

@@ -17,11 +17,11 @@
     "tdd": "karma start --no-single-run",
     "webpack": "webpack --progress",
     "webpack-dist": "webpack --progress -p --config ./webpack.dist.config.js",
-    "prebuild": "rm -rf lib",
     "build": "npm run webpack && npm run webpack-dist && npm run build:babel && npm run build:flow",
     "build:babel": "babel src --out-dir lib --source-maps",
     "build:flow": "gulp flow",
-    "prepublish": "npm run build"
+    "prepublish": "rm -rf lib",
+    "prepublish": "npm run build:babel && npm run build:flow"
   },
   "peerDependencies": {
     "react": "*",
