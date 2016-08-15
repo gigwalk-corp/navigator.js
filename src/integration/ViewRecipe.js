@@ -1,3 +1,4 @@
+// @flow
 import ReactRecipe from './ReactRecipe';
 import BackboneRecipe from './BackboneRecipe';
 

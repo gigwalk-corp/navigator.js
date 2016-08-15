@@ -1,3 +1,6 @@
+// @flow
+import $ from 'jquery';
+
 const BackboneRecipe = {
     _type: 'BACKBONE',
 

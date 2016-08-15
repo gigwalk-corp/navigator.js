@@ -1,5 +1,6 @@
-const React = require('react');
-const ReactDOM = require('react-dom');
+// @flow
+import React from 'react';
+import ReactDOM from 'react-dom';
 
 const ReactRecipe = {
     _type: 'REACT',

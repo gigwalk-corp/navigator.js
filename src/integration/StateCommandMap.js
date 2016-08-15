@@ -1,3 +1,6 @@
+// @flow
+import NavigationState from '../NavigationState';
+
 const StateCommandMap = function (navigator, injector) {
     this._navigator = navigator;
     this._injector = injector;
@@ -22,9 +25,9 @@ StateCommandMap.prototype = {
 
     mapCommand(stateOrPath, CommandClass, aExactMatch, aOneShot) {
         let exactMatch = aExactMatch == undefined ? false : aExactMatch,
-        oneShot = aOneShot == undefined ? false : aOneShot,
-        state = navigatorjs.NavigationState.make(stateOrPath),
-        commands = this._commandsByState[state.getPath()] || [];
+            oneShot = aOneShot == undefined ? false : aOneShot,
+            state = NavigationState.make(stateOrPath),
+            commands = this._commandsByState[state.getPath()] || [];
 
         this._commandsByState[state.getPath()] = commands;
         this._navigator.add(this, state);
@@ -40,9 +43,9 @@ StateCommandMap.prototype = {
     },
 
     unmapCommand(stateOrPath, CommandClass) {
-        let state = navigatorjs.NavigationState.make(stateOrPath),
-        commands = this._commandsByState[state.getPath()] || [],
-        i, wrapper;
+        let state = NavigationState.make(stateOrPath),
+            commands = this._commandsByState[state.getPath()] || [],
+            i, wrapper;
         this._commandsByState[state.getPath()] = commands;
         this._navigator.remove(this, state);
         for (i = commands.length; --i >= 0;) {
@@ -63,7 +66,7 @@ StateCommandMap.prototype = {
         let path, mappedState, commands, isExact, i, wrapper;
 
         for (path in this._commandsByState) {
-            mappedState = navigatorjs.NavigationState.make(path);
+            mappedState = NavigationState.make(path);
 
             if (fullState.contains(mappedState)) {
                 commands = this._commandsByState[path];
@@ -88,7 +91,7 @@ StateCommandMap.prototype = {
         let path, mappedState, commands, isExact, i, wrapper, command;
 
         for (path in this._commandsByState) {
-            mappedState = navigatorjs.NavigationState.make(path);
+            mappedState = NavigationState.make(path);
             if (fullState.contains(mappedState)) {
                 commands = this._commandsByState[path];
                 isExact = fullState.equals(mappedState);
