@@ -29,9 +29,9 @@ NavigationState.prototype = {
 
     getPathRegex() {
         let segments = this.getSegments(),
-        regexPath = '\/',
-        segment,
-        i, length = segments.length;
+            regexPath = '\/',
+            segment,
+            i, length = segments.length;
 
         for (i = 0; i < length; i++) {
             segment = segments[i];
@@ -86,24 +86,24 @@ NavigationState.prototype = {
         }
 
         let foreignStateOrPath = foreignStateOrPathOrArray, // if we get this far, it is a state or path
-        foreignState = NavigationState.make(foreignStateOrPath),
-        foreignSegments = foreignState.getSegments(),
-        nativeSegments = this.getSegments(),
-        foreignMatch = this.getPath().match(foreignState.getPathRegex()),
-        nativeMatch = foreignState.getPath().match(this.getPathRegex()),
-        isForeignMatch = foreignMatch && foreignMatch.index == 0 ? true : false,
-        isNativeMatch = nativeMatch && nativeMatch.index == 0 ? true : false,
-        foreignSegmentDoubleWildcardsMatch = foreignState.getPath().match(/\*\*/g),
-        doubleWildcardsLength = foreignSegmentDoubleWildcardsMatch ? foreignSegmentDoubleWildcardsMatch.length : 0,
-        tooManyForeignSegments = foreignSegments.length > (nativeSegments.length + doubleWildcardsLength),
-        enoughNativeSegments = nativeSegments.length > foreignSegments.length;
+            foreignState = NavigationState.make(foreignStateOrPath),
+            foreignSegments = foreignState.getSegments(),
+            nativeSegments = this.getSegments(),
+            foreignMatch = this.getPath().match(foreignState.getPathRegex()),
+            nativeMatch = foreignState.getPath().match(this.getPathRegex()),
+            isForeignMatch = foreignMatch && foreignMatch.index == 0 ? true : false,
+            isNativeMatch = nativeMatch && nativeMatch.index == 0 ? true : false,
+            foreignSegmentDoubleWildcardsMatch = foreignState.getPath().match(/\*\*/g),
+            doubleWildcardsLength = foreignSegmentDoubleWildcardsMatch ? foreignSegmentDoubleWildcardsMatch.length : 0,
+            tooManyForeignSegments = foreignSegments.length > (nativeSegments.length + doubleWildcardsLength),
+            enoughNativeSegments = nativeSegments.length > foreignSegments.length;
 
         return (isForeignMatch || (isNativeMatch && enoughNativeSegments)) && !tooManyForeignSegments;
     },
 
     _containsStateInArray(foreignStatesOrPaths) {
         let i, length = foreignStatesOrPaths.length,
-        foreignStateOrPath;
+            foreignStateOrPath;
 
         for (i = 0; i < length; i++) {
             foreignStateOrPath = foreignStatesOrPaths[i];
@@ -121,8 +121,8 @@ NavigationState.prototype = {
         }
 
         let stateOrPath = stateOrPathOrArray, // if we get this far, it is a state or path
-        state = NavigationState.make(stateOrPath),
-        subtractedState = this.subtract(state) || state.subtract(this); // Or the other way around for double wildcard states
+            state = NavigationState.make(stateOrPath),
+            subtractedState = this.subtract(state) || state.subtract(this); // Or the other way around for double wildcard states
 
         if (subtractedState === null) {
             return false;
@@ -133,7 +133,7 @@ NavigationState.prototype = {
 
     _equalsStateInArray(statesOrPaths) {
         let i, length = statesOrPaths.length,
-        stateOrPath;
+            stateOrPath;
 
         for (i = 0; i < length; i++) {
             stateOrPath = statesOrPaths[i];
@@ -147,7 +147,7 @@ NavigationState.prototype = {
 
     subtract(operandStateOrPath) {
         let operand = NavigationState.make(operandStateOrPath),
-        subtractedPath;
+            subtractedPath;
 
         if (!this.contains(operand)) {
             return null;
@@ -180,10 +180,10 @@ NavigationState.prototype = {
 
     mask(sourceStateOrPath) {
         let sourceState = NavigationState.make(sourceStateOrPath),
-        unmaskedSegments = this.getSegments(),
-        sourceSegments = sourceState.getSegments(),
-        length = Math.min(unmaskedSegments.length, sourceSegments.length),
-        i;
+            unmaskedSegments = this.getSegments(),
+            sourceSegments = sourceState.getSegments(),
+            length = Math.min(unmaskedSegments.length, sourceSegments.length),
+            i;
 
         for (i = 0; i < length; i++) {
             if (unmaskedSegments[i] === '*') {

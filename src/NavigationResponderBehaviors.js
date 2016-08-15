@@ -18,9 +18,9 @@ NavigationResponderBehaviors.implementsBehaviorInterface = function (object, _in
     }
 
     let inheritanceChain = NavigationResponderBehaviors.getInterfaceInheritanceChain(_interface),
-    methodsToBeImplemented = NavigationResponderBehaviors.getInterfaceMethods(inheritanceChain),
-    i, method,
-    length = methodsToBeImplemented.length;
+        methodsToBeImplemented = NavigationResponderBehaviors.getInterfaceMethods(inheritanceChain),
+        i, method,
+        length = methodsToBeImplemented.length;
 
     for (i = 0; i < length; i++) {
         method = methodsToBeImplemented[i];
@@ -35,10 +35,10 @@ NavigationResponderBehaviors.implementsBehaviorInterface = function (object, _in
 
 NavigationResponderBehaviors.getInterfaceInheritanceChain = function (_interface, existingChain) {
     let chain = existingChain || [],
-    extendsArray,
-    extendingInterface,
-    i, length,
-    interfaceObject = NavigationResponderBehaviors[_interface];
+        extendsArray,
+        extendingInterface,
+        i, length,
+        interfaceObject = NavigationResponderBehaviors[_interface];
 
     if (interfaceObject == undefined || typeof interfaceObject !== 'object') {
         //		console.log('behaviorObject for interface is undefined ', interface );
@@ -72,12 +72,12 @@ NavigationResponderBehaviors.getInterfaceMethods = function (interfaces) {
     }
 
     let combinedInterfacesChain = [],
-    _interface, i,
-    length = interfaces.length,
-    interfaceObject,
-    interfaceMethods,
-    j, methodsLength, method,
-    methods = [];
+        _interface, i,
+        length = interfaces.length,
+        interfaceObject,
+        interfaceMethods,
+        j, methodsLength, method,
+        methods = [];
 
     for (i = 0; i < length; i++) {
         _interface = interfaces[i];
