@@ -1,26 +1,58 @@
 // @flow weak
 
 const NavigationResponderBehaviors = {};
-NavigationResponderBehaviors.IHasStateInitialization = { name: 'IHasStateInitialization', methods: ['initializeByNavigator'] };
-NavigationResponderBehaviors.IHasStateValidation = { name: 'IHasStateValidation', methods: ['validate'] };
-NavigationResponderBehaviors.IHasStateValidationAsync = { name: 'IHasStateValidationAsync', 'extends': ['IHasStateValidation'], methods: ['prepareValidation'] };
-NavigationResponderBehaviors.IHasStateValidationOptional = { name: 'IHasStateValidationOptional', 'extends': ['IHasStateValidation'], methods: ['willValidate'] };
-NavigationResponderBehaviors.IHasStateValidationOptionalAsync = { name: 'IHasStateValidationOptionalAsync', 'extends': ['IHasStateValidationAsync', 'IHasStateValidationOptional'], methods: [] };
-NavigationResponderBehaviors.IHasStateRedirection = { name: 'IHasStateRedirection', 'extends': ['IHasStateValidation'], methods: ['redirect'] };
-NavigationResponderBehaviors.IHasStateSwap = { name: 'IHasStateSwap', methods: ['willSwapToState', 'swapOut', 'swapIn'] };
-NavigationResponderBehaviors.IHasStateTransition = { name: 'IHasStateTransition', methods: ['transitionIn', 'transitionOut'] };
-NavigationResponderBehaviors.IHasStateUpdate = { name: 'IHasStateUpdate', methods: ['updateState'] };
+NavigationResponderBehaviors.IHasStateInitialization = {
+    name: 'IHasStateInitialization',
+    methods: ['initializeByNavigator']
+};
+NavigationResponderBehaviors.IHasStateValidation = {
+    name: 'IHasStateValidation',
+    methods: ['validate']
+};
+NavigationResponderBehaviors.IHasStateValidationAsync = {
+    name: 'IHasStateValidationAsync',
+    extends: ['IHasStateValidation'],
+    methods: ['prepareValidation']
+};
+NavigationResponderBehaviors.IHasStateValidationOptional = {
+    name: 'IHasStateValidationOptional',
+    extends: ['IHasStateValidation'],
+    methods: ['willValidate']
+};
+NavigationResponderBehaviors.IHasStateValidationOptionalAsync = {
+    name: 'IHasStateValidationOptionalAsync',
+    extends: ['IHasStateValidationAsync', 'IHasStateValidationOptional'],
+    methods: []
+};
+NavigationResponderBehaviors.IHasStateRedirection = {
+    name: 'IHasStateRedirection',
+    extends: ['IHasStateValidation'],
+    methods: ['redirect']
+};
+NavigationResponderBehaviors.IHasStateSwap = {
+    name: 'IHasStateSwap',
+    methods: ['willSwapToState', 'swapOut', 'swapIn']
+};
+NavigationResponderBehaviors.IHasStateTransition = {
+    name: 'IHasStateTransition',
+    methods: ['transitionIn', 'transitionOut']
+};
+NavigationResponderBehaviors.IHasStateUpdate = {
+    name: 'IHasStateUpdate',
+    methods: ['updateState']
+};
 
-NavigationResponderBehaviors.implementsBehaviorInterface = function (object, _interface) {
+NavigationResponderBehaviors.implementsBehaviorInterface = function implementsBehaviorInterface(object, _interface) {
     if (object.navigatorBehaviors === undefined || !object.navigatorBehaviors instanceof Array) {
         // The input interface is not set on object's navigatorBehaviors.
         return false;
     }
 
-    let inheritanceChain = NavigationResponderBehaviors.getInterfaceInheritanceChain(_interface),
-        methodsToBeImplemented = NavigationResponderBehaviors.getInterfaceMethods(inheritanceChain),
-        i, method,
-        length = methodsToBeImplemented.length;
+    let inheritanceChain = NavigationResponderBehaviors.getInterfaceInheritanceChain(_interface);
+    let methodsToBeImplemented = NavigationResponderBehaviors.getInterfaceMethods(inheritanceChain);
+    let i;
+    let method;
+    let length = methodsToBeImplemented.length;
 
     for (i = 0; i < length; i++) {
         method = methodsToBeImplemented[i];
@@ -33,12 +65,13 @@ NavigationResponderBehaviors.implementsBehaviorInterface = function (object, _in
     return true;
 };
 
-NavigationResponderBehaviors.getInterfaceInheritanceChain = function (_interface, existingChain) {
-    let chain = existingChain || [],
-        extendsArray,
-        extendingInterface,
-        i, length,
-        interfaceObject = NavigationResponderBehaviors[_interface];
+NavigationResponderBehaviors.getInterfaceInheritanceChain = function(_interface, existingChain) {
+    let chain = existingChain || [];
+    let extendsArray;
+    let extendingInterface;
+    let i;
+    let length;
+    let interfaceObject = NavigationResponderBehaviors[_interface];
 
     if (interfaceObject === undefined || typeof interfaceObject !== 'object') {
         //		console.log('behaviorObject for interface is undefined ', interface );
@@ -65,19 +98,22 @@ NavigationResponderBehaviors.getInterfaceInheritanceChain = function (_interface
     return chain;
 };
 
-NavigationResponderBehaviors.getInterfaceMethods = function (interfaces) {
+NavigationResponderBehaviors.getInterfaceMethods = function(interfaces) {
     if (interfaces === undefined || !interfaces instanceof Array) {
         // No valid input
         return [];
     }
 
-    let combinedInterfacesChain = [],
-        _interface, i,
-        length = interfaces.length,
-        interfaceObject,
-        interfaceMethods,
-        j, methodsLength, method,
-        methods = [];
+    let combinedInterfacesChain = [];
+    let _interface;
+    let i;
+    let length = interfaces.length;
+    let interfaceObject;
+    let interfaceMethods;
+    let j;
+    let methodsLength;
+    let method;
+    let methods = [];
 
     for (i = 0; i < length; i++) {
         _interface = interfaces[i];

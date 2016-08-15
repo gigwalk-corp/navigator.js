@@ -1,31 +1,32 @@
 // @flow weak
-function AsynchResponders() {
-    this._responders = [];
-}
+class AsynchResponders {
+    _responders: Object[];
+    constructor() {
+        this._responders = [];
+    }
 
-// PUBLIC API
-AsynchResponders.prototype = {
+    // PUBLIC API
     getLength() {
         return this._responders.length;
-    },
+    }
 
     isBusy() {
         return this.getLength() > 0;
-    },
+    }
 
     hasResponder(responder) {
         return this._responders.indexOf(responder) !== -1;
-    },
+    }
 
     addResponder(responder) {
         this._responders.push(responder);
-    },
+    }
 
     addResponders(additionalRespondersArray) {
         if (additionalRespondersArray && additionalRespondersArray instanceof Array && additionalRespondersArray.length) {
             this._responders = this._responders.concat(additionalRespondersArray);
         }
-    },
+    }
 
     takeOutResponder(responder) {
         const index = this._responders.indexOf(responder);
@@ -35,7 +36,7 @@ AsynchResponders.prototype = {
         }
 
         return false;
-    },
+    }
 
     reset() {
         if (this._responders.length > 0) {
@@ -44,6 +45,6 @@ AsynchResponders.prototype = {
 
         this._responders = [];
     }
-};
+}
 
 export default AsynchResponders;

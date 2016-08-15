@@ -46,8 +46,10 @@ const _modify = function (addition, responder, pathsOrStates, behaviorString) {
     }
 
     // Using the path variable as dictionary key to break instance referencing.
-    let path = NavigationState.make(pathsOrStates).getPath(),
-        list, matchingInterface;
+    const path = NavigationState.make(pathsOrStates).getPath();
+
+    let list;
+    let matchingInterface;
 
     // Create, store and retrieve the list that matches the desired behavior.
 
@@ -73,12 +75,12 @@ const _modify = function (addition, responder, pathsOrStates, behaviorString) {
             list = _responders.swapByPath[path] = _responders.swapByPath[path] || [];
             break;
         default:
-            throw new Error('Unknown behavior: ' + behaviorString);
+            throw new Error(`Unknown behavior: ${behaviorString}`);
     }
 
     // TODO: Build in more strict validation?
     if (!NavigationResponderBehaviors.implementsBehaviorInterface(responder, matchingInterface)) {
-        throw new Error('Responder ' + responder + ' should implement ' + matchingInterface + ' to respond to ' + behaviorString);
+        throw new Error(`Responder ${responder} should implement ${matchingInterface} to respond to ${behaviorString}`);
     }
     if (addition) {
         // add
@@ -124,7 +126,8 @@ let _relayModification = function (addition, responder, pathsOrStates, behaviorS
         throw new Error('add: responder is null');
     }
 
-    let i, length;
+    let i;
+    let length;
 
     if (pathsOrStates instanceof Array) {
         length = pathsOrStates.length;
@@ -157,9 +160,14 @@ let _relayModification = function (addition, responder, pathsOrStates, behaviorS
 * "IHasStateValidationAsync" for example.
 */
 const _hasRegisteredResponder = function (state, optionalInterface) {
-    let i, length = _responders.all.length,
-        j, respondersLength, responder,
-        responders, respondersForPath, path;
+    let i;
+    let length = _responders.all.length;
+    let j;
+    let respondersLength;
+    let responder;
+    let responders;
+    let respondersForPath;
+    let path;
 
     for (i = 0; i < length; i++) {
         responders = _responders.all[i];
@@ -192,10 +200,10 @@ const _request = function (pathOrState) {
         // logger.error("Requested a null state. Aborting request.");
         return;
     }
-    let requestedState,
-        path,
-        fromState,
-        toState;
+    let requestedState;
+    let path;
+    let fromState;
+    let toState;
 
     // Store and possibly mask the requested state
     requestedState = NavigationState.make(pathOrState);
@@ -270,7 +278,7 @@ let _performRequestCascade = function (requestedState, startAsyncValidation) {
         // If we get here, after validateWithWildcards has failed, this means there are still
         // wildcards in the requested state that didn't match the previous state. This,
         // unfortunately means your application has a logic error. Go fix it!
-        throw new Error('Check wildcard masking: ' + requestedState.getPath());
+        throw new Error(`Check wildcard masking: ${requestedState.getPath()}`);
     } else if (_defaultState) {
         //			console.log('everything failed, use default state');
         // If all else fails, we'll put up the default state.
@@ -278,7 +286,7 @@ let _performRequestCascade = function (requestedState, startAsyncValidation) {
     } else {
         //			console.log('everything failed without default state');
         // If you don't provide a default state, at least make sure your first request makes sense!
-        throw new Error('First request is invalid: ' + requestedState.getPath());
+        throw new Error(`First request is invalid: ${requestedState.getPath()}`);
     }
 };
 
@@ -316,11 +324,11 @@ _flow.startTransition = function () {
 };
 
 _flow.transitionOut = function () {
-    let respondersToShow = _getRespondersToShow(),
-        responderID,
-        responder,
-        waitForResponders = [],
-        i;
+    let respondersToShow = _getRespondersToShow();
+    let responderID;
+    let responder;
+    let waitForResponders = [];
+    let i;
 
     // This initialize call is to catch responders that were put on stage to show,
     // yet still need to wait for async out transitions before they actually transition in.
@@ -345,7 +353,7 @@ _flow.transitionOut = function () {
         }
     }
 
-        // loop backwards so we can splice elements off the array while in the loop.
+    // loop backwards so we can splice elements off the array while in the loop.
     for (i = waitForResponders.length; --i >= 0;) {
         if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] === TransitionStatus.HIDDEN) {
             waitForResponders.splice(i, 1);
@@ -362,7 +370,11 @@ _flow.transitionOut = function () {
 _flow.performUpdates = function () {
     _disappearingAsynchResponders.reset();
 
-    let path, state, list, i, responder;
+    let path;
+    let state;
+    let list;
+    let i;
+    let responder;
 
     for (path in _responders.updateByPath) {
             // create a state object for comparison:
@@ -395,15 +407,15 @@ _flow.startTransitionIn = function () {
 };
 
 _flow.transitionIn = function () {
-    let respondersToShow = _getRespondersToShow(),
-        respondersToWaitFor = [],
-        responder,
-        status,
-        i;
+    let respondersToShow = _getRespondersToShow();
+    let respondersToWaitFor = [];
+    let responder;
+    let status;
+    let i;
 
     _initializeIfNeccessary(respondersToShow);
 
-        // for each (var responder : IHasStateTransition in respondersToShow) {
+    // for each (var responder : IHasStateTransition in respondersToShow) {
 
     for (i = 0; i < respondersToShow.length; i++) {
         responder = respondersToShow[i];
@@ -419,7 +431,7 @@ _flow.transitionIn = function () {
         }
     }
 
-        // loop backwards so we can splice elements off the array while in the loop.
+    // loop backwards so we can splice elements off the array while in the loop.
     for (i = respondersToWaitFor.length; --i >= 0;) {
         if (_statusByResponderID[respondersToWaitFor[i].__navigatorjs.id] === TransitionStatus.SHOWN) {
             respondersToWaitFor.splice(i, 1);
@@ -445,12 +457,13 @@ _flow.startSwapOut = function () {
 _flow.swapOut = function () {
     _appearingAsynchResponders.reset();
 
-    let waitForResponders = [],
-        path, state,
-        swapByPathList,
-        responder,
-        i,
-        truncatedState;
+    let waitForResponders = [];
+    let path;
+    let state;
+    let swapByPathList;
+    let responder;
+    let i;
+    let truncatedState;
 
     for (path in _responders.swapByPath) {
             // create a state object for comparison:
@@ -481,7 +494,7 @@ _flow.swapOut = function () {
         }
     }
 
-        // loop backwards so we can splice elements off the array while in the loop.
+    // loop backwards so we can splice elements off the array while in the loop.
     for (i = waitForResponders.length; --i >= 0;) {
         if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] === TransitionStatus.SHOWN) {
             waitForResponders.splice(i, 1);
@@ -498,12 +511,12 @@ _flow.swapOut = function () {
 _flow.swapIn = function () {
     _swappingAsynchResponders.reset();
 
-    let path,
-        state,
-        swapByPathList,
-        responder,
-        truncatedState,
-        i;
+    let path;
+    let state;
+    let swapByPathList;
+    let responder;
+    let truncatedState;
+    let i;
 
     for (path in _responders.swapByPath) {
             // create a state object for comparison:
@@ -544,8 +557,8 @@ _transition.notifyComplete = function (responder, status, behavior) {
         _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
     }
 
-    let asynchResponders,
-        callbackMethod;
+    let asynchResponders;
+    let callbackMethod;
 
     switch (behavior) {
         case NavigationBehaviors.HIDE:
@@ -561,10 +574,10 @@ _transition.notifyComplete = function (responder, status, behavior) {
             callbackMethod = _flow.swapIn;
             break;
         default:
-            throw new Error("Don't know how to handle notification of behavior " + behavior);
+            throw new Error(`Don't know how to handle notification of behavior ${behavior}`);
     }
 
-        // If the notifyComplete is called instantly, the array of asynchronous responders is not yet assigned, and therefore not busy.
+    // If the notifyComplete is called instantly, the array of asynchronous responders is not yet assigned, and therefore not busy.
     if (asynchResponders.isBusy()) {
         asynchResponders.takeOutResponder(responder);
 
@@ -582,9 +595,10 @@ _transition.notifyComplete = function (responder, status, behavior) {
 _hidden.hasResponder = function (responder) {
     if (_statusByResponderID[responder.__navigatorjs.id]) { return true; }
 
-    let respondersByPath,
-        existingResponders,
-        i, j;
+    let respondersByPath;
+    let existingResponders;
+    let i;
+    let j;
 
     for (i = 0; i < _responders.all.length; i++) {
         respondersByPath = _responders.all[i];
@@ -610,9 +624,9 @@ _hidden.getStatus = function (responder) {
 };
 
 _hidden.getKnownPaths = function () {
-    let list = {},
-        path,
-        knownPaths = [];
+    let list = {};
+    let path;
+    let knownPaths = [];
 
     list[_defaultState.getPath()] = true;
 
@@ -672,22 +686,23 @@ let _validateFirstValidatingAsynchResponderFromStack = function () {
 
 
 let _validate = function (stateToValidate, allowRedirection, allowAsyncValidation) {
-    var allowRedirection = allowRedirection === undefined ? true : allowRedirection,
-        allowAsyncValidation = allowAsyncValidation === undefined ? true : allowAsyncValidation,
-        unvalidatedState = stateToValidate,
-        callOnPrepared = null,
-        implicit,
-        invalidated = false,
-        validated = false,
-        path,
-        state,
-        remainderState,
-        validateByPathList,
-        i,
-        responder,
-        validatorResponder;
+    var allowRedirection = allowRedirection === undefined ? true : allowRedirection;
 
-        // check to see if there are still wildcards left
+    // check to see if there are still wildcards left
+
+    var allowAsyncValidation = allowAsyncValidation === undefined ? true : allowAsyncValidation;
+    var unvalidatedState = stateToValidate;
+    var callOnPrepared = null;
+    var implicit;
+    var invalidated = false;
+    var validated = false;
+    var path;
+    var state;
+    var remainderState;
+    var validateByPathList;
+    var i;
+    var responder;
+    var validatorResponder;
     if (unvalidatedState.hasWildcard()) {
             //			console.log("validate - validateState: Requested states may not contain wildcards", "return false");
             // throw new Error("validateState: Requested states may not contain wildcards " + NavigationState.WILDCARD);
@@ -711,9 +726,9 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
     }
 
     implicit = _validateImplicitly(unvalidatedState);
-        //		console.groupCollapsed('Responders');
+    //		console.groupCollapsed('Responders');
 
-        // TODO should we order the states? As mapping a validating child state before a invalidating parent state will validate the state
+    // TODO should we order the states? As mapping a validating child state before a invalidating parent state will validate the state
     for (path in _responders.validateByPath) {
             //			console.log(path);
             // create a state object for comparison:
@@ -792,7 +807,7 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
         return false;
     }
 
-        //		console.groupEnd();
+    //		console.groupEnd();
 
     if (_validatingAsynchResponders.isBusy()) {
             //			console.log("validate - _validatingAsynchResponders.isBusy", "return false");
@@ -800,7 +815,7 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
         return false;
     }
 
-        // invalidation overrules any validation
+    // invalidation overrules any validation
     if (invalidated || _asyncInvalidated) {
             //			console.log("validate - invalidated || _asyncInvalidated", invalidated,  _asyncInvalidated, "return false");
         return false;
@@ -816,7 +831,7 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
             // logger.warn("Validation failed. No validators or transitions matched the requested " + unvalidatedState);
     }
 
-        //		console.log("validate - return with the implicit return value", implicit);
+    //		console.log("validate - return with the implicit return value", implicit);
 
     return implicit;
 };
@@ -834,14 +849,15 @@ let _validateImplicitly = function (state) {
 };
 
 let _getRespondersToShow = function () {
-    let respondersToShow = _getResponderList(_responders.showByPath, _currentState),
-        respondersToHide = _getResponderList(_responders.hideByPath, _currentState),
-        i,
-        hideResponder,
-        hideIndex;
+    let respondersToShow = _getResponderList(_responders.showByPath, _currentState);
 
-        // remove elements from the toShow list, if they are in the toHide list.
-        //			for each (var hide : IHasStateTransition in toHide) {
+    // remove elements from the toShow list, if they are in the toHide list.
+    //			for each (var hide : IHasStateTransition in toHide) {
+
+    let respondersToHide = _getResponderList(_responders.hideByPath, _currentState);
+    let i;
+    let hideResponder;
+    let hideIndex;
     for (i = 0; i < respondersToHide.length; i++) {
         hideResponder = respondersToHide[i];
         hideIndex = respondersToShow.indexOf(hideResponder);
@@ -854,8 +870,10 @@ let _getRespondersToShow = function () {
 };
 
 let _initializeIfNeccessary = function (responderList) {
-    let i, responder;
-        //			for each (var responder : INavigationResponder in responderList) {
+    let i;
+    //			for each (var responder : INavigationResponder in responderList) {
+
+    let responder;
     for (i = 0; i < responderList.length; i++) {
         responder = responderList[i];
         if (_statusByResponderID[responder.__navigatorjs.id] === TransitionStatus.UNINITIALIZED && NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateInitialization')) {
@@ -867,8 +885,8 @@ let _initializeIfNeccessary = function (responderList) {
 };
 
 let _getResponderList = function (listObj, state) {
-    let responders = [],
-        path;
+    let responders = [];
+    let path;
 
     for (path in listObj) {
         if (state.contains(new NavigationState(path))) {

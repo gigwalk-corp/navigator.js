@@ -1,37 +1,39 @@
 // @flow weak
-function NavigationState(pathStringOrArray: string | string[]) {
-    this._path = '';
+class NavigationState {
+    _path: string;
+    constructor(pathStringOrArray: string | string[]) {
+        this._path = '';
 
-    if (pathStringOrArray instanceof Array) {
-        this.setSegments(pathStringOrArray);
-    } else {
-        this.setPath(pathStringOrArray || '');
+        if (pathStringOrArray instanceof Array) {
+            this.setSegments(pathStringOrArray);
+        } else {
+            this.setPath(pathStringOrArray || '');
+        }
     }
-}
 
-NavigationState.make = function (stateOrPath) {
-    return stateOrPath instanceof NavigationState ? stateOrPath : new NavigationState(stateOrPath);
-};
+    static make(stateOrPath): NavigationState {
+        return stateOrPath instanceof NavigationState ? stateOrPath : new NavigationState(stateOrPath);
+    }
 
-NavigationState.prototype = {
-    setPath(path) {
-        this._path = '/' + path.toLowerCase() + '/';
+    setPath(path): this {
+        this._path = `/${path.toLowerCase()}/`;
         this._path = this._path.replace(new RegExp('[^-_/A-Za-z0-9* ]', 'g'), '');
         this._path = this._path.replace(new RegExp('\/+', 'g'), '/');
         this._path = this._path.replace(/\s+/g, '-');
 
         return this;
-    },
+    }
 
-    getPath() {
+    getPath(): string {
         return this._path;
-    },
+    }
 
-    getPathRegex() {
-        let segments = this.getSegments(),
-            regexPath = '\/',
-            segment,
-            i, length = segments.length;
+    getPathRegex(): RegExp {
+        const segments = this.getSegments();
+        let regexPath: string = '\/';
+        let segment;
+        let i;
+        const length = segments.length;
 
         for (i = 0; i < length; i++) {
             segment = segments[i];
@@ -39,71 +41,74 @@ NavigationState.prototype = {
             if (segment === '**') {
                 // match any character, including slashes (multiple segments)
                 // eg: bla or bla/bla or bla/bla/bla
-                regexPath = regexPath + '(.*)';
+                regexPath = `${regexPath}(.*)`;
             } else if (segment === '*') {
                 // match anything expect slashes and end with a slash (1 segment only).
                 // eg: bla/ but not /bla/ or bla/bla/
-                regexPath = regexPath + '([^/]*)\/';
+                regexPath = `${regexPath}([^/]*)\/`;
             } else {
                 // Either the segment, a wildcard or double wildcard and ends with a forward slash (1 segment only).
                 // eg: segment/ or */ or **/
-                regexPath = regexPath + '(' + segment + '|\\*|\\*\\*)\/';
+                regexPath = `${regexPath}(${segment}|\\*|\\*\\*)\/`;
             }
         }
 
         return new RegExp(regexPath);
-    },
+    }
 
-    setSegments(segments) {
+    setSegments(segments: string[]) {
         this.setPath(segments.join('/'));
-    },
+    }
 
-    getSegments() {
+    getSegments(): string[] {
         const segments = this._path.split('/');
 
         segments.pop();
         segments.shift();
 
         return segments;
-    },
+    }
 
-    getSegment(index) {
+    getSegment(index): ?string {
         return this.getSegments()[index];
-    },
+    }
 
-    getFirstSegment() {
+    getFirstSegment(): ?string {
         return this.getSegment(0);
-    },
+    }
 
-    getLastSegment() {
+    getLastSegment(): ?string {
         const segments = this.getSegments();
         return this.getSegment(segments.length - 1);
-    },
+    }
 
-    contains(foreignStateOrPathOrArray) {
-        if (foreignStateOrPathOrArray instanceof Array) {
+    contains(foreignStateOrPathOrArray): Boolean {
+        if (Array.isArray(foreignStateOrPathOrArray)) {
             return this._containsStateInArray(foreignStateOrPathOrArray);
         }
 
-        let foreignStateOrPath = foreignStateOrPathOrArray, // if we get this far, it is a state or path
-            foreignState = NavigationState.make(foreignStateOrPath),
-            foreignSegments = foreignState.getSegments(),
-            nativeSegments = this.getSegments(),
-            foreignMatch = this.getPath().match(foreignState.getPathRegex()),
-            nativeMatch = foreignState.getPath().match(this.getPathRegex()),
-            isForeignMatch = foreignMatch && foreignMatch.index === 0 ? true : false,
-            isNativeMatch = nativeMatch && nativeMatch.index === 0 ? true : false,
-            foreignSegmentDoubleWildcardsMatch = foreignState.getPath().match(/\*\*/g),
-            doubleWildcardsLength = foreignSegmentDoubleWildcardsMatch ? foreignSegmentDoubleWildcardsMatch.length : 0,
-            tooManyForeignSegments = foreignSegments.length > (nativeSegments.length + doubleWildcardsLength),
-            enoughNativeSegments = nativeSegments.length > foreignSegments.length;
+        let // if we get this far, it is a state or path
+        foreignStateOrPath = foreignStateOrPathOrArray;
+
+        let foreignState = NavigationState.make(foreignStateOrPath);
+        let foreignSegments = foreignState.getSegments();
+        let nativeSegments = this.getSegments();
+        let foreignMatch = this.getPath().match(foreignState.getPathRegex());
+        let nativeMatch = foreignState.getPath().match(this.getPathRegex());
+        let isForeignMatch = foreignMatch && foreignMatch.index === 0 ? true : false;
+        let isNativeMatch = nativeMatch && nativeMatch.index === 0 ? true : false;
+        let foreignSegmentDoubleWildcardsMatch = foreignState.getPath().match(/\*\*/g);
+        let doubleWildcardsLength = foreignSegmentDoubleWildcardsMatch ? foreignSegmentDoubleWildcardsMatch.length : 0;
+        let tooManyForeignSegments = foreignSegments.length > (nativeSegments.length + doubleWildcardsLength);
+        let enoughNativeSegments = nativeSegments.length > foreignSegments.length;
 
         return (isForeignMatch || (isNativeMatch && enoughNativeSegments)) && !tooManyForeignSegments;
-    },
+    }
 
     _containsStateInArray(foreignStatesOrPaths) {
-        let i, length = foreignStatesOrPaths.length,
-            foreignStateOrPath;
+        let i;
+        let length = foreignStatesOrPaths.length;
+        let foreignStateOrPath;
 
         for (i = 0; i < length; i++) {
             foreignStateOrPath = foreignStatesOrPaths[i];
@@ -113,27 +118,30 @@ NavigationState.prototype = {
         }
 
         return false;
-    },
+    }
 
-    equals(stateOrPathOrArray) {
+    equals(stateOrPathOrArray): boolean {
         if (stateOrPathOrArray instanceof Array) {
             return this._equalsStateInArray(stateOrPathOrArray);
         }
 
-        let stateOrPath = stateOrPathOrArray, // if we get this far, it is a state or path
-            state = NavigationState.make(stateOrPath),
-            subtractedState = this.subtract(state) || state.subtract(this); // Or the other way around for double wildcard states
+        let // if we get this far, it is a state or path
+        stateOrPath = stateOrPathOrArray; // Or the other way around for double wildcard states
+
+        let state = NavigationState.make(stateOrPath);
+        let subtractedState = this.subtract(state) || state.subtract(this);
 
         if (subtractedState === null) {
             return false;
         }
 
         return subtractedState.getSegments().length === 0;
-    },
+    }
 
     _equalsStateInArray(statesOrPaths) {
-        let i, length = statesOrPaths.length,
-            stateOrPath;
+        let i;
+        let length = statesOrPaths.length;
+        let stateOrPath;
 
         for (i = 0; i < length; i++) {
             stateOrPath = statesOrPaths[i];
@@ -143,11 +151,11 @@ NavigationState.prototype = {
         }
 
         return false;
-    },
+    }
 
     subtract(operandStateOrPath) {
-        let operand = NavigationState.make(operandStateOrPath),
-            subtractedPath;
+        let operand = NavigationState.make(operandStateOrPath);
+        let subtractedPath;
 
         if (!this.contains(operand)) {
             return null;
@@ -156,7 +164,7 @@ NavigationState.prototype = {
         subtractedPath = this.getPath().replace(operand.getPathRegex(), '');
 
         return new NavigationState(subtractedPath);
-    },
+    }
 
     append(stringOrState) {
         let path = stringOrState;
@@ -164,7 +172,7 @@ NavigationState.prototype = {
             path = stringOrState.getPath();
         }
         return this.setPath(this._path + path);
-    },
+    }
 
     prepend(stringOrState) {
         let path = stringOrState;
@@ -172,18 +180,18 @@ NavigationState.prototype = {
             path = stringOrState.getPath();
         }
         return this.setPath(path + this._path);
-    },
+    }
 
     hasWildcard() {
         return this.getPath().indexOf('/*/') !== -1;
-    },
+    }
 
     mask(sourceStateOrPath) {
-        let sourceState = NavigationState.make(sourceStateOrPath),
-            unmaskedSegments = this.getSegments(),
-            sourceSegments = sourceState.getSegments(),
-            length = Math.min(unmaskedSegments.length, sourceSegments.length),
-            i;
+        let sourceState = NavigationState.make(sourceStateOrPath);
+        let unmaskedSegments = this.getSegments();
+        let sourceSegments = sourceState.getSegments();
+        let length = Math.min(unmaskedSegments.length, sourceSegments.length);
+        let i;
 
         for (i = 0; i < length; i++) {
             if (unmaskedSegments[i] === '*') {
@@ -192,11 +200,11 @@ NavigationState.prototype = {
         }
 
         return new NavigationState(unmaskedSegments);
-    },
+    }
 
     clone() {
         return new NavigationState(this._path);
     }
-};
+}
 
 export default NavigationState;

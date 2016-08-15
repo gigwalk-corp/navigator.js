@@ -282,6 +282,8 @@ History.prototype = {
             case History.DIRECTION_FORWARD:
                 this._navigationDirection = History.DIRECTION_NORMAL;
                 break;
+            default:
+                break;
         }
     }
 };
