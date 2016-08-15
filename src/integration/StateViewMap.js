@@ -1,9 +1,7 @@
-const ReactDOM = require('react-dom');
 
-window.navigatorjs = window.navigatorjs || {};
-window.navigatorjs.integration = window.navigatorjs.integration || {};
+import ReactDOM from 'react-dom';
+import $ from 'jquery';
 
-(function () {
     function StateViewMap(navigator, $root) {
         this._navigator = navigator;
         this._orderedRecipes = [];
@@ -155,5 +153,4 @@ window.navigatorjs.integration = window.navigatorjs.integration || {};
         }
     };
 
-    navigatorjs.integration.StateViewMap = StateViewMap;
-}());
+export default StateViewMap;

@@ -1,14 +1,11 @@
-window.navigatorjs = window.navigatorjs || {};
-window.navigatorjs.integration = window.navigatorjs.integration || {};
-
-(function () {
-	                                                                            let _usingPushState,
+import autoBind from '../utils/AutoBind';
+let _usingPushState,
 		                                                                                _rootUrl,
 		                                                                                _navigator,
 		                                                                                _started;
 
 	                                                                        const StateUrlSyncer = function (navigator) {
-		                                                                                navigatorjs.utils.AutoBind(this, this);
+		                                                                                autoBind(this, this);
 
 		                                                                                _usingPushState = false;
 		                                                                                _rootUrl = '/';
@@ -131,5 +128,4 @@ window.navigatorjs.integration = window.navigatorjs.integration || {};
 
 	};
 
-	                                                                                navigatorjs.integration.StateUrlSyncer = StateUrlSyncer;
-})();
+export default StateUrlSyncer;

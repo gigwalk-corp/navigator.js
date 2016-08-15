@@ -1,4 +1,5 @@
-
+// @flow
+import autoBind from './utils/AutoBind';
 /**
 * History manager for the navigatorjs.Navigator
 *
@@ -26,7 +27,7 @@
 */
 const History = function (navigator) {
     // Bind the methods to this scope
-    navigatorjs.utils.AutoBind(this, this);
+    autoBind(this, this);
 
     // Initialize the instance
     this._initialize(navigator);

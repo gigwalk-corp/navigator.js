@@ -14,12 +14,15 @@ import DebugConsole from './features/DebugConsole';
 import * as TransitionStatus from './transition/TransitionStatus';
 import TransitionCompleteDelegate from './transition/TransitionCompleteDelegate';
 import ValidationPreparedDelegate from './transition/ValidationPreparedDelegate';
-
+import StateCommandMap from './integration/StateCommandMap';
+import ViewRecipe from './integration/ViewRecipe';
+import StateUrlSyncer from './integration/StateUrlSyncer';
+import StateViewMap from './integration/StateViewMap';
 // integration
-require('./integration/StateCommandMap');
-require('./integration/StateUrlSyncer');
-require('./integration/StateViewMap');
-require('./integration/ViewRecipe');
+
+
+
+
 
 module.exports = window.navigatorjs = {
     ...window.navigatorjs,
@@ -43,4 +46,10 @@ module.exports = window.navigatorjs = {
         TransitionCompleteDelegate,
         ValidationPreparedDelegate,
     },
+    integration: {
+        ViewRecipe,
+        StateCommandMap,
+        StateUrlSyncer,
+        StateViewMap,
+    }
 };
