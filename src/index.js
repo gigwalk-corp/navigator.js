@@ -10,6 +10,7 @@ import AsynchResponders from './AsynchResponders';
 import Navigator from './Navigator';
 import Bind from './utils/Bind';
 import AutoBind from './utils/AutoBind';
+import DebugConsole from './features/DebugConsole';
 
 // transition
 require('./transition/TransitionCompleteDelegate');
@@ -22,8 +23,7 @@ require('./integration/StateUrlSyncer');
 require('./integration/StateViewMap');
 require('./integration/ViewRecipe');
 
-// features
-require('./features/DebugConsole');
+
 
 module.exports = window.navigatorjs = {
     ...window.navigatorjs,
@@ -39,4 +39,7 @@ module.exports = window.navigatorjs = {
         Bind,
         AutoBind,
     },
+    features: {
+        DebugConsole
+    }
 };
