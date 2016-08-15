@@ -28,6 +28,7 @@ export default class ResponderLists {
         let s: string = 'ResponderLists [';
 
         for (const variable in this) {
+            // $FlowFixMe
             const list = this[variable];
 
             if (this.all.indexOf(list) > -1) {
