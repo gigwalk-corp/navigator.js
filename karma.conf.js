@@ -25,10 +25,6 @@ const webpackConfig = {
 };
 const reporters = ['dots', 'coverage'];
 
-if (process.env.CI) {
-    reporters.push('coveralls');
-}
-
 module.exports = function karmaConfig(config) {
     config.set({
 
