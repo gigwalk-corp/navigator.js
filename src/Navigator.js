@@ -9,6 +9,7 @@ import TransitionCompleteDelegate from './transition/TransitionCompleteDelegate'
 import ValidationPreparedDelegate from './transition/ValidationPreparedDelegate';
 import ResponderLists from './ResponderLists';
 import autoBind from './utils/AutoBind';
+import $ from 'jquery';
 
 let _$eventDispatcher = null;
 // internal namespaces

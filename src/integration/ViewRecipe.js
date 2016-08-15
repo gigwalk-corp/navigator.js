@@ -1,6 +1,7 @@
-// @flow
+// @flow weak
 import ReactRecipe from './ReactRecipe';
 import BackboneRecipe from './BackboneRecipe';
+import _ from 'underscore';
 
 const ViewRecipe = function () {
     this._states = [];

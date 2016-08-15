@@ -1,4 +1,4 @@
-// @flow
+// @flow weak
 import NavigationState from '../NavigationState';
 
 const StateCommandMap = function (navigator, injector) {
@@ -34,7 +34,6 @@ StateCommandMap.prototype = {
 
         if (this._hasCommand(commands, CommandClass)) {
             throw new Error('Already mapped ' + CommandClass + ' to state ' + state.getPath());
-            return;
         }
 
         this._verifyCommandClass(CommandClass);

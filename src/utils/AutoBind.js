@@ -1,4 +1,4 @@
-// @flow
+// @flow weak
 import $ from 'jquery';
 export default function AutoBind(object: Object, context: Object) {
     let key, method;

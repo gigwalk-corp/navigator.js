@@ -1,4 +1,4 @@
-// @flow
+// @flow weak
 function NavigationState(pathStringOrArray: string | string[]) {
     this._path = '';
 

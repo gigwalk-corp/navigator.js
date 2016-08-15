@@ -1,4 +1,4 @@
-// @flow
+// @flow weak
 import autoBind from '../utils/AutoBind';
 
 const ValidationPreparedDelegate = function (validatorResponder, truncatedState, fullState, navigator, validationNamespace) {

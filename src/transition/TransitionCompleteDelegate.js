@@ -1,4 +1,4 @@
-// @flow
+// @flow weak
 import autoBind from '../utils/AutoBind';
 
 const TransitionCompleteDelegate = function (responder, status, behavior, navigator, transitionNamespace) {

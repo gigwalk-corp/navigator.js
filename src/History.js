@@ -1,4 +1,4 @@
-// @flow
+// @flow weak
 import autoBind from './utils/AutoBind';
 import * as NavigatorEvent from './NavigatorEvent';
 /**

@@ -1,6 +1,8 @@
-// @flow
+// @flow weak
 import React from 'react';
 import ReactDOM from 'react-dom';
+import _ from 'underscore';
+import $ from 'jquery';
 
 const ReactRecipe = {
     _type: 'REACT',

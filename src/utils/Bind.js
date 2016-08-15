@@ -1,4 +1,4 @@
-// @flow
+// @flow weak
 import $ from 'jquery';
 
 export default function Bind(functionOrArray: Function | Function[], context: Object) {

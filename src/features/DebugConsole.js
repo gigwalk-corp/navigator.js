@@ -1,3 +1,4 @@
+// @flow weak
 import $ from 'jquery';
 import * as NavigatorEvent from '../NavigatorEvent';
 import NavigationResponderBehaviors from '../NavigationResponderBehaviors';
@@ -28,7 +29,7 @@ const _onKeyPress = function (e) {
         case 0: // Others such as arrows
             return; // This can just be execute
         default:
-            return;
+            break;
     }
 
     const char = String.fromCharCode(e.which);

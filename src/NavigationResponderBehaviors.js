@@ -1,4 +1,4 @@
-// @flow
+// @flow weak
 
 const NavigationResponderBehaviors = {};
 NavigationResponderBehaviors.IHasStateInitialization = { name: 'IHasStateInitialization', methods: ['initializeByNavigator'] };

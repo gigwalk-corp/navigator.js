@@ -1,7 +1,8 @@
-// @flow
+// @flow weak
 import autoBind from '../utils/AutoBind';
 import NavigationState from '../NavigationState';
 import { STATE_CHANGED } from '../NavigatorEvent';
+import $ from 'jquery';
 
 let _usingPushState,
     _rootUrl,
@@ -23,7 +24,6 @@ StateUrlSyncer.prototype = {
     usePushState(rootUrl) {
         if (_started) {
             throw new Error('Cannot switch to using push states after start was called');
-            return;
         }
 
         _usingPushState = this.supportsPushState;

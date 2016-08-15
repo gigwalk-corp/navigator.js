@@ -1,4 +1,4 @@
-// @flow
+// @flow weak
 // navigator-main
 import * as NavigatorEvent from './NavigatorEvent';
 import * as NavigationBehaviors from './NavigationBehaviors';
