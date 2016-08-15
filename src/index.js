@@ -18,14 +18,8 @@ import StateCommandMap from './integration/StateCommandMap';
 import ViewRecipe from './integration/ViewRecipe';
 import StateUrlSyncer from './integration/StateUrlSyncer';
 import StateViewMap from './integration/StateViewMap';
-// integration
 
-
-
-
-
-module.exports = window.navigatorjs = {
-    ...window.navigatorjs,
+module.exports = {
     NavigatorEvent,
     NavigationBehaviors,
     ResponderLists,

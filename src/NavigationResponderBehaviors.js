@@ -17,8 +17,8 @@ NavigationResponderBehaviors.implementsBehaviorInterface = function (object, _in
         return false;
     }
 
-    let inheritanceChain = navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain(_interface),
-    methodsToBeImplemented = navigatorjs.NavigationResponderBehaviors.getInterfaceMethods(inheritanceChain),
+    let inheritanceChain = NavigationResponderBehaviors.getInterfaceInheritanceChain(_interface),
+    methodsToBeImplemented = NavigationResponderBehaviors.getInterfaceMethods(inheritanceChain),
     i, method,
     length = methodsToBeImplemented.length;
 
@@ -38,7 +38,7 @@ NavigationResponderBehaviors.getInterfaceInheritanceChain = function (_interface
     extendsArray,
     extendingInterface,
     i, length,
-    interfaceObject = navigatorjs.NavigationResponderBehaviors[_interface];
+    interfaceObject = NavigationResponderBehaviors[_interface];
 
     if (interfaceObject == undefined || typeof interfaceObject !== 'object') {
         //		console.log('behaviorObject for interface is undefined ', interface );
@@ -58,7 +58,7 @@ NavigationResponderBehaviors.getInterfaceInheritanceChain = function (_interface
         extendingInterface = extendsArray[i];
         if (chain.indexOf(extendingInterface) == -1) {
             // We did not yet extend this interface, so continue to follow the chain
-            navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain(extendingInterface, chain);
+            NavigationResponderBehaviors.getInterfaceInheritanceChain(extendingInterface, chain);
         }
     }
 
@@ -81,13 +81,13 @@ NavigationResponderBehaviors.getInterfaceMethods = function (interfaces) {
 
     for (i = 0; i < length; i++) {
         _interface = interfaces[i];
-        navigatorjs.NavigationResponderBehaviors.getInterfaceInheritanceChain(_interface, combinedInterfacesChain);
+        NavigationResponderBehaviors.getInterfaceInheritanceChain(_interface, combinedInterfacesChain);
     }
 
     length = combinedInterfacesChain.length;
     for (i = 0; i < length; i++) {
         _interface = combinedInterfacesChain[i];
-        interfaceObject = navigatorjs.NavigationResponderBehaviors[_interface];
+        interfaceObject = NavigationResponderBehaviors[_interface];
         interfaceMethods = interfaceObject.methods;
         if (interfaceObject != undefined && typeof interfaceObject === 'object' && interfaceMethods != undefined && interfaceMethods instanceof Array) {
             methodsLength = interfaceMethods.length;

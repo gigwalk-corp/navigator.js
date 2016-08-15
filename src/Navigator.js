@@ -1,4 +1,15 @@
 // @flow
+import NavigationState from './NavigationState';
+import NavigationResponderBehaviors from './NavigationResponderBehaviors';
+import * as NavigationBehaviors from './NavigationBehaviors';
+import * as NavigatorEvent from './NavigatorEvent';
+import AsynchResponders from './AsynchResponders';
+import * as TransitionStatus from './transition/TransitionStatus';
+import TransitionCompleteDelegate from './transition/TransitionCompleteDelegate';
+import ValidationPreparedDelegate from './transition/ValidationPreparedDelegate';
+import ResponderLists from './ResponderLists';
+import autoBind from './utils/AutoBind';
+
 let _$eventDispatcher = null;
 // internal namespaces
 const _flow = {};
@@ -11,7 +22,7 @@ let _previousState = null;
 let _defaultState = null;
 let _isTransitioning = false;
 //
-let _responders = null; // new navigatorjs.ResponderLists();
+let _responders = null; // new ResponderLists();
 let _respondersByID = null; // {};
 let _statusByResponderID = null; // {};
 let _redirects = null;
@@ -33,29 +44,29 @@ const _modify = function (addition, responder, pathsOrStates, behaviorString) {
     }
 
     // Using the path variable as dictionary key to break instance referencing.
-    let path = navigatorjs.NavigationState.make(pathsOrStates).getPath(),
+    let path = NavigationState.make(pathsOrStates).getPath(),
         list, matchingInterface;
 
     // Create, store and retrieve the list that matches the desired behavior.
 
     switch (behaviorString) {
-        case navigatorjs.NavigationBehaviors.SHOW:
+        case NavigationBehaviors.SHOW:
             matchingInterface = 'IHasStateTransition';
             list = _responders.showByPath[path] = _responders.showByPath[path] || [];
             break;
-        case navigatorjs.NavigationBehaviors.HIDE:
+        case NavigationBehaviors.HIDE:
             matchingInterface = 'IHasStateTransition';
             list = _responders.hideByPath[path] = _responders.hideByPath[path] || [];
             break;
-        case navigatorjs.NavigationBehaviors.VALIDATE:
+        case NavigationBehaviors.VALIDATE:
             matchingInterface = 'IHasStateValidation';
             list = _responders.validateByPath[path] = _responders.validateByPath[path] || [];
             break;
-        case navigatorjs.NavigationBehaviors.UPDATE:
+        case NavigationBehaviors.UPDATE:
             matchingInterface = 'IHasStateUpdate';
             list = _responders.updateByPath[path] = _responders.updateByPath[path] || [];
             break;
-        case navigatorjs.NavigationBehaviors.SWAP:
+        case NavigationBehaviors.SWAP:
             matchingInterface = 'IHasStateSwap';
             list = _responders.swapByPath[path] = _responders.swapByPath[path] || [];
             break;
@@ -64,7 +75,7 @@ const _modify = function (addition, responder, pathsOrStates, behaviorString) {
     }
 
     // TODO: Build in more strict validation?
-    if (!navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, matchingInterface)) {
+    if (!NavigationResponderBehaviors.implementsBehaviorInterface(responder, matchingInterface)) {
         throw new Error('Responder ' + responder + ' should implement ' + matchingInterface + ' to respond to ' + behaviorString);
     }
     if (addition) {
@@ -81,7 +92,7 @@ const _modify = function (addition, responder, pathsOrStates, behaviorString) {
             }
 
             // If the responder has no status yet, initialize it to UNINITIALIZED:
-            _statusByResponderID[responder.__navigatorjs.id] = _statusByResponderID[responder.__navigatorjs.id] || navigatorjs.transition.TransitionStatus.UNINITIALIZED;
+            _statusByResponderID[responder.__navigatorjs.id] = _statusByResponderID[responder.__navigatorjs.id] || TransitionStatus.UNINITIALIZED;
         } else {
             return;
         }
@@ -103,7 +114,7 @@ const _modify = function (addition, responder, pathsOrStates, behaviorString) {
         }
     }
 
-    _$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
+    _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
 };
 
 let _relayModification = function (addition, responder, pathsOrStates, behaviorString) {
@@ -121,12 +132,12 @@ let _relayModification = function (addition, responder, pathsOrStates, behaviorS
         return true;
     }
 
-    behaviorString = behaviorString || navigatorjs.NavigationBehaviors.AUTO;
-    if (behaviorString == navigatorjs.NavigationBehaviors.AUTO) {
-        length = navigatorjs.NavigationBehaviors.ALL_AUTO.length;
+    behaviorString = behaviorString || NavigationBehaviors.AUTO;
+    if (behaviorString == NavigationBehaviors.AUTO) {
+        length = NavigationBehaviors.ALL_AUTO.length;
         for (i = 0; i < length; i++) {
             try {
-                _modify(addition, responder, pathsOrStates, navigatorjs.NavigationBehaviors.ALL_AUTO[i]);
+                _modify(addition, responder, pathsOrStates, NavigationBehaviors.ALL_AUTO[i]);
             } catch (e) {
                 // console.warn(e);
                 // ignore 'should implement xyz' errors
@@ -158,7 +169,7 @@ const _hasRegisteredResponder = function (state, optionalInterface) {
                     respondersLength = respondersForPath.length;
                     for (j = 0; j < respondersLength; j++) {
                         responder = respondersForPath[j];
-                        if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, optionalInterface)) {
+                        if (NavigationResponderBehaviors.implementsBehaviorInterface(responder, optionalInterface)) {
                             return true;
                         }
                     }
@@ -185,7 +196,7 @@ const _request = function (pathOrState) {
         toState;
 
     // Store and possibly mask the requested state
-    requestedState = navigatorjs.NavigationState.make(pathOrState);
+    requestedState = NavigationState.make(pathOrState);
     if (requestedState.hasWildcard()) {
         requestedState = requestedState.mask(_currentState || _defaultState);
     }
@@ -198,9 +209,9 @@ const _request = function (pathOrState) {
 
     if (_redirects) {
         for (path in _redirects) {
-            fromState = new navigatorjs.NavigationState(path);
+            fromState = new NavigationState(path);
             if (fromState.equals(requestedState)) {
-                toState = navigatorjs.NavigationState.make(_redirects[path]);
+                toState = NavigationState.make(_redirects[path]);
                 // logger.info("Redirecting " + from + " to " + to);
                 _request(toState);
                 return;
@@ -209,7 +220,7 @@ const _request = function (pathOrState) {
     }
 
     // this event makes it possible to add responders just in time to participate in the validation process.
-    _$eventDispatcher.trigger(navigatorjs.NavigatorEvent.STATE_REQUESTED, { state: requestedState });
+    _$eventDispatcher.trigger(NavigatorEvent.STATE_REQUESTED, { state: requestedState });
 
     // Inline redirection is reset with every request call.
     // It can be changed by a responder implementing the IHasStateRedirection interface.
@@ -285,16 +296,16 @@ let _notifyStateChange = function (state) {
 
     // Do call the super.notifyStateChange() when overriding.
     if (state != _previousState) {
-        _$eventDispatcher.trigger(navigatorjs.NavigatorEvent.STATE_CHANGED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID, state: _currentState });
+        _$eventDispatcher.trigger(NavigatorEvent.STATE_CHANGED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID, state: _currentState });
     }
 };
 
 // FLOW NAMESPACE START
 _flow.startTransition = function () {
     _isTransitioning = true;
-    _$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STARTED);
+    _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_STARTED);
 
-    _disappearingAsynchResponders = new navigatorjs.AsynchResponders();
+    _disappearingAsynchResponders = new AsynchResponders();
     _disappearingAsynchResponders.addResponders(_flow.transitionOut());
 
     if (!_disappearingAsynchResponders.isBusy()) {
@@ -317,15 +328,15 @@ _flow.transitionOut = function () {
         responder = _respondersByID[responderID];
         if (respondersToShow.indexOf(responder) == -1) {
             // if the responder is not already hidden or disappearing, trigger the transitionOut:
-            if (navigatorjs.transition.TransitionStatus.HIDDEN < _statusByResponderID[responderID] && _statusByResponderID[responderID] < navigatorjs.transition.TransitionStatus.DISAPPEARING &&
+            if (TransitionStatus.HIDDEN < _statusByResponderID[responderID] && _statusByResponderID[responderID] < TransitionStatus.DISAPPEARING &&
                 // We could also not be hidden or disappearing but performing a state swap.
-                navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateTransition')) {
-                _statusByResponderID[responderID] = navigatorjs.transition.TransitionStatus.DISAPPEARING;
+                NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateTransition')) {
+                _statusByResponderID[responderID] = TransitionStatus.DISAPPEARING;
                 waitForResponders.push(responder);
 
                     // use namespace transition;
                     // console.log('_flow -> transitionOut', responder);
-                responder.transitionOut(new navigatorjs.transition.TransitionCompleteDelegate(responder, navigatorjs.transition.TransitionStatus.HIDDEN, navigatorjs.NavigationBehaviors.HIDE, this, _transition).call);
+                responder.transitionOut(new TransitionCompleteDelegate(responder, TransitionStatus.HIDDEN, NavigationBehaviors.HIDE, this, _transition).call);
             } else {
                     // already hidden or hiding
             }
@@ -334,13 +345,13 @@ _flow.transitionOut = function () {
 
         // loop backwards so we can splice elements off the array while in the loop.
     for (i = waitForResponders.length; --i >= 0;) {
-        if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.HIDDEN) {
+        if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] == TransitionStatus.HIDDEN) {
             waitForResponders.splice(i, 1);
         }
     }
 
     if (waitForResponders.length > 0) {
-        _$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
+        _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
     }
 
     return waitForResponders;
@@ -353,7 +364,7 @@ _flow.performUpdates = function () {
 
     for (path in _responders.updateByPath) {
             // create a state object for comparison:
-        state = new navigatorjs.NavigationState(path);
+        state = new NavigationState(path);
 
         if (_currentState.contains(state)) {
                 // the lookup path is contained by the new state.
@@ -373,7 +384,7 @@ _flow.performUpdates = function () {
 };
 
 _flow.startTransitionIn = function () {
-    _appearingAsynchResponders = new navigatorjs.AsynchResponders();
+    _appearingAsynchResponders = new AsynchResponders();
     _appearingAsynchResponders.addResponders(_flow.transitionIn());
 
     if (!_appearingAsynchResponders.isBusy()) {
@@ -396,32 +407,32 @@ _flow.transitionIn = function () {
         responder = respondersToShow[i];
         status = _statusByResponderID[responder.__navigatorjs.id];
 
-        if (status < navigatorjs.transition.TransitionStatus.APPEARING || navigatorjs.transition.TransitionStatus.SHOWN < status) {
+        if (status < TransitionStatus.APPEARING || TransitionStatus.SHOWN < status) {
                 // then continue with the transitionIn() call.
-            _statusByResponderID[responder.__navigatorjs.id] = navigatorjs.transition.TransitionStatus.APPEARING;
+            _statusByResponderID[responder.__navigatorjs.id] = TransitionStatus.APPEARING;
             respondersToWaitFor.push(responder);
 
                 // use namespace transition;
-            responder.transitionIn(new navigatorjs.transition.TransitionCompleteDelegate(responder, navigatorjs.transition.TransitionStatus.SHOWN, navigatorjs.NavigationBehaviors.SHOW, this, _transition).call);
+            responder.transitionIn(new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SHOW, this, _transition).call);
         }
     }
 
         // loop backwards so we can splice elements off the array while in the loop.
     for (i = respondersToWaitFor.length; --i >= 0;) {
-        if (_statusByResponderID[respondersToWaitFor[i].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.SHOWN) {
+        if (_statusByResponderID[respondersToWaitFor[i].__navigatorjs.id] == TransitionStatus.SHOWN) {
             respondersToWaitFor.splice(i, 1);
         }
     }
 
     if (respondersToWaitFor.length > 0) {
-        _$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
+        _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
     }
 
     return respondersToWaitFor;
 };
 
 _flow.startSwapOut = function () {
-    _swappingAsynchResponders = new navigatorjs.AsynchResponders();
+    _swappingAsynchResponders = new AsynchResponders();
     _swappingAsynchResponders.addResponders(_flow.swapOut());
 
     if (!_swappingAsynchResponders.isBusy()) {
@@ -441,7 +452,7 @@ _flow.swapOut = function () {
 
     for (path in _responders.swapByPath) {
             // create a state object for comparison:
-        state = new navigatorjs.NavigationState(path);
+        state = new NavigationState(path);
 
         if (_currentState.contains(state)) {
                 // the lookup path is contained by the new state.
@@ -458,11 +469,11 @@ _flow.swapOut = function () {
 
                 truncatedState = _currentState.subtract(state);
                 if (responder.willSwapToState(truncatedState, _currentState)) {
-                    _statusByResponderID[responder.__navigatorjs.id] = navigatorjs.transition.TransitionStatus.SWAPPING;
+                    _statusByResponderID[responder.__navigatorjs.id] = TransitionStatus.SWAPPING;
                     waitForResponders.push(responder);
 
                         // use namespace transition;
-                    responder.swapOut(new navigatorjs.transition.TransitionCompleteDelegate(responder, navigatorjs.transition.TransitionStatus.SHOWN, navigatorjs.NavigationBehaviors.SWAP, this, _transition).call);
+                    responder.swapOut(new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SWAP, this, _transition).call);
                 }
             }
         }
@@ -470,13 +481,13 @@ _flow.swapOut = function () {
 
         // loop backwards so we can splice elements off the array while in the loop.
     for (i = waitForResponders.length; --i >= 0;) {
-        if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] == navigatorjs.transition.TransitionStatus.SHOWN) {
+        if (_statusByResponderID[waitForResponders[i].__navigatorjs.id] == TransitionStatus.SHOWN) {
             waitForResponders.splice(i, 1);
         }
     }
 
     if (waitForResponders.length > 0) {
-        _$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
+        _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
     }
 
     return waitForResponders;
@@ -494,7 +505,7 @@ _flow.swapIn = function () {
 
     for (path in _responders.swapByPath) {
             // create a state object for comparison:
-        state = new navigatorjs.NavigationState(path);
+        state = new NavigationState(path);
 
         if (_currentState.contains(state)) {
                 // the lookup path is contained by the new state.
@@ -520,7 +531,7 @@ _flow.swapIn = function () {
 
 _flow.finishTransition = function () {
     _isTransitioning = false;
-    _$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_FINISHED);
+    _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_FINISHED);
 };
     // FLOW NAMESPACE END
 
@@ -528,22 +539,22 @@ _flow.finishTransition = function () {
 _transition.notifyComplete = function (responder, status, behavior) {
     if (_statusByResponderID[responder.__navigatorjs.id]) {
         _statusByResponderID[responder.__navigatorjs.id] = status;
-        _$eventDispatcher.trigger(navigatorjs.NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
+        _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
     }
 
     let asynchResponders,
         callbackMethod;
 
     switch (behavior) {
-        case navigatorjs.NavigationBehaviors.HIDE:
+        case NavigationBehaviors.HIDE:
             asynchResponders = _disappearingAsynchResponders;
             callbackMethod = _flow.performUpdates;
             break;
-        case navigatorjs.NavigationBehaviors.SHOW:
+        case NavigationBehaviors.SHOW:
             asynchResponders = _appearingAsynchResponders;
             callbackMethod = _flow.startSwapOut;
             break;
-        case navigatorjs.NavigationBehaviors.SWAP:
+        case NavigationBehaviors.SWAP:
             asynchResponders = _swappingAsynchResponders;
             callbackMethod = _flow.swapIn;
             break;
@@ -604,7 +615,7 @@ _hidden.getKnownPaths = function () {
     list[_defaultState.getPath()] = true;
 
     for (path in _responders.showByPath) {
-        list[new navigatorjs.NavigationState(path).getPath()] = true;
+        list[new NavigationState(path).getPath()] = true;
     }
 
     for (path in list) {
@@ -627,7 +638,7 @@ _validation.notifyValidationPrepared = function (validatorResponder, truncatedSt
                 // logger.warn("Asynchronously invalidated by " + validatorResponder);
             _asyncInvalidated = true;
 
-            if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(validatorResponder, 'IHasStateRedirection')) {
+            if (NavigationResponderBehaviors.implementsBehaviorInterface(validatorResponder, 'IHasStateRedirection')) {
                 _inlineRedirectionState = validatorResponder.redirect(truncatedState, fullState);
             }
         }
@@ -693,7 +704,7 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
         _asyncValidated = false;
 
             // reset asynchronous validation for every new state.
-        _validatingAsynchResponders = new navigatorjs.AsynchResponders();
+        _validatingAsynchResponders = new AsynchResponders();
         _preparedValidatingAsynchRespondersStack = [];
     }
 
@@ -704,7 +715,7 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
     for (path in _responders.validateByPath) {
             //			console.log(path);
             // create a state object for comparison:
-        state = new navigatorjs.NavigationState(path);
+        state = new NavigationState(path);
 
         if (unvalidatedState.contains(state)) {
             remainderState = unvalidatedState.subtract(state);
@@ -720,14 +731,14 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
                     responder = validateByPathList[i];
 
                         // check for optional validation
-                    if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationOptionalAsync') && !responder.willValidate(remainderState, unvalidatedState)) {
+                    if (NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationOptionalAsync') && !responder.willValidate(remainderState, unvalidatedState)) {
                         continue;
                     }
 
-                    if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationAsync')) {
+                    if (NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationAsync')) {
                         _asyncValidationOccurred = true;
 
-                        callOnPrepared = new navigatorjs.transition.ValidationPreparedDelegate(responder, remainderState, unvalidatedState, this, _validation).call;
+                        callOnPrepared = new ValidationPreparedDelegate(responder, remainderState, unvalidatedState, this, _validation).call;
                         _validatingAsynchResponders.addResponder(responder);
                         _preparedValidatingAsynchRespondersStack.push({ responder, remainderState, unvalidatedState, callOnPrepared });
 
@@ -741,12 +752,12 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
             for (i = 0; i < validateByPathList.length; i++) {
                 responder = validateByPathList[i];
                     // skip async validators, we handled them a few lines back.
-                if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationAsync')) {
+                if (NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationAsync')) {
                     continue;
                 }
 
                     // check for optional validation
-                if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationOptional') && !responder.willValidate(remainderState, unvalidatedState)) {
+                if (NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationOptional') && !responder.willValidate(remainderState, unvalidatedState)) {
                     continue;
                 }
 
@@ -756,7 +767,7 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
                         // logger.warn("Invalidated by validator: " + responder);
                     invalidated = true;
 
-                    if (allowRedirection && navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateRedirection')) {
+                    if (allowRedirection && NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateRedirection')) {
                         _inlineRedirectionState = responder.redirect(remainderState, unvalidatedState);
                     }
 
@@ -811,7 +822,7 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
 let _validateImplicitly = function (state) {
     let path;
     for (path in _responders.showByPath) {
-        if (new navigatorjs.NavigationState(path).equals(state)) {
+        if (new NavigationState(path).equals(state)) {
                 // info("Validation passed based on transition responder.");
             return true;
         }
@@ -845,10 +856,10 @@ let _initializeIfNeccessary = function (responderList) {
         //			for each (var responder : INavigationResponder in responderList) {
     for (i = 0; i < responderList.length; i++) {
         responder = responderList[i];
-        if (_statusByResponderID[responder.__navigatorjs.id] == navigatorjs.transition.TransitionStatus.UNINITIALIZED && navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateInitialization')) {
+        if (_statusByResponderID[responder.__navigatorjs.id] == TransitionStatus.UNINITIALIZED && NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateInitialization')) {
                 // first initialize the responder.
             responder.initializeByNavigator();
-            _statusByResponderID[responder.__navigatorjs.id] = navigatorjs.transition.TransitionStatus.INITIALIZED;
+            _statusByResponderID[responder.__navigatorjs.id] = TransitionStatus.INITIALIZED;
         }
     }
 };
@@ -858,7 +869,7 @@ let _getResponderList = function (listObj, state) {
         path;
 
     for (path in listObj) {
-        if (state.contains(new navigatorjs.NavigationState(path))) {
+        if (state.contains(new NavigationState(path))) {
             responders = responders.concat(listObj[path]);
         }
     }
@@ -867,11 +878,11 @@ let _getResponderList = function (listObj, state) {
 };
 
 const Navigator = function () {
-    navigatorjs.utils.AutoBind(this, this);
+    autoBind(this, this);
 
     _$eventDispatcher = $({});
     _currentState = null;
-    _responders = new navigatorjs.ResponderLists();
+    _responders = new ResponderLists();
     _respondersByID = {};
     _statusByResponderID = {};
     _redirects = null;
@@ -891,11 +902,11 @@ Navigator.prototype = {
 
     registerRedirect(fromStateOrPath, toStateOrPath) {
         _redirects = _redirects || {};
-        _redirects[navigatorjs.NavigationState.make(fromStateOrPath).getPath()] = navigatorjs.NavigationState.make(toStateOrPath);
+        _redirects[NavigationState.make(fromStateOrPath).getPath()] = NavigationState.make(toStateOrPath);
     },
 
     start(defaultStateOrPath, startStateOrPath) {
-        _defaultState = navigatorjs.NavigationState.make(defaultStateOrPath || '');
+        _defaultState = NavigationState.make(defaultStateOrPath || '');
 
         this.request(startStateOrPath || _defaultState);
     },

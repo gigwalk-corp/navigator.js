@@ -1,5 +1,6 @@
 // @flow
 import autoBind from './utils/AutoBind';
+import * as NavigatorEvent from './NavigatorEvent';
 /**
 * History manager for the navigatorjs.Navigator
 *
@@ -82,7 +83,7 @@ History.prototype = {
 
         // Listen to changes on the navigator
         this._navigator = navigator;
-        this._navigator.on(navigatorjs.NavigatorEvent.STATE_CHANGED, this._handleStateChange);
+        this._navigator.on(NavigatorEvent.STATE_CHANGED, this._handleStateChange);
     },
 
     /**

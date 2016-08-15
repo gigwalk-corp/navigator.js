@@ -1,5 +1,8 @@
 import $ from 'jquery';
 import * as NavigatorEvent from '../NavigatorEvent';
+import NavigationResponderBehaviors from '../NavigationResponderBehaviors';
+import * as TransitionStatus from '../transition/TransitionStatus';
+
 let _navigator = null,
     _template = '<div class="debugConsole">Path: <input type="text" class="path" /><div class="pathRenderer"></div><div class="responders"><div class="names"></div><div class="status"></div></div></div>',
     _visible = true,
@@ -79,10 +82,10 @@ let _updateDisplay = function () {
         responder = _respondersByID[responderID];
         status = _statusByResponderID[responderID];
 
-        if (navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateTransition') || navigatorjs.NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateInitialization')) {
+        if (NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateTransition') || NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateInitialization')) {
             responderNamesHTMLString += '<span data-responder-id="' + responderID + '">' + _getResponderString(responder) + '</span><br />';
             color = _getColorByStatus(status);
-            responderStatusHTMLString += '<span style=" color:' + color + '; font-weight:bold;" data-responder-id="' + responderID + '">' + navigatorjs.transition.TransitionStatus.toString(status) + '</span><br />';
+            responderStatusHTMLString += '<span style=" color:' + color + '; font-weight:bold;" data-responder-id="' + responderID + '">' + TransitionStatus.toString(status) + '</span><br />';
         }
     }
 
@@ -106,20 +109,20 @@ let _getResponderString = function (responder) {
 let _getColorByStatus = function (status) {
     let color = '';
     switch (status) {
-        case navigatorjs.transition.TransitionStatus.UNINITIALIZED:
+        case TransitionStatus.UNINITIALIZED:
             color = '#AAAAAA';
             break;
-        case navigatorjs.transition.TransitionStatus.INITIALIZED:
+        case TransitionStatus.INITIALIZED:
             color = '#FFFFFF';
             break;
-        case navigatorjs.transition.TransitionStatus.HIDDEN:
+        case TransitionStatus.HIDDEN:
             color = '#FF0000';
             break;
-        case navigatorjs.transition.TransitionStatus.APPEARING:
-        case navigatorjs.transition.TransitionStatus.DISAPPEARING:
+        case TransitionStatus.APPEARING:
+        case TransitionStatus.DISAPPEARING:
             color = '#FFFF00';
             break;
-        case navigatorjs.transition.TransitionStatus.SHOWN:
+        case TransitionStatus.SHOWN:
             color = '#00FF00';
             break;
     }
