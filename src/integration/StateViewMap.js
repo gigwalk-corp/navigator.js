@@ -1,13 +1,16 @@
 // @flow
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
+import { STATE_REQUESTED } from '../NavigatorEvent';
+import ViewRecipe from './ViewRecipe';
+import NavigationState from '../NavigationState';
 
 function StateViewMap(navigator, $root) {
     this._navigator = navigator;
     this._orderedRecipes = [];
     this._$root = $root || $('body');
 
-    this._navigator.on(navigatorjs.NavigatorEvent.STATE_REQUESTED, this._handleStateRequested.bind(this));
+    this._navigator.on(STATE_REQUESTED, this._handleStateRequested.bind(this));
 }
 
   // PUBLIC API
@@ -23,11 +26,11 @@ StateViewMap.prototype = {
     },
 
     _addRecipe: function _addRecipe(statesOrPaths) {
-        const recipe = new navigatorjs.integration.ViewRecipe();
+        const recipe = new ViewRecipe();
 
         let i, length = statesOrPaths.length;
         for (i = 0; i < length; i++) {
-            recipe.addState(navigatorjs.NavigationState.make(statesOrPaths[i]));
+            recipe.addState(NavigationState.make(statesOrPaths[i]));
         }
 
         this._orderedRecipes.push(recipe);
