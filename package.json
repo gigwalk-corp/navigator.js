@@ -20,7 +20,8 @@
     "prebuild": "rm -rf lib",
     "build": "npm run webpack && npm run webpack-dist && npm run build:babel && npm run build:flow",
     "build:babel": "babel src --out-dir lib --source-maps",
-    "build:flow": "gulp flow"
+    "build:flow": "gulp flow",
+    "prepublish": "npm run build"
   },
   "peerDependencies": {
     "react": "*",
