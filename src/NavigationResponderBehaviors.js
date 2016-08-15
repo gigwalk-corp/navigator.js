@@ -43,7 +43,7 @@ NavigationResponderBehaviors.IHasStateUpdate = {
 };
 
 NavigationResponderBehaviors.implementsBehaviorInterface = function implementsBehaviorInterface(object, _interface) {
-    if (object.navigatorBehaviors === undefined || !object.navigatorBehaviors instanceof Array) {
+    if (object.navigatorBehaviors === undefined || !(object.navigatorBehaviors instanceof Array)) {
         // The input interface is not set on object's navigatorBehaviors.
         return false;
     }
@@ -97,7 +97,7 @@ NavigationResponderBehaviors.getInterfaceInheritanceChain = (_interface, existin
 };
 
 NavigationResponderBehaviors.getInterfaceMethods = interfaces => {
-    if (interfaces === undefined || !interfaces instanceof Array) {
+    if (interfaces === undefined || !Array.isArray(interfaces)) {
         // No valid input
         return [];
     }

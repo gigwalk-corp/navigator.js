@@ -12,4 +12,4 @@ dependencies:
 test:
   post:
     - ./node_modules/.bin/eslint --quiet ./src
-    - ./node_modules/.bin/flow -- check --show-all-errors
+    - ./node_modules/.bin/flow check --show-all-errors
