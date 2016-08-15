@@ -1,5 +1,5 @@
 // @flow weak
-
+/* eslint "no-use-before-define": 1 */
 import $ from 'jquery';
 import NavigationState from './NavigationState';
 import NavigationResponderBehaviors from './NavigationResponderBehaviors';
@@ -40,7 +40,7 @@ let _asyncValidated = false;
 let _asyncValidationOccurred = false;
 let _responderIDCount = 0;
 
-const _modify = function (addition, responder, pathsOrStates, behaviorString) {
+const _modify = (addition, responder, pathsOrStates, behaviorString) => {
     if (_relayModification(addition, responder, pathsOrStates, behaviorString)) {
         return;
     }
@@ -118,10 +118,13 @@ const _modify = function (addition, responder, pathsOrStates, behaviorString) {
         }
     }
 
-    _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
+    _$eventDispatcher.trigger(
+        NavigatorEvent.TRANSITION_STATUS_UPDATED,
+        { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID }
+    );
 };
 
-let _relayModification = function (addition, responder, pathsOrStates, behaviorString) {
+let _relayModification = (addition, responder, pathsOrStates, behaviorString) => {
     if (!responder) {
         throw new Error('add: responder is null');
     }
@@ -159,9 +162,9 @@ let _relayModification = function (addition, responder, pathsOrStates, behaviorS
 * interface. This allows you to check if there was something mapped to a state which implements
 * "IHasStateValidationAsync" for example.
 */
-const _hasRegisteredResponder = function (state, optionalInterface) {
+const _hasRegisteredResponder = (state, optionalInterface) => {
     let i;
-    let length = _responders.all.length;
+    const length = _responders.all.length;
     let j;
     let respondersLength;
     let responder;
@@ -195,7 +198,7 @@ const _hasRegisteredResponder = function (state, optionalInterface) {
     return false;
 };
 
-const _request = function (pathOrState) {
+const _request = pathOrState => {
     if (pathOrState === null) {
         // logger.error("Requested a null state. Aborting request.");
         return;
@@ -239,7 +242,7 @@ const _request = function (pathOrState) {
     _performRequestCascade(requestedState);
 };
 
-let _performRequestCascade = function (requestedState, startAsyncValidation) {
+let _performRequestCascade = (requestedState, startAsyncValidation) => {
     if (!_defaultState) { throw new Error('No default state set. Call start() before the first request!'); }
     // Request cascade starts here.
     //
@@ -290,7 +293,7 @@ let _performRequestCascade = function (requestedState, startAsyncValidation) {
     }
 };
 
-let _grantRequest = function (state) {
+let _grantRequest = state => {
     _asyncInvalidated = false;
     _asyncValidated = false;
     _previousState = _currentState;
@@ -301,17 +304,20 @@ let _grantRequest = function (state) {
     _flow.startTransition();
 };
 
-let _notifyStateChange = function (state) {
+let _notifyStateChange = state => {
     // logger.notice(state);
 
     // Do call the super.notifyStateChange() when overriding.
     if (state !== _previousState) {
-        _$eventDispatcher.trigger(NavigatorEvent.STATE_CHANGED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID, state: _currentState });
+        _$eventDispatcher.trigger(
+            NavigatorEvent.STATE_CHANGED,
+            { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID, state: _currentState }
+        );
     }
 };
 
 // FLOW NAMESPACE START
-_flow.startTransition = function () {
+_flow.startTransition = () => {
     _isTransitioning = true;
     _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_STARTED);
 
@@ -324,10 +330,10 @@ _flow.startTransition = function () {
 };
 
 _flow.transitionOut = function () {
-    let respondersToShow = _getRespondersToShow();
+    const respondersToShow = _getRespondersToShow();
     let responderID;
     let responder;
-    let waitForResponders = [];
+    const waitForResponders = [];
     let i;
 
     // This initialize call is to catch responders that were put on stage to show,
@@ -346,7 +352,9 @@ _flow.transitionOut = function () {
 
                     // use namespace transition;
                     // console.log('_flow -> transitionOut', responder);
-                responder.transitionOut(new TransitionCompleteDelegate(responder, TransitionStatus.HIDDEN, NavigationBehaviors.HIDE, this, _transition).call);
+                responder.transitionOut(
+                    new TransitionCompleteDelegate(responder, TransitionStatus.HIDDEN, NavigationBehaviors.HIDE, this, _transition).call
+                );
             } else {
                     // already hidden or hiding
             }
@@ -361,13 +369,16 @@ _flow.transitionOut = function () {
     }
 
     if (waitForResponders.length > 0) {
-        _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
+        _$eventDispatcher.trigger(
+            NavigatorEvent.TRANSITION_STATUS_UPDATED,
+            { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID }
+        );
     }
 
     return waitForResponders;
 };
 
-_flow.performUpdates = function () {
+_flow.performUpdates = () => {
     _disappearingAsynchResponders.reset();
 
     let path;
@@ -397,7 +408,7 @@ _flow.performUpdates = function () {
     _flow.startTransitionIn();
 };
 
-_flow.startTransitionIn = function () {
+_flow.startTransitionIn = () => {
     _appearingAsynchResponders = new AsynchResponders();
     _appearingAsynchResponders.addResponders(_flow.transitionIn());
 
@@ -407,8 +418,8 @@ _flow.startTransitionIn = function () {
 };
 
 _flow.transitionIn = function () {
-    let respondersToShow = _getRespondersToShow();
-    let respondersToWaitFor = [];
+    const respondersToShow = _getRespondersToShow();
+    const respondersToWaitFor = [];
     let responder;
     let status;
     let i;
@@ -427,7 +438,9 @@ _flow.transitionIn = function () {
             respondersToWaitFor.push(responder);
 
                 // use namespace transition;
-            responder.transitionIn(new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SHOW, this, _transition).call);
+            responder.transitionIn(
+                new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SHOW, this, _transition).call
+            );
         }
     }
 
@@ -439,13 +452,16 @@ _flow.transitionIn = function () {
     }
 
     if (respondersToWaitFor.length > 0) {
-        _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
+        _$eventDispatcher.trigger(
+            NavigatorEvent.TRANSITION_STATUS_UPDATED,
+            { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID }
+        );
     }
 
     return respondersToWaitFor;
 };
 
-_flow.startSwapOut = function () {
+_flow.startSwapOut = () => {
     _swappingAsynchResponders = new AsynchResponders();
     _swappingAsynchResponders.addResponders(_flow.swapOut());
 
@@ -457,7 +473,7 @@ _flow.startSwapOut = function () {
 _flow.swapOut = function () {
     _appearingAsynchResponders.reset();
 
-    let waitForResponders = [];
+    const waitForResponders = [];
     let path;
     let state;
     let swapByPathList;
@@ -479,7 +495,7 @@ _flow.swapOut = function () {
             for (i = 0; i < swapByPathList.length; i++) {
                 responder = swapByPathList[i];
                 if (!_responders.swappedBefore[responder]) {
-                    continue;
+                    continue; // eslint-disable-line no-continue
                 }
 
                 truncatedState = _currentState.subtract(state);
@@ -488,7 +504,9 @@ _flow.swapOut = function () {
                     waitForResponders.push(responder);
 
                         // use namespace transition;
-                    responder.swapOut(new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SWAP, this, _transition).call);
+                    responder.swapOut(
+                        new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SWAP, this, _transition).call
+                    );
                 }
             }
         }
@@ -502,13 +520,16 @@ _flow.swapOut = function () {
     }
 
     if (waitForResponders.length > 0) {
-        _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
+        _$eventDispatcher.trigger(
+            NavigatorEvent.TRANSITION_STATUS_UPDATED,
+            { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID }
+        );
     }
 
     return waitForResponders;
 };
 
-_flow.swapIn = function () {
+_flow.swapIn = () => {
     _swappingAsynchResponders.reset();
 
     let path;
@@ -544,17 +565,20 @@ _flow.swapIn = function () {
     _flow.finishTransition();
 };
 
-_flow.finishTransition = function () {
+_flow.finishTransition = () => {
     _isTransitioning = false;
     _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_FINISHED);
 };
-    // FLOW NAMESPACE END
+// FLOW NAMESPACE END
 
-    // TRANSITION NAMESPACE START
-_transition.notifyComplete = function (responder, status, behavior) {
+// TRANSITION NAMESPACE START
+_transition.notifyComplete = (responder, status, behavior) => {
     if (_statusByResponderID[responder.__navigatorjs.id]) {
         _statusByResponderID[responder.__navigatorjs.id] = status;
-        _$eventDispatcher.trigger(NavigatorEvent.TRANSITION_STATUS_UPDATED, { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID });
+        _$eventDispatcher.trigger(
+            NavigatorEvent.TRANSITION_STATUS_UPDATED,
+            { statusByResponderID: _statusByResponderID, respondersByID: _respondersByID }
+        );
     }
 
     let asynchResponders;
@@ -589,10 +613,10 @@ _transition.notifyComplete = function (responder, status, behavior) {
         }
     }
 };
-    // TRANSITION NAMESPACE END
+// TRANSITION NAMESPACE END
 
-    // HIDDEN NAMESPACE START
-_hidden.hasResponder = function (responder) {
+// HIDDEN NAMESPACE START
+_hidden.hasResponder = responder => {
     if (_statusByResponderID[responder.__navigatorjs.id]) { return true; }
 
     let respondersByPath;
@@ -611,22 +635,16 @@ _hidden.hasResponder = function (responder) {
     return false;
 };
 
-_hidden.getStatusByResponderID = function () {
-    return _statusByResponderID;
-};
+_hidden.getStatusByResponderID = () => _statusByResponderID;
 
-_hidden.getRespondersByID = function () {
-    return _respondersByID;
-};
+_hidden.getRespondersByID = () => _respondersByID;
 
-_hidden.getStatus = function (responder) {
-    return _statusByResponderID[responder.__navigatorjs.id];
-};
+_hidden.getStatus = responder => _statusByResponderID[responder.__navigatorjs.id];
 
-_hidden.getKnownPaths = function () {
-    let list = {};
+_hidden.getKnownPaths = () => {
+    const list = {};
     let path;
-    let knownPaths = [];
+    const knownPaths = [];
 
     list[_defaultState.getPath()] = true;
 
@@ -641,10 +659,10 @@ _hidden.getKnownPaths = function () {
     knownPaths.sort();
     return knownPaths;
 };
-    // HIDDEN NAMESPACE END
+// HIDDEN NAMESPACE END
 
-    // VALIDATION NAMESPACE START
-_validation.notifyValidationPrepared = function (validatorResponder, truncatedState, fullState) {
+// VALIDATION NAMESPACE START
+_validation.notifyValidationPrepared = (validatorResponder, truncatedState, fullState) => {
         // If the takeOutResponder() method returns false, it was not in the responder list to begin with.
         // This happens if a second navigation state is requested before the async validation preparation of the first completes.
     if (_validatingAsynchResponders.takeOutResponder(validatorResponder)) {
@@ -671,46 +689,45 @@ _validation.notifyValidationPrepared = function (validatorResponder, truncatedSt
             // ignore async preparations of former requests.
     }
 };
-    // VALIDATION NAMESPACE END
+// VALIDATION NAMESPACE END
 
-let _validateFirstValidatingAsynchResponderFromStack = function () {
+let _validateFirstValidatingAsynchResponderFromStack = () => {
     if (_preparedValidatingAsynchRespondersStack.length === 0) {
         return false;
     }
 
     const preparedResponder = _preparedValidatingAsynchRespondersStack.shift();
-    preparedResponder.responder.prepareValidation(preparedResponder.remainderState, preparedResponder.unvalidatedState, preparedResponder.callOnPrepared);
+    preparedResponder.responder.prepareValidation(
+        preparedResponder.remainderState,
+        preparedResponder.unvalidatedState,
+        preparedResponder.callOnPrepared
+    );
 
     return true;
 };
 
 
 let _validate = function (stateToValidate, allowRedirection, allowAsyncValidation) {
-    var allowRedirection = allowRedirection === undefined ? true : allowRedirection;
+    allowRedirection = allowRedirection === undefined ? true : allowRedirection;
 
     // check to see if there are still wildcards left
 
-    var allowAsyncValidation = allowAsyncValidation === undefined ? true : allowAsyncValidation;
-    var unvalidatedState = stateToValidate;
-    var callOnPrepared = null;
-    var implicit;
-    var invalidated = false;
-    var validated = false;
-    var path;
-    var state;
-    var remainderState;
-    var validateByPathList;
-    var i;
-    var responder;
-    var validatorResponder;
+    allowAsyncValidation = allowAsyncValidation === undefined ? true : allowAsyncValidation;
+    const unvalidatedState = stateToValidate;
+    let callOnPrepared = null;
+    let invalidated = false;
+    let validated = false;
+    let path;
+    let state;
+    let remainderState;
+    let validateByPathList;
+    let i;
+    let responder;
     if (unvalidatedState.hasWildcard()) {
-            //			console.log("validate - validateState: Requested states may not contain wildcards", "return false");
-            // throw new Error("validateState: Requested states may not contain wildcards " + NavigationState.WILDCARD);
         return false;
     }
 
     if (unvalidatedState.equals(_defaultState)) {
-            //			console.log("validate - unvalidatedState.equals(_defaultState)", unvalidatedState.getPath(), _defaultState.getPath() , "return false");
         return true;
     }
 
@@ -725,7 +742,7 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
         _preparedValidatingAsynchRespondersStack = [];
     }
 
-    implicit = _validateImplicitly(unvalidatedState);
+    const implicit = _validateImplicitly(unvalidatedState);
     //		console.groupCollapsed('Responders');
 
     // TODO should we order the states? As mapping a validating child state before a invalidating parent state will validate the state
@@ -748,8 +765,11 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
                     responder = validateByPathList[i];
 
                         // check for optional validation
-                    if (NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationOptionalAsync') && !responder.willValidate(remainderState, unvalidatedState)) {
-                        continue;
+                    if (
+                        NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationOptionalAsync') &&
+                        !responder.willValidate(remainderState, unvalidatedState)
+                    ) {
+                        continue; // eslint-disable-line no-continue
                     }
 
                     if (NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationAsync')) {
@@ -770,12 +790,15 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
                 responder = validateByPathList[i];
                     // skip async validators, we handled them a few lines back.
                 if (NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationAsync')) {
-                    continue;
+                    continue; // eslint-disable-line no-continue
                 }
 
                     // check for optional validation
-                if (NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationOptional') && !responder.willValidate(remainderState, unvalidatedState)) {
-                    continue;
+                if (
+                    NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateValidationOptional') &&
+                    !responder.willValidate(remainderState, unvalidatedState)
+                ) {
+                    continue;  // eslint-disable-line no-continue
                 }
 
                 if (responder.validate(remainderState, unvalidatedState) && _hasRegisteredResponder(unvalidatedState)) {
@@ -836,7 +859,7 @@ let _validate = function (stateToValidate, allowRedirection, allowAsyncValidatio
     return implicit;
 };
 
-let _validateImplicitly = function (state) {
+let _validateImplicitly = state => {
     let path;
     for (path in _responders.showByPath) {
         if (new NavigationState(path).equals(state)) {
@@ -848,13 +871,13 @@ let _validateImplicitly = function (state) {
     return false;
 };
 
-let _getRespondersToShow = function () {
-    let respondersToShow = _getResponderList(_responders.showByPath, _currentState);
+let _getRespondersToShow = () => {
+    const respondersToShow = _getResponderList(_responders.showByPath, _currentState);
 
     // remove elements from the toShow list, if they are in the toHide list.
     //			for each (var hide : IHasStateTransition in toHide) {
 
-    let respondersToHide = _getResponderList(_responders.hideByPath, _currentState);
+    const respondersToHide = _getResponderList(_responders.hideByPath, _currentState);
     let i;
     let hideResponder;
     let hideIndex;
@@ -869,14 +892,17 @@ let _getRespondersToShow = function () {
     return respondersToShow;
 };
 
-let _initializeIfNeccessary = function (responderList) {
+let _initializeIfNeccessary = responderList => {
     let i;
     //			for each (var responder : INavigationResponder in responderList) {
 
     let responder;
     for (i = 0; i < responderList.length; i++) {
         responder = responderList[i];
-        if (_statusByResponderID[responder.__navigatorjs.id] === TransitionStatus.UNINITIALIZED && NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateInitialization')) {
+        if (
+            _statusByResponderID[responder.__navigatorjs.id] === TransitionStatus.UNINITIALIZED &&
+             NavigationResponderBehaviors.implementsBehaviorInterface(responder, 'IHasStateInitialization')
+         ) {
                 // first initialize the responder.
             responder.initializeByNavigator();
             _statusByResponderID[responder.__navigatorjs.id] = TransitionStatus.INITIALIZED;
@@ -884,7 +910,7 @@ let _initializeIfNeccessary = function (responderList) {
     }
 };
 
-let _getResponderList = function (listObj, state) {
+let _getResponderList = (listObj, state) => {
     let responders = [];
     let path;
 
@@ -897,43 +923,41 @@ let _getResponderList = function (listObj, state) {
     return responders;
 };
 
-const Navigator = function () {
-    autoBind(this, this);
+class Navigator {
+    constructor() {
+        autoBind(this, this);
 
-    _$eventDispatcher = $({});
-    _currentState = null;
-    _responders = new ResponderLists();
-    _respondersByID = {};
-    _statusByResponderID = {};
-    _redirects = null;
-    _responderIDCount = 0;
-};
+        _$eventDispatcher = $({});
+        _currentState = null;
+        _responders = new ResponderLists();
+        _respondersByID = {};
+        _statusByResponderID = {};
+        _redirects = null;
+        _responderIDCount = 0;
+    }
 
-
-    // PUBLIC API
-Navigator.prototype = {
     add(responder, pathsOrStates, behaviorString) {
         _modify(true, responder, pathsOrStates, behaviorString);
-    },
+    }
 
     remove(responder, pathsOrStates, behaviorString) {
         _modify(false, responder, pathsOrStates, behaviorString);
-    },
+    }
 
     registerRedirect(fromStateOrPath, toStateOrPath) {
         _redirects = _redirects || {};
         _redirects[NavigationState.make(fromStateOrPath).getPath()] = NavigationState.make(toStateOrPath);
-    },
+    }
 
     start(defaultStateOrPath, startStateOrPath) {
         _defaultState = NavigationState.make(defaultStateOrPath || '');
 
         this.request(startStateOrPath || _defaultState);
-    },
+    }
 
     request(pathOrState) {
         _request(pathOrState);
-    },
+    }
 
     getCurrentState() {
         if (!_currentState) {
@@ -945,27 +969,30 @@ Navigator.prototype = {
         }
 
         return _currentState.clone();
-    },
+    }
 
     isTransitioning() {
         return _isTransitioning;
-    },
+    }
 
     on(event, handler) {
         _$eventDispatcher.on(event, handler);
         return this;
-    },
+    }
 
     off(event, handler) {
         _$eventDispatcher.off(event, handler);
         return this;
-    },
+    }
 
     logResponders() {
         try {
             console.log(_responders.toString());
         } catch (e) { console.error(e); }
     }
-};
+}
+
+
+// PUBLIC API
 
 export default Navigator;

@@ -1,32 +1,29 @@
 // @flow weak
-function ResponderLists() {
-    this.validateByPath = {};
-    this.updateByPath = {};
-    this.swapByPath = {};
-    this.showByPath = {};
-    this.hideByPath = {};
-    this.swappedBefore = {};
+export default class ResponderLists {
+    constructor() {
+        this.validateByPath = {};
+        this.updateByPath = {};
+        this.swapByPath = {};
+        this.showByPath = {};
+        this.hideByPath = {};
+        this.swappedBefore = {};
 
-    this.all = [
-        this.validateByPath,
-        this.updateByPath,
-        this.swapByPath,
-        this.showByPath,
-        this.hideByPath,
-        this.swappedBefore
-    ];
-}
-
-// PUBLIC API
-ResponderLists.prototype = {
-    validateByPath: null, // []
-    updateByPath: null, // []
-    swapByPath: null, // []
-    showByPath: null, // []
-    hideByPath: null, // []
-    swappedBefore: null, // []
-    all: null, // []
-
+        this.all = [
+            this.validateByPath,
+            this.updateByPath,
+            this.swapByPath,
+            this.showByPath,
+            this.hideByPath,
+            this.swappedBefore
+        ];
+    }
+    validateByPath: Object;
+    updateByPath: Object;
+    swapByPath: Object;
+    showByPath: Object;
+    hideByPath: Object;
+    swappedBefore: Object;
+    all: Object[];
     toString(): string {
         let s: string = 'ResponderLists [';
 
@@ -45,6 +42,4 @@ ResponderLists.prototype = {
         s += ']';
         return s;
     }
-};
-
-export default ResponderLists;
+}

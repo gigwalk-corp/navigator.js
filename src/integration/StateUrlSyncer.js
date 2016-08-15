@@ -1,22 +1,22 @@
 // @flow weak
+import $ from 'jquery';
 import autoBind from '../utils/AutoBind';
 import NavigationState from '../NavigationState';
 import { STATE_CHANGED } from '../NavigatorEvent';
-import $ from 'jquery';
 
-let _usingPushState,
-    _rootUrl,
-    _navigator,
-    _started;
+let _usingPushState;
+let _rootUrl;
+let _navigator;
+let _started;
 
-const StateUrlSyncer = function (navigator) {
+function StateUrlSyncer(navigator) {
     autoBind(this, this);
 
     _usingPushState = false;
     _rootUrl = '/';
     _navigator = navigator;
     _started = false;
-};
+}
 
 StateUrlSyncer.prototype = {
     supportsPushState: !!(window && window.history && window.history.pushState),
@@ -37,15 +37,15 @@ StateUrlSyncer.prototype = {
     },
 
     _redirectPushStateOrHashOnDeeplink() {
-        let pushUrl = this.parsePushStateUrl(window.location.pathname),
-            hashUrl = this.parseHashUrl(window.location.hash);
+        const pushUrl = this.parsePushStateUrl(window.location.pathname);
+        const hashUrl = this.parseHashUrl(window.location.hash);
 
         if (this.supportsPushState && pushUrl === '' && hashUrl !== '') {
             // There is a hash and no push state.
             window.history.replaceState(null, '', new NavigationState(_rootUrl + hashUrl).getPath());
         } else if (!this.supportsPushState && pushUrl !== '') {
             // There is a push state deeplink, but we don't support it. Redirect back.
-            window.location.href = _rootUrl + '#/' + pushUrl;
+            window.location.href = `${_rootUrl}#/${pushUrl}`;
         }
     },
 
@@ -74,8 +74,8 @@ StateUrlSyncer.prototype = {
     },
 
     setUrl(url) {
-        let newState,
-            urlState = this.getUrlState();
+        let newState;
+        const urlState = this.getUrlState();
         if (_usingPushState) {
             newState = new NavigationState(_rootUrl + url);
             if (newState.equals(urlState)) {

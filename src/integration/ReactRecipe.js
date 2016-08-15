@@ -64,7 +64,7 @@ const ReactRecipe = {
 
         const props = _.extend(
             {
-                ref: function (c) {
+                ref: c => {
                     this._ref = c;
 
                     if (this._queuedTransitionIn && this._ref.transitionIn) {
@@ -84,7 +84,7 @@ const ReactRecipe = {
                         }
                         this._queuedStateUpdate = null;
                     }
-                }.bind(this)
+                }
             },
       params[0]
     );
@@ -93,9 +93,7 @@ const ReactRecipe = {
       this._viewClass,
       props,
       this._children.map(
-        function (child) {
-            return child._viewInstance;
-        }
+        child => child._viewInstance
       )
     );
     },

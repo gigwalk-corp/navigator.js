@@ -17,6 +17,8 @@
         "max-len": [2, 150, 1],
         "no-underscore-dangle": 1,
         "no-restricted-syntax": 0,
-        "import/no-extraneous-dependencies": 1
+        "import/no-extraneous-dependencies": 1,
+        "react/no-find-dom-node": 1,
+        "react/no-is-mounted": 1
     }
 }

@@ -1,7 +1,7 @@
 // @flow weak
 import autoBind from '../utils/AutoBind';
 
-const TransitionCompleteDelegate = function (responder, status, behavior, navigator, transitionNamespace) {
+function TransitionCompleteDelegate(responder, status, behavior, navigator, transitionNamespace) {
     this._responder = responder;
     this._status = status;
     this._behavior = behavior;
@@ -9,12 +9,11 @@ const TransitionCompleteDelegate = function (responder, status, behavior, naviga
     this._transitionNamespace = transitionNamespace;
     this._called = false;
     autoBind(this, this);
-};
+}
 
 // PUBLIC API
 TransitionCompleteDelegate.prototype = {
     call() {
-        // console.log('TransitionCompleteDelegate -> call', this);
         if (this._called) {
             throw new Error('Illegal second call to transition complete. This instance is already prepared for garbage collection!');
         }

@@ -15,12 +15,14 @@ class NavigationState {
         return stateOrPath instanceof NavigationState ? stateOrPath : new NavigationState(stateOrPath);
     }
 
-    setPath(path): this {
-        this._path = `/${path.toLowerCase()}/`;
-        this._path = this._path.replace(new RegExp('[^-_/A-Za-z0-9* ]', 'g'), '');
-        this._path = this._path.replace(new RegExp('\/+', 'g'), '/');
-        this._path = this._path.replace(/\s+/g, '-');
-
+    setPath(_path: string | NavigationState): this {
+        const path: string = _path instanceof NavigationState ? _path.getPath() : _path;
+        if (typeof path === 'string') {
+            this._path = `/${path.toLowerCase()}/`;
+            this._path = this._path.replace(new RegExp('[^-_/A-Za-z0-9* ]', 'g'), '');
+            this._path = this._path.replace(new RegExp('/+', 'g'), '/');
+            this._path = this._path.replace(/\s+/g, '-');
+        }
         return this;
     }
 
@@ -30,7 +32,7 @@ class NavigationState {
 
     getPathRegex(): RegExp {
         const segments = this.getSegments();
-        let regexPath: string = '\/';
+        let regexPath: string = '/';
         let segment;
         let i;
         const length = segments.length;
@@ -82,32 +84,34 @@ class NavigationState {
         return this.getSegment(segments.length - 1);
     }
 
-    contains(foreignStateOrPathOrArray): Boolean {
+    contains(foreignStateOrPathOrArray): boolean {
         if (Array.isArray(foreignStateOrPathOrArray)) {
             return this._containsStateInArray(foreignStateOrPathOrArray);
         }
 
-        let // if we get this far, it is a state or path
+        const // if we get this far, it is a state or path
         foreignStateOrPath = foreignStateOrPathOrArray;
 
-        let foreignState = NavigationState.make(foreignStateOrPath);
-        let foreignSegments = foreignState.getSegments();
-        let nativeSegments = this.getSegments();
-        let foreignMatch = this.getPath().match(foreignState.getPathRegex());
-        let nativeMatch = foreignState.getPath().match(this.getPathRegex());
-        let isForeignMatch = foreignMatch && foreignMatch.index === 0 ? true : false;
-        let isNativeMatch = nativeMatch && nativeMatch.index === 0 ? true : false;
-        let foreignSegmentDoubleWildcardsMatch = foreignState.getPath().match(/\*\*/g);
-        let doubleWildcardsLength = foreignSegmentDoubleWildcardsMatch ? foreignSegmentDoubleWildcardsMatch.length : 0;
-        let tooManyForeignSegments = foreignSegments.length > (nativeSegments.length + doubleWildcardsLength);
-        let enoughNativeSegments = nativeSegments.length > foreignSegments.length;
+        const foreignState = NavigationState.make(foreignStateOrPath);
+        const foreignSegments = foreignState.getSegments();
+        const nativeSegments = this.getSegments();
+        const foreignMatch = this.getPath().match(foreignState.getPathRegex());
+        const nativeMatch = foreignState.getPath().match(this.getPathRegex());
+        // $FlowFixMe should return the corrent type
+        const isForeignMatch = foreignMatch && foreignMatch.index === 0 ? true : false; // eslint-disable-line no-unneeded-ternary
+        // $FlowFixMe should return the corrent type
+        const isNativeMatch = nativeMatch && nativeMatch.index === 0 ? true : false; // eslint-disable-line no-unneeded-ternary
+        const foreignSegmentDoubleWildcardsMatch = foreignState.getPath().match(/\*\*/g);
+        const doubleWildcardsLength = foreignSegmentDoubleWildcardsMatch ? foreignSegmentDoubleWildcardsMatch.length : 0;
+        const tooManyForeignSegments = foreignSegments.length > (nativeSegments.length + doubleWildcardsLength);
+        const enoughNativeSegments = nativeSegments.length > foreignSegments.length;
 
         return (isForeignMatch || (isNativeMatch && enoughNativeSegments)) && !tooManyForeignSegments;
     }
 
     _containsStateInArray(foreignStatesOrPaths) {
         let i;
-        let length = foreignStatesOrPaths.length;
+        const length = foreignStatesOrPaths.length;
         let foreignStateOrPath;
 
         for (i = 0; i < length; i++) {
@@ -125,11 +129,11 @@ class NavigationState {
             return this._equalsStateInArray(stateOrPathOrArray);
         }
 
-        let // if we get this far, it is a state or path
+        const // if we get this far, it is a state or path
         stateOrPath = stateOrPathOrArray; // Or the other way around for double wildcard states
 
-        let state = NavigationState.make(stateOrPath);
-        let subtractedState = this.subtract(state) || state.subtract(this);
+        const state = NavigationState.make(stateOrPath);
+        const subtractedState = this.subtract(state) || state.subtract(this);
 
         if (subtractedState === null) {
             return false;
@@ -140,7 +144,7 @@ class NavigationState {
 
     _equalsStateInArray(statesOrPaths) {
         let i;
-        let length = statesOrPaths.length;
+        const length = statesOrPaths.length;
         let stateOrPath;
 
         for (i = 0; i < length; i++) {
@@ -154,14 +158,14 @@ class NavigationState {
     }
 
     subtract(operandStateOrPath) {
-        let operand = NavigationState.make(operandStateOrPath);
-        let subtractedPath;
+        const operand = NavigationState.make(operandStateOrPath);
+
 
         if (!this.contains(operand)) {
             return null;
         }
 
-        subtractedPath = this.getPath().replace(operand.getPathRegex(), '');
+        const subtractedPath = this.getPath().replace(operand.getPathRegex(), '');
 
         return new NavigationState(subtractedPath);
     }
@@ -187,10 +191,10 @@ class NavigationState {
     }
 
     mask(sourceStateOrPath) {
-        let sourceState = NavigationState.make(sourceStateOrPath);
-        let unmaskedSegments = this.getSegments();
-        let sourceSegments = sourceState.getSegments();
-        let length = Math.min(unmaskedSegments.length, sourceSegments.length);
+        const sourceState = NavigationState.make(sourceStateOrPath);
+        const unmaskedSegments = this.getSegments();
+        const sourceSegments = sourceState.getSegments();
+        const length = Math.min(unmaskedSegments.length, sourceSegments.length);
         let i;
 
         for (i = 0; i < length; i++) {

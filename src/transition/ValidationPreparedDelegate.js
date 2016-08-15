@@ -1,14 +1,14 @@
 // @flow weak
 import autoBind from '../utils/AutoBind';
 
-const ValidationPreparedDelegate = function (validatorResponder, truncatedState, fullState, navigator, validationNamespace) {
+function ValidationPreparedDelegate(validatorResponder, truncatedState, fullState, navigator, validationNamespace) {
     this._validatorResponder = validatorResponder;
     this._truncatedState = truncatedState;
     this._fullState = fullState;
     this._navigator = navigator;
     this._validationNamespace = validationNamespace;
     autoBind(this, this);
-};
+}
 
 // PUBLIC API
 ValidationPreparedDelegate.prototype = {

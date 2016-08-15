@@ -1,7 +1,7 @@
 // @flow weak
 import NavigationState from '../NavigationState';
 
-const StateCommandMap = function (navigator, injector) {
+function StateCommandMap(navigator, injector) {
     this._navigator = navigator;
     this._injector = injector;
     this._commandsByState = {};
@@ -10,7 +10,7 @@ const StateCommandMap = function (navigator, injector) {
     // this._navigator.add(this, "");
 
     this.initialize();
-};
+}
 
 StateCommandMap.prototype = {
     navigatorBehaviors: ['IHasStateValidationOptional', 'IHasStateUpdate'],
@@ -20,20 +20,19 @@ StateCommandMap.prototype = {
     _commandsByState: null, // {}
     _verifiedCommandClasses: null, // {}
 
-    initialize() {
-    },
+    initialize() {},
 
     mapCommand(stateOrPath, CommandClass, aExactMatch, aOneShot) {
-        let exactMatch = aExactMatch === undefined ? false : aExactMatch,
-            oneShot = aOneShot === undefined ? false : aOneShot,
-            state = NavigationState.make(stateOrPath),
-            commands = this._commandsByState[state.getPath()] || [];
+        const exactMatch = aExactMatch === undefined ? false : aExactMatch;
+        const oneShot = aOneShot === undefined ? false : aOneShot;
+        const state = NavigationState.make(stateOrPath);
+        const commands = this._commandsByState[state.getPath()] || [];
 
         this._commandsByState[state.getPath()] = commands;
         this._navigator.add(this, state);
 
         if (this._hasCommand(commands, CommandClass)) {
-            throw new Error('Already mapped ' + CommandClass + ' to state ' + state.getPath());
+            throw new Error(`Already mapped ${CommandClass} to state ${state.getPath()}`);
         }
 
         this._verifyCommandClass(CommandClass);
@@ -42,9 +41,10 @@ StateCommandMap.prototype = {
     },
 
     unmapCommand(stateOrPath, CommandClass) {
-        let state = NavigationState.make(stateOrPath),
-            commands = this._commandsByState[state.getPath()] || [],
-            i, wrapper;
+        const state = NavigationState.make(stateOrPath);
+        const commands = this._commandsByState[state.getPath()] || [];
+        let i;
+        let wrapper;
         this._commandsByState[state.getPath()] = commands;
         this._navigator.remove(this, state);
         for (i = commands.length; --i >= 0;) {
@@ -62,7 +62,12 @@ StateCommandMap.prototype = {
     },
 
     validate(truncatedState, fullState) {
-        let path, mappedState, commands, isExact, i, wrapper;
+        let path;
+        let mappedState;
+        let commands;
+        let isExact;
+        let i;
+        let wrapper;
 
         for (path in this._commandsByState) {
             mappedState = NavigationState.make(path);
@@ -76,7 +81,7 @@ StateCommandMap.prototype = {
                 for (i; --i >= 0;) {
                     wrapper = commands[i];
                     if (!isExact && wrapper.exactMatch) {
-                        continue;
+                        continue; // eslint-disable-line no-continue
                     }
                     return true;
                 }
@@ -87,7 +92,13 @@ StateCommandMap.prototype = {
     },
 
     updateState(truncatedState, fullState) {
-        let path, mappedState, commands, isExact, i, wrapper, command;
+        let path;
+        let mappedState;
+        let commands;
+        let isExact;
+        let i;
+        let wrapper;
+        let command;
 
         for (path in this._commandsByState) {
             mappedState = NavigationState.make(path);
@@ -100,7 +111,7 @@ StateCommandMap.prototype = {
                 for (i; --i >= 0;) {
                     wrapper = commands[i];
                     if (!isExact && wrapper.exactMatch) {
-                        continue;
+                        continue; // eslint-disable-line no-continue
                     }
 
                     this._injector.map('fullState').toValue(fullState);
@@ -121,7 +132,9 @@ StateCommandMap.prototype = {
     },
 
     _hasCommand(wrappedCommandsList, testForCommandClass) {
-        let i, commandWrapper, length = wrappedCommandsList.length;
+        let i;
+        let commandWrapper;
+        const length = wrappedCommandsList.length;
         for (i = 0; i < length; i++) {
             commandWrapper = wrappedCommandsList[i];
             if (commandWrapper.CommandClass === testForCommandClass) {
@@ -135,8 +148,8 @@ StateCommandMap.prototype = {
         if (this._verifiedCommandClasses[CommandClass]) {
             return;
         }
-        if (CommandClass.prototype['execute'] === undefined) {
-            throw new Error("Command doesn't implement an execute method - " + CommandClass);
+        if (CommandClass.prototype.execute === undefined) {
+            throw new Error(`Command doesn't implement an execute method - ${CommandClass}`);
         }
         this._verifiedCommandClasses[CommandClass] = true;
     }

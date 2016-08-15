@@ -4,7 +4,7 @@ import $ from 'jquery';
 const BackboneRecipe = {
     _type: 'BACKBONE',
 
-    initialize: function initialize() {
+    initialize() {
         const params = this._viewArguments;
 
         switch (params.length) {
@@ -30,7 +30,7 @@ const BackboneRecipe = {
         }
     },
 
-    isMounted: function isMounted() {
+    isMounted() {
         return this.isInstantiated() &&
       $.contains(
         document.documentElement,
@@ -38,7 +38,7 @@ const BackboneRecipe = {
       );
     },
 
-    getRootEl: function getRootEl() {
+    getRootEl() {
         return this._viewInstance.$el;
     }
 };
