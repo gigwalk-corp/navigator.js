@@ -2,6 +2,7 @@
 import _ from 'underscore';
 import ReactRecipe from './ReactRecipe';
 import BackboneRecipe from './BackboneRecipe';
+import NavigationState from '../NavigationState';
 
 class ViewRecipe {
     constructor() {
@@ -13,7 +14,7 @@ class ViewRecipe {
         this._parentRecipe = null;
         this._viewType = null;
     }
-    _states: Array<any>
+    _states: Array<NavigationState>
     _viewClass: mixed;
     _viewArguments: Array<mixed>;
     _viewInstance: mixed;

@@ -1,4 +1,13 @@
 // @flow weak
+export type ValidationStatus =
+    -2 |
+    -1 |
+    1 |
+    2 |
+    3 |
+    4 |
+    5;
+
 export const UNINITIALIZED = -2;
 export const INITIALIZED = -1;
 export const HIDDEN = 1;
@@ -7,7 +16,7 @@ export const SHOWN = 3;
 export const SWAPPING = 4;
 export const DISAPPEARING = 5;
 
-export function toString(status: number): string {
+export function toString(status: ValidationStatus): string {
     switch (status) {
         case UNINITIALIZED:
             return 'UNINITIALIZED';

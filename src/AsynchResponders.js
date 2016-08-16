@@ -1,4 +1,4 @@
-// @flow weak
+// @flow
 class AsynchResponders {
     _responders: Object[];
     constructor() {
@@ -6,29 +6,29 @@ class AsynchResponders {
     }
 
     // PUBLIC API
-    getLength() {
+    getLength(): number {
         return this._responders.length;
     }
 
-    isBusy() {
+    isBusy(): bool {
         return this.getLength() > 0;
     }
 
-    hasResponder(responder) {
+    hasResponder(responder: any): boolean {
         return this._responders.indexOf(responder) !== -1;
     }
 
-    addResponder(responder) {
+    addResponder(responder: any) {
         this._responders.push(responder);
     }
 
-    addResponders(additionalRespondersArray) {
-        if (additionalRespondersArray && additionalRespondersArray instanceof Array && additionalRespondersArray.length) {
+    addResponders(additionalRespondersArray: mixed): void {
+        if (Array.isArray(additionalRespondersArray) && additionalRespondersArray.length) {
             this._responders = this._responders.concat(additionalRespondersArray);
         }
     }
 
-    takeOutResponder(responder) {
+    takeOutResponder(responder: any): bool {
         const index = this._responders.indexOf(responder);
         if (index !== -1) {
             this._responders.splice(index, 1);
