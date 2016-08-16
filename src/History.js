@@ -1,6 +1,7 @@
 // @flow weak
 import autoBind from './utils/AutoBind';
 import * as NavigatorEvent from './NavigatorEvent';
+import Navigator from './Navigator';
 /**
 * History manager for the navigatorjs.Navigator
 *
@@ -26,13 +27,13 @@ import * as NavigatorEvent from './NavigatorEvent';
 *
 * @param {navigatorjs.Navigator} navigator
 */
-const History = function (navigator) {
+function History(navigator: Navigator) {
     // Bind the methods to this scope
     autoBind(this, this);
 
     // Initialize the instance
     this._initialize(navigator);
-};
+}
 
 // Default max history length, don't change this,
 // change the maxLength instance property
