@@ -65,7 +65,7 @@ NavigationResponderBehaviors.implementsBehaviorInterface = function implementsBe
     return true;
 };
 
-NavigationResponderBehaviors.getInterfaceInheritanceChain = (_interface, existingChain) => {
+NavigationResponderBehaviors.getInterfaceInheritanceChain = function getInterfaceInheritanceChain(_interface, existingChain): Array<any> {
     const chain = existingChain || [];
     let extendingInterface;
     let i;
@@ -96,7 +96,7 @@ NavigationResponderBehaviors.getInterfaceInheritanceChain = (_interface, existin
     return chain;
 };
 
-NavigationResponderBehaviors.getInterfaceMethods = interfaces => {
+NavigationResponderBehaviors.getInterfaceMethods = function getInterfaceMethods(interfaces: mixed): Array<any> {
     if (interfaces === undefined || !Array.isArray(interfaces)) {
         // No valid input
         return [];
@@ -127,7 +127,7 @@ NavigationResponderBehaviors.getInterfaceMethods = interfaces => {
             interfaceObject !== undefined &&
             typeof interfaceObject === 'object' &&
             interfaceMethods !== undefined &&
-            interfaceMethods instanceof Array
+            Array.isArray(interfaceMethods)
         ) {
             methodsLength = interfaceMethods.length;
             for (j = 0; j < methodsLength; j++) {
