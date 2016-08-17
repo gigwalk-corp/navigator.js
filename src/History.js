@@ -27,12 +27,14 @@ import Navigator from './Navigator';
 *
 * @param {navigatorjs.Navigator} navigator
 */
-function History(navigator: Navigator) {
-    // Bind the methods to this scope
-    autoBind(this, this);
+class History {
+    constructor(navigator: Navigator) {
+        // Bind the methods to this scope
+        autoBind(this, this);
 
-    // Initialize the instance
-    this._initialize(navigator);
+        // Initialize the instance
+        this._initialize(navigator);
+    }
 }
 
 // Default max history length, don't change this,
@@ -47,7 +49,7 @@ History.DIRECTION_FORWARD = 1;
 /**
 * Instance properties
 */
-History.prototype = {
+Object.assign(History.prototype, {
 
     // The navigator it is controlling
     _navigator: null,
@@ -287,7 +289,7 @@ History.prototype = {
                 break;
         }
     }
-};
+});
 
 // Copy the History object to the navigatorjs namespace
 export default History;
