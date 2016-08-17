@@ -39,13 +39,11 @@ class History {
     static DIRECTION_NORMAL: 0 = 0;
     static DIRECTION_FORWARD: 1 = 1;
 
-
-
     // The navigator it is controlling
-    _navigator: ?Navigator = null;
+    _navigator: Navigator;
 
     // The history, last state is at start of Array
-    _history: ?NavigationState[] = null;
+    _history: NavigationState[] = [];
 
     // The current position in history
     _historyPosition: number = 0;
@@ -73,9 +71,6 @@ class History {
             this.maxLength = options.maxLength || this.maxLength;
         }
 
-        // Create the history array containing the NavigationState objects
-        this._history = [];
-
         // Listen to changes on the navigator
         this._navigator = navigator;
         this._navigator.on(NavigatorEvent.STATE_CHANGED, this._handleStateChange);
@@ -102,19 +97,13 @@ class History {
         this._navigateToCurrentHistoryPosition();
         return true;
     }
-}
-
-/**
-* Instance properties
-*/
-Object.assign(History.prototype, {
     /**
     * Go forward in the history
     *
     * @param {Number} [steps=1] The number of steps to go forward in history
     * @return {Boolean} Returns false if there was no next state
     */
-    forward(steps) {
+    forward(steps: number): bool {
         if (this._historyPosition === 0) {
             return false;
         }
@@ -127,7 +116,7 @@ Object.assign(History.prototype, {
         this._navigationDirection = History.DIRECTION_FORWARD;
         this._navigateToCurrentHistoryPosition();
         return true;
-    },
+    }
 
     /**
     * Go back in the history and return that NavigationState
@@ -135,19 +124,16 @@ Object.assign(History.prototype, {
     * @param {Number} [steps=1] The number of steps to go back in history
     * @return {navigatorjs.NavigationState} The found state or null if no state was found
     */
-    getPreviousState(steps) {
+    getPreviousState(steps: number = 1): ?NavigationState {
         // Cannot go beyond the first entry in history
         if (this._history.length === 0 || this._historyPosition === Math.max(0, this._history.length - 1)) {
             return null;
         }
 
-        // Set to 1 by default
-        steps = steps || 1;
-
         // Fetch the requested state in history
         const position = Math.min(this._history.length - 1, Math.max(0, this._historyPosition + steps));
         return this._history[position];
-    },
+    }
 
     /**
     * Go forward in the history and return that NavigationState
@@ -155,7 +141,7 @@ Object.assign(History.prototype, {
     * @param {Number} [steps=1] The number of steps to go back in history
     * @return {navigatorjs.NavigationState} The found state or null if no state was found
     */
-    getNextState(steps) {
+    getNextState(steps: number = 1): ?NavigationState {
         // Cannot look into the future
         if (this._history.length === 0 || this._historyPosition === 0) {
             return null;
@@ -167,46 +153,43 @@ Object.assign(History.prototype, {
         // Fetch the requested state in history
         const position = Math.max(0, this._historyPosition - steps);
         return this._history[position];
-    },
-
+    }
     /**
     * Fetch the current NavigationState
     *
     * @return {navigatorjs.NavigationState}
     */
-    getCurrentState() {
+    getCurrentState(): ?NavigationState {
         return this._history[this._historyPosition] || null;
-    },
+    }
 
     /**
     * Clear the navigation history
     */
-    clearHistory() {
+    clearHistory(): void {
         this._history = [];
         this._historyPosition = 1;
-    },
-
+    }
     /**
     * Get the full history
     *
     * @return {Array} List of navigatorjs.NavigationStates
     */
-    all() {
+    all(): NavigationState[] {
         return this._history;
-    },
-
+    }
     /**
     * Get the state by historyposition
     *
     * @param {Number} position The position in history
     * @return {navigatorjs.NavigationState} The found state or null if no state was found
     */
-    getStateByPosition(position) {
+    getStateByPosition(position: number): ?NavigationState {
         if (position < 0 || position > this._history.length - 1) {
             return null;
         }
         return this._history[position];
-    },
+    }
 
     /**
     * Get the first occurence of a state in the history
@@ -214,10 +197,9 @@ Object.assign(History.prototype, {
     * @param {navigatorjs.NavigationState} state The NavigationState in history
     * @return {Number} The found position or false if not found
     */
-    getPositionByState(state) {
+    getPositionByState(state: NavigationState): number | false {
         return this.getPositionByPath(state.getPath());
-    },
-
+    }
     /**
     * Find the first occurence of the path in the history
     *
@@ -232,16 +214,16 @@ Object.assign(History.prototype, {
             }
         }
         return false;
-    },
+    }
 
     /**
     * Get the number of items in the history
     *
     * @return {Number}
     */
-    getLength() {
+    getLength(): number {
         return this._history.length;
-    },
+    }
 
     /**
     * Tell the navigator to go the current historyPosition
@@ -249,7 +231,15 @@ Object.assign(History.prototype, {
     _navigateToCurrentHistoryPosition() {
         const newState = this._history[this._historyPosition];
         this._navigator.request(newState);
-    },
+    }
+
+    _handleStateChange: (event: Event, update: Object) => void;
+}
+
+/**
+* Instance properties
+*/
+Object.assign(History.prototype, {
 
     /**
     * Check what to do with the new state
@@ -257,7 +247,7 @@ Object.assign(History.prototype, {
     * @param {Object} event
     * @param {Object} update
     */
-    _handleStateChange(event, update) {
+    _handleStateChange(event: Event, update: Object) {
         const state = update.state;
 
         switch (this._navigationDirection) {
