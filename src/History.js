@@ -2,6 +2,8 @@
 import autoBind from './utils/AutoBind';
 import * as NavigatorEvent from './NavigatorEvent';
 import Navigator from './Navigator';
+import NavigationState from './NavigationState';
+
 /**
 * History manager for the navigatorjs.Navigator
 *
@@ -28,46 +30,33 @@ import Navigator from './Navigator';
 * @param {navigatorjs.Navigator} navigator
 */
 class History {
-    constructor(navigator: Navigator) {
-        // Bind the methods to this scope
-        autoBind(this, this);
+    // Default max history length, don't change this,
+    // change the maxLength instance property
+    static MAX_HISTORY_LENGTH: 100 = 100;
 
-        // Initialize the instance
-        this._initialize(navigator);
-    }
-}
+    // Navigation direction types
+    static DIRECTION_BACK: -1 = -1;
+    static DIRECTION_NORMAL: 0 = 0;
+    static DIRECTION_FORWARD: 1 = 1;
 
-// Default max history length, don't change this,
-// change the maxLength instance property
-History.MAX_HISTORY_LENGTH = 100;
 
-// Navigation direction types
-History.DIRECTION_BACK = -1;
-History.DIRECTION_NORMAL = 0;
-History.DIRECTION_FORWARD = 1;
-
-/**
-* Instance properties
-*/
-Object.assign(History.prototype, {
 
     // The navigator it is controlling
-    _navigator: null,
+    _navigator: ?Navigator = null;
 
     // The history, last state is at start of Array
-    _history: null,
+    _history: ?NavigationState[] = null;
 
     // The current position in history
-    _historyPosition: 0,
+    _historyPosition: number = 0;
 
     // The navigator doesn't know anything about going forward or back.
     // Therefore, we need to keep track of the direction.
     // This is changed when the forward or back methods are called.
-    _navigationDirection: History.DIRECTION_NORMAL,
+    _navigationDirection: -1 | 0 | 1 = 0;
 
     // The max number of history states
-    maxLength: History.MAX_HISTORY_LENGTH,
-
+    maxLength: number = 100;
     /**
     * Create the history manager. When navigating back and forword, the history is maintained.
     * It is truncated when navigating to a state naturally
@@ -75,7 +64,10 @@ Object.assign(History.prototype, {
     * @param {navigatorjs.Navigator} navigator
     * @param {Object} [options]
     */
-    _initialize(navigator, options) {
+    constructor(navigator: Navigator, options?: { maxLength: number }) {
+        // Bind the methods to this scope
+        autoBind(this, this);
+        // Initialize the instance
         // Setup the options
         if (options) {
             this.maxLength = options.maxLength || this.maxLength;
@@ -87,7 +79,7 @@ Object.assign(History.prototype, {
         // Listen to changes on the navigator
         this._navigator = navigator;
         this._navigator.on(NavigatorEvent.STATE_CHANGED, this._handleStateChange);
-    },
+    }
 
     /**
     * Go back in the history
@@ -109,8 +101,13 @@ Object.assign(History.prototype, {
         this._navigationDirection = History.DIRECTION_BACK;
         this._navigateToCurrentHistoryPosition();
         return true;
-    },
+    }
+}
 
+/**
+* Instance properties
+*/
+Object.assign(History.prototype, {
     /**
     * Go forward in the history
     *
