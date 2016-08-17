@@ -327,7 +327,7 @@ _flow.startTransition = () => {
         _flow.performUpdates();
     }
 };
-
+// $FlowFixMe need to fix this
 _flow.transitionOut = function () {
     const respondersToShow = _getRespondersToShow();
     let responderID;
@@ -415,7 +415,7 @@ _flow.startTransitionIn = () => {
         _flow.startSwapOut();
     }
 };
-
+// $FlowFixMe should allow for this call
 _flow.transitionIn = function () {
     const respondersToShow = _getRespondersToShow();
     const respondersToWaitFor = [];
@@ -468,7 +468,7 @@ _flow.startSwapOut = () => {
         _flow.swapIn();
     }
 };
-
+// $FlowFixMe should allow for this call
 _flow.swapOut = function () {
     _appearingAsynchResponders.reset();
 
