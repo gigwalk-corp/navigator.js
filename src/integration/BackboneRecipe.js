@@ -30,7 +30,7 @@ const BackboneRecipe = {
         }
     },
 
-    isMounted() {
+    isMounted(): bool {
         return this.isInstantiated() &&
       $.contains(
         document.documentElement,

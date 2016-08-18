@@ -1,7 +1,7 @@
 // @flow
 import NavigationState from '../NavigationState';
 import Navigator from '../Navigator';
-
+/* globals Command */
 interface Command {
     execute(): mixed;
 }

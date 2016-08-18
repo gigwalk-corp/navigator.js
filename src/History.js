@@ -228,12 +228,18 @@ class History {
     /**
     * Tell the navigator to go the current historyPosition
     */
-    _navigateToCurrentHistoryPosition() {
+    _navigateToCurrentHistoryPosition(): void {
         const newState = this._history[this._historyPosition];
         this._navigator.request(newState);
     }
 
-    _handleStateChange: (event: Event, update: Object) => void;
+    /**
+    * Check what to do with the new state
+    *
+    * @param {Object} event
+    * @param {Object} update
+    */
+    _handleStateChange: (event: Event, update: { state: NavigationState}) => void;
 }
 
 /**
@@ -247,9 +253,8 @@ Object.assign(History.prototype, {
     * @param {Object} event
     * @param {Object} update
     */
-    _handleStateChange(event: Event, update: Object) {
+    _handleStateChange(event: Event, update: { state: NavigationState}) {
         const state = update.state;
-
         switch (this._navigationDirection) {
 
             case History.DIRECTION_BACK:

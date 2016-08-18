@@ -8,13 +8,13 @@ export type ValidationStatus =
     4 |
     5;
 
-export const UNINITIALIZED = -2;
-export const INITIALIZED = -1;
-export const HIDDEN = 1;
-export const APPEARING = 2;
-export const SHOWN = 3;
-export const SWAPPING = 4;
-export const DISAPPEARING = 5;
+export const UNINITIALIZED: -2 = -2;
+export const INITIALIZED: -1 = -1;
+export const HIDDEN: 1 = 1;
+export const APPEARING: 2 = 2;
+export const SHOWN: 3 = 3;
+export const SWAPPING: 4 = 4;
+export const DISAPPEARING: 5 = 5;
 
 export function toString(status: ValidationStatus): string {
     switch (status) {
