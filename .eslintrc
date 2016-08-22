@@ -6,6 +6,9 @@
         "jasmine": true
     },
     "extends": "airbnb",
+    "globals": {
+      "Command": true
+    },
     "rules": {
         "indent": [2, 4, {"SwitchCase": 1}],
         "comma-dangle": 0,
