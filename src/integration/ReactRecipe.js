@@ -16,7 +16,7 @@ const ReactRecipe = {
   // we do not use these transition functions within
   // our react components
 
-    getViewInstance: function getViewInstance() {
+    getViewInstance() {
         if (!this._refProxy) {
       // Create proxy object to call methods on the react
       // component instance (ref).  This allows us to queue
@@ -59,7 +59,7 @@ const ReactRecipe = {
   // Save reference to our react element instead of
   // view instance like backbone recipe does
 
-    initialize: function initialize() {
+    initialize() {
         const params = this._viewArguments;
 
         const props = _.extend(
@@ -101,13 +101,13 @@ const ReactRecipe = {
   // Use ReactDOM's findDOMNode method to find associated
   // DOM node of the component reference
 
-    getRootEl: function getRootEl() {
+    getRootEl(): any {
         return $(ReactDOM.findDOMNode(this._ref));
     },
 
   // Component is mounted if is not 'null'
 
-    isMounted() {
+    isMounted(): boolean {
         if (!this.isInstantiated()) {
             this.initialize();
         }

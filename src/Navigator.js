@@ -10,7 +10,6 @@ import * as TransitionStatus from './transition/TransitionStatus';
 import TransitionCompleteDelegate from './transition/TransitionCompleteDelegate';
 import ValidationPreparedDelegate from './transition/ValidationPreparedDelegate';
 import ResponderLists from './ResponderLists';
-import autoBind from './utils/AutoBind';
 
 let _$eventDispatcher = null;
 // internal namespaces
@@ -293,7 +292,7 @@ let _performRequestCascade = (requestedState, startAsyncValidation) => {
     }
 };
 
-let _grantRequest = state => {
+function _grantRequest(state: NavigationState) {
     _asyncInvalidated = false;
     _asyncValidated = false;
     _previousState = _currentState;
@@ -302,7 +301,7 @@ let _grantRequest = state => {
     _notifyStateChange(_currentState);
 
     _flow.startTransition();
-};
+}
 
 let _notifyStateChange = state => {
     // logger.notice(state);
@@ -328,7 +327,7 @@ _flow.startTransition = () => {
         _flow.performUpdates();
     }
 };
-
+// $FlowFixMe need to fix this
 _flow.transitionOut = function () {
     const respondersToShow = _getRespondersToShow();
     let responderID;
@@ -416,7 +415,7 @@ _flow.startTransitionIn = () => {
         _flow.startSwapOut();
     }
 };
-
+// $FlowFixMe should allow for this call
 _flow.transitionIn = function () {
     const respondersToShow = _getRespondersToShow();
     const respondersToWaitFor = [];
@@ -469,7 +468,7 @@ _flow.startSwapOut = () => {
         _flow.swapIn();
     }
 };
-
+// $FlowFixMe should allow for this call
 _flow.swapOut = function () {
     _appearingAsynchResponders.reset();
 
@@ -925,8 +924,6 @@ let _getResponderList = (listObj, state) => {
 
 class Navigator {
     constructor() {
-        autoBind(this, this);
-
         _$eventDispatcher = $({});
         _currentState = null;
         _responders = new ResponderLists();
