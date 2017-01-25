@@ -1,27 +1,24 @@
 // @flow weak
 import $ from 'jquery';
-import autoBind from '../utils/AutoBind';
 import NavigationState from '../NavigationState';
+import Navigator from '../Navigator';
 import { STATE_CHANGED } from '../NavigatorEvent';
 
-let _usingPushState;
-let _rootUrl;
-let _navigator;
-let _started;
+let _usingPushState: bool;
+let _rootUrl: string;
+let _navigator: Navigator;
+let _started: bool;
 
-function StateUrlSyncer(navigator) {
-    autoBind(this, this);
-
-    _usingPushState = false;
-    _rootUrl = '/';
-    _navigator = navigator;
-    _started = false;
-}
-
-StateUrlSyncer.prototype = {
-    supportsPushState: !!(window && window.history && window.history.pushState),
-
-    usePushState(rootUrl) {
+class StateUrlSyncer {
+    constructor(navigator: Navigator): void {
+        _usingPushState = false;
+        _rootUrl = '/';
+        _navigator = navigator;
+        _started = false;
+        this.supportsPushState = !!(window && window.history && window.history.pushState);
+    }
+    supportsPushState: bool;
+    usePushState = (rootUrl: string) => {
         if (_started) {
             throw new Error('Cannot switch to using push states after start was called');
         }
@@ -30,11 +27,11 @@ StateUrlSyncer.prototype = {
         _rootUrl = rootUrl || _rootUrl;
 
         this._redirectPushStateOrHashOnDeeplink();
-    },
+    }
 
     isUsingPushState() {
         return _usingPushState;
-    },
+    }
 
     _redirectPushStateOrHashOnDeeplink() {
         const pushUrl = this.parsePushStateUrl(window.location.pathname);
@@ -47,16 +44,16 @@ StateUrlSyncer.prototype = {
             // There is a push state deeplink, but we don't support it. Redirect back.
             window.location.href = `${_rootUrl}#/${pushUrl}`;
         }
-    },
+    }
 
-    start() {
+    start = () => {
         if (_started) {
             throw new Error('Already started');
         }
 
         _started = true;
         this._addListeners();
-    },
+    };
 
     _addListeners() {
         if (_usingPushState) {
@@ -66,14 +63,14 @@ StateUrlSyncer.prototype = {
         }
 
         _navigator.on(STATE_CHANGED, this._onStateChanged);
-    },
+    }
 
     _removeListeners() {
         $(window).off('popstate', this._onUrlChange);
         $(window).off('hashchange', this._onUrlChange);
-    },
+    }
 
-    setUrl(url) {
+    setUrl(url: string) {
         let newState;
         const urlState = this.getUrlState();
         if (_usingPushState) {
@@ -89,43 +86,42 @@ StateUrlSyncer.prototype = {
                 window.location.hash = newState.getPath();
             }
         }
-    },
+    }
 
-    getRawUrl() {
+    getRawUrl(): string {
         if (_usingPushState) {
             return this.parsePushStateUrl(window.location.pathname);
         }
         return this.parseHashUrl(window.location.hash);
-    },
+    }
 
     getUrlState() {
         return new NavigationState(this.getRawUrl());
-    },
+    }
 
-    _onStateChanged() {
+    _onStateChanged = () => {
         this.setUrl(_navigator.getCurrentState().getPath());
-    },
+    };
 
-    _onUrlChange() {
+    _onUrlChange = () => {
         _navigator.request(this.getUrlState());
-    },
+    };
 
     resetUrl() {
         this.setUrl('');
-    },
+    }
 
-    parseHashUrl(hashUrl) {
+    parseHashUrl(hashUrl: string) {
         return hashUrl.replace(/^#|$/g, '');
-    },
+    }
 
-    parsePushStateUrl(pushStateUrl) {
+    parsePushStateUrl(pushStateUrl: string): string {
         return pushStateUrl.replace(_rootUrl, '');
-    },
+    }
 
     dispose() {
         this._removeListeners();
     }
-
-};
+}
 
 export default StateUrlSyncer;

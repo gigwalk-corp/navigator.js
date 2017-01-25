@@ -8,7 +8,6 @@ import NavigationResponderBehaviors from './NavigationResponderBehaviors';
 import History from './History';
 import AsynchResponders from './AsynchResponders';
 import Navigator from './Navigator';
-import Bind from './utils/Bind';
 import AutoBind from './utils/AutoBind';
 import DebugConsole from './features/DebugConsole';
 import * as TransitionStatus from './transition/TransitionStatus';
@@ -20,7 +19,6 @@ import StateUrlSyncer from './integration/StateUrlSyncer';
 import StateViewMap from './integration/StateViewMap';
 
 const utils = Object.freeze({
-    Bind,
     AutoBind,
 });
 const features = Object.freeze({

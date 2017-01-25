@@ -1,4 +1,4 @@
-// @flow weak
+// @flow
 class NavigationState {
     _path: string;
     constructor(pathStringOrArray: string | string[]) {
@@ -71,7 +71,7 @@ class NavigationState {
         return segments;
     }
 
-    getSegment(index): ?string {
+    getSegment(index: number): ?string {
         return this.getSegments()[index];
     }
 
@@ -84,7 +84,7 @@ class NavigationState {
         return this.getSegment(segments.length - 1);
     }
 
-    contains(foreignStateOrPathOrArray): boolean {
+    contains(foreignStateOrPathOrArray: Array<NavigationState | string> | string | NavigationState): boolean {
         if (Array.isArray(foreignStateOrPathOrArray)) {
             return this._containsStateInArray(foreignStateOrPathOrArray);
         }
@@ -107,7 +107,7 @@ class NavigationState {
         return (isForeignMatch || (isNativeMatch && enoughNativeSegments)) && !tooManyForeignSegments;
     }
 
-    _containsStateInArray(foreignStatesOrPaths) {
+    _containsStateInArray(foreignStatesOrPaths: Array<NavigationState | string>): bool {
         let i;
         const length = foreignStatesOrPaths.length;
         let foreignStateOrPath;
@@ -122,8 +122,8 @@ class NavigationState {
         return false;
     }
 
-    equals(stateOrPathOrArray): boolean {
-        if (stateOrPathOrArray instanceof Array) {
+    equals(stateOrPathOrArray: Array<NavigationState | string> | NavigationState | string): boolean {
+        if (Array.isArray(stateOrPathOrArray)) {
             return this._equalsStateInArray(stateOrPathOrArray);
         }
 
@@ -133,14 +133,14 @@ class NavigationState {
         const state = NavigationState.make(stateOrPath);
         const subtractedState = this.subtract(state) || state.subtract(this);
 
-        if (subtractedState === null) {
+        if (!subtractedState) {
             return false;
+        } else {
+            return subtractedState.getSegments().length === 0;
         }
-
-        return subtractedState.getSegments().length === 0;
     }
 
-    _equalsStateInArray(statesOrPaths) {
+    _equalsStateInArray(statesOrPaths: Array<NavigationState | string>): bool {
         let i;
         const length = statesOrPaths.length;
         let stateOrPath;
@@ -155,7 +155,7 @@ class NavigationState {
         return false;
     }
 
-    subtract(operandStateOrPath) {
+    subtract(operandStateOrPath: NavigationState | string): ?NavigationState {
         const operand = NavigationState.make(operandStateOrPath);
 
 
@@ -168,27 +168,21 @@ class NavigationState {
         return new NavigationState(subtractedPath);
     }
 
-    append(stringOrState) {
-        let path = stringOrState;
-        if (stringOrState instanceof NavigationState) {
-            path = stringOrState.getPath();
-        }
+    append(stringOrState: NavigationState | string): this {
+        const path: string = typeof stringOrState === 'string' ? stringOrState : stringOrState.getPath();
         return this.setPath(this._path + path);
     }
 
-    prepend(stringOrState) {
-        let path = stringOrState;
-        if (stringOrState instanceof NavigationState) {
-            path = stringOrState.getPath();
-        }
+    prepend(stringOrState: NavigationState | string): this {
+        const path: string = typeof stringOrState === 'string' ? stringOrState : stringOrState.getPath();
         return this.setPath(path + this._path);
     }
 
-    hasWildcard() {
+    hasWildcard(): bool {
         return this.getPath().indexOf('/*/') !== -1;
     }
 
-    mask(sourceStateOrPath) {
+    mask(sourceStateOrPath: string | NavigationState): NavigationState {
         const sourceState = NavigationState.make(sourceStateOrPath);
         const unmaskedSegments = this.getSegments();
         const sourceSegments = sourceState.getSegments();
@@ -204,7 +198,7 @@ class NavigationState {
         return new NavigationState(unmaskedSegments);
     }
 
-    clone() {
+    clone(): NavigationState {
         return new NavigationState(this._path);
     }
 }

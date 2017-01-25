@@ -5,29 +5,32 @@ import $ from 'jquery';
 import { STATE_REQUESTED } from '../NavigatorEvent';
 import ViewRecipe from './ViewRecipe';
 import NavigationState from '../NavigationState';
+import Navigator from '../Navigator';
 
-function StateViewMap(navigator, $root) {
-    this._navigator = navigator;
-    this._orderedRecipes = [];
-    this._$root = $root || $('body');
+class StateViewMap {
+    constructor(navigator: Navigator, $root: any): void {
+        this._navigator = navigator;
+        this._orderedRecipes = [];
+        this._$root = $root || $('body');
 
-    this._navigator.on(STATE_REQUESTED, this._handleStateRequested.bind(this));
-}
+        this._navigator.on(STATE_REQUESTED, this._handleStateRequested.bind(this));
+    }
 
-  // PUBLIC API
-StateViewMap.prototype = {
+    _navigator: Navigator;
+    _orderedRecipes: ViewRecipe[];
+    _$root: any;
+
     mapState() {
         let allArgumentsAsOneFlatArray = [];
         allArgumentsAsOneFlatArray = allArgumentsAsOneFlatArray.concat.apply(allArgumentsAsOneFlatArray, arguments); // eslint-disable-line
         return this._addRecipe(allArgumentsAsOneFlatArray);
-    },
-
-    get$Root: function get$Root() {
+    }
+    get$Root(): any {
         return this._$root;
-    },
+    }
 
-    _addRecipe: function _addRecipe(statesOrPaths) {
-        const recipe = new ViewRecipe();
+    _addRecipe(statesOrPaths): ViewRecipe {
+        const recipe: ViewRecipe = new ViewRecipe();
 
         let i;
         const length = statesOrPaths.length;
@@ -38,9 +41,9 @@ StateViewMap.prototype = {
         this._orderedRecipes.push(recipe);
 
         return recipe;
-    },
+    }
 
-    _handleStateRequested: function _handleStateRequested(e, eventData) {
+    _handleStateRequested(e, eventData) {
         const requestedState = eventData.state;
         let index;
         let recipe;
@@ -67,9 +70,9 @@ StateViewMap.prototype = {
                 }
             }
         }
-    },
+    }
 
-    _addRecipeToParent: function _addRecipeToParent(parentRecipe, recipe) {
+    _addRecipeToParent(parentRecipe, recipe) {
         let $container = this._$root;
         let $inside;
         let $reactRoot;
@@ -131,9 +134,9 @@ StateViewMap.prototype = {
                 break;
 
         }
-    },
+    }
 
-    _addViewElementToDOM: function _addViewElementToDOM(recipe) {
+    _addViewElementToDOM(recipe) {
       // If element for this view is already initialized and in the DOM
 
         if (recipe.isMounted()) {
@@ -160,6 +163,6 @@ StateViewMap.prototype = {
 
         this._addRecipeToParent(parentRecipe, recipe);
     }
-};
+}
 
 export default StateViewMap;

@@ -1,6 +1,10 @@
-// @flow weak
+// @flow
 import NavigationState from '../NavigationState';
 import Navigator from '../Navigator';
+/* globals Command */
+interface Command {
+    execute(): mixed;
+}
 
 export default class StateCommandMap {
     constructor(navigator: Navigator, injector: any) {
@@ -15,10 +19,8 @@ export default class StateCommandMap {
     _verifiedCommandClasses: Object;
     navigatorBehaviors = ['IHasStateValidationOptional', 'IHasStateUpdate'];
 
-    mapCommand(stateOrPath, CommandClass, aExactMatch, aOneShot) {
-        const exactMatch = aExactMatch === undefined ? false : aExactMatch;
-        const oneShot = aOneShot === undefined ? false : aOneShot;
-        const state = NavigationState.make(stateOrPath);
+    mapCommand(stateOrPath: NavigationState | string, CommandClass: any, exactMatch: bool = false, oneShot: bool = false) {
+        const state: NavigationState = NavigationState.make(stateOrPath);
         const commands = this._commandsByState[state.getPath()] || [];
 
         this._commandsByState[state.getPath()] = commands;
@@ -33,7 +35,7 @@ export default class StateCommandMap {
         commands.push({ CommandClass, state, exactMatch, oneShot });
     }
 
-    unmapCommand(stateOrPath, CommandClass) {
+    unmapCommand(stateOrPath: NavigationState | string, CommandClass: any): void {
         const state = NavigationState.make(stateOrPath);
         const commands = this._commandsByState[state.getPath()] || [];
         let i;
@@ -49,21 +51,19 @@ export default class StateCommandMap {
         }
     }
 
-    willValidate(truncatedState, fullState) {
+    willValidate(truncatedState: NavigationState, fullState: NavigationState) {
         // will only validate if the state matches a command.
         return this.validate(truncatedState, fullState);
     }
 
-    validate(truncatedState, fullState) {
-        let path;
-        let mappedState;
+    validate(truncatedState: NavigationState, fullState: NavigationState) {
         let commands;
         let isExact;
         let i;
         let wrapper;
 
-        for (path in this._commandsByState) {
-            mappedState = NavigationState.make(path);
+        for (const path in this._commandsByState) {
+            const mappedState = NavigationState.make(path);
 
             if (fullState.contains(mappedState)) {
                 commands = this._commandsByState[path];
@@ -84,7 +84,7 @@ export default class StateCommandMap {
         return false;
     }
 
-    updateState(truncatedState, fullState) {
+    updateState(truncatedState: NavigationState, fullState: NavigationState) {
         let path;
         let mappedState;
         let commands;
@@ -124,7 +124,7 @@ export default class StateCommandMap {
         }
     }
 
-    _hasCommand(wrappedCommandsList, testForCommandClass) {
+    _hasCommand(wrappedCommandsList: Array<any>, testForCommandClass: Function): boolean {
         let i;
         let commandWrapper;
         const length = wrappedCommandsList.length;
@@ -137,7 +137,7 @@ export default class StateCommandMap {
         return false;
     }
 
-    _verifyCommandClass(CommandClass) {
+    _verifyCommandClass(CommandClass: any): ?bool {
         if (this._verifiedCommandClasses[CommandClass]) {
             return;
         }

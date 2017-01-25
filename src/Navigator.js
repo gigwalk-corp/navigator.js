@@ -10,7 +10,6 @@ import * as TransitionStatus from './transition/TransitionStatus';
 import TransitionCompleteDelegate from './transition/TransitionCompleteDelegate';
 import ValidationPreparedDelegate from './transition/ValidationPreparedDelegate';
 import ResponderLists from './ResponderLists';
-import autoBind from './utils/AutoBind';
 
 let _$eventDispatcher = null;
 // internal namespaces
@@ -293,7 +292,7 @@ let _performRequestCascade = (requestedState, startAsyncValidation) => {
     }
 };
 
-let _grantRequest = state => {
+function _grantRequest(state: NavigationState) {
     _asyncInvalidated = false;
     _asyncValidated = false;
     _previousState = _currentState;
@@ -302,7 +301,7 @@ let _grantRequest = state => {
     _notifyStateChange(_currentState);
 
     _flow.startTransition();
-};
+}
 
 let _notifyStateChange = state => {
     // logger.notice(state);
@@ -352,8 +351,9 @@ _flow.transitionOut = function () {
 
                     // use namespace transition;
                     // console.log('_flow -> transitionOut', responder);
+                const navigator = this instanceof Navigator ? this : null;
                 responder.transitionOut(
-                    new TransitionCompleteDelegate(responder, TransitionStatus.HIDDEN, NavigationBehaviors.HIDE, this, _transition).call
+                    new TransitionCompleteDelegate(responder, TransitionStatus.HIDDEN, NavigationBehaviors.HIDE, navigator, _transition).call
                 );
             } else {
                     // already hidden or hiding
@@ -438,8 +438,9 @@ _flow.transitionIn = function () {
             respondersToWaitFor.push(responder);
 
                 // use namespace transition;
+            const navigator = this instanceof Navigator ? this : null;
             responder.transitionIn(
-                new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SHOW, this, _transition).call
+                new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SHOW, navigator, _transition).call
             );
         }
     }
@@ -504,8 +505,9 @@ _flow.swapOut = function () {
                     waitForResponders.push(responder);
 
                         // use namespace transition;
+                    const navigator = this instanceof Navigator ? this : null;
                     responder.swapOut(
-                        new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SWAP, this, _transition).call
+                        new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SWAP, navigator, _transition).call
                     );
                 }
             }
@@ -925,8 +927,6 @@ let _getResponderList = (listObj, state) => {
 
 class Navigator {
     constructor() {
-        autoBind(this, this);
-
         _$eventDispatcher = $({});
         _currentState = null;
         _responders = new ResponderLists();

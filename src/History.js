@@ -1,6 +1,9 @@
 // @flow weak
 import autoBind from './utils/AutoBind';
 import * as NavigatorEvent from './NavigatorEvent';
+import Navigator from './Navigator';
+import NavigationState from './NavigationState';
+
 /**
 * History manager for the navigatorjs.Navigator
 *
@@ -26,45 +29,32 @@ import * as NavigatorEvent from './NavigatorEvent';
 *
 * @param {navigatorjs.Navigator} navigator
 */
-const History = function (navigator) {
-    // Bind the methods to this scope
-    autoBind(this, this);
+class History {
+    // Default max history length, don't change this,
+    // change the maxLength instance property
+    static MAX_HISTORY_LENGTH: 100 = 100;
 
-    // Initialize the instance
-    this._initialize(navigator);
-};
-
-// Default max history length, don't change this,
-// change the maxLength instance property
-History.MAX_HISTORY_LENGTH = 100;
-
-// Navigation direction types
-History.DIRECTION_BACK = -1;
-History.DIRECTION_NORMAL = 0;
-History.DIRECTION_FORWARD = 1;
-
-/**
-* Instance properties
-*/
-History.prototype = {
+    // Navigation direction types
+    static DIRECTION_BACK: -1 = -1;
+    static DIRECTION_NORMAL: 0 = 0;
+    static DIRECTION_FORWARD: 1 = 1;
 
     // The navigator it is controlling
-    _navigator: null,
+    _navigator: Navigator;
 
     // The history, last state is at start of Array
-    _history: null,
+    _history: NavigationState[] = [];
 
     // The current position in history
-    _historyPosition: 0,
+    _historyPosition: number = 0;
 
     // The navigator doesn't know anything about going forward or back.
     // Therefore, we need to keep track of the direction.
     // This is changed when the forward or back methods are called.
-    _navigationDirection: History.DIRECTION_NORMAL,
+    _navigationDirection: -1 | 0 | 1 = 0;
 
     // The max number of history states
-    maxLength: History.MAX_HISTORY_LENGTH,
-
+    maxLength: number = 100;
     /**
     * Create the history manager. When navigating back and forword, the history is maintained.
     * It is truncated when navigating to a state naturally
@@ -72,19 +62,19 @@ History.prototype = {
     * @param {navigatorjs.Navigator} navigator
     * @param {Object} [options]
     */
-    _initialize(navigator, options) {
+    constructor(navigator: Navigator, options?: { maxLength: number }) {
+        // Bind the methods to this scope
+        autoBind(this, this);
+        // Initialize the instance
         // Setup the options
         if (options) {
             this.maxLength = options.maxLength || this.maxLength;
         }
 
-        // Create the history array containing the NavigationState objects
-        this._history = [];
-
         // Listen to changes on the navigator
         this._navigator = navigator;
         this._navigator.on(NavigatorEvent.STATE_CHANGED, this._handleStateChange);
-    },
+    }
 
     /**
     * Go back in the history
@@ -106,15 +96,14 @@ History.prototype = {
         this._navigationDirection = History.DIRECTION_BACK;
         this._navigateToCurrentHistoryPosition();
         return true;
-    },
-
+    }
     /**
     * Go forward in the history
     *
     * @param {Number} [steps=1] The number of steps to go forward in history
     * @return {Boolean} Returns false if there was no next state
     */
-    forward(steps) {
+    forward(steps: number): bool {
         if (this._historyPosition === 0) {
             return false;
         }
@@ -127,7 +116,7 @@ History.prototype = {
         this._navigationDirection = History.DIRECTION_FORWARD;
         this._navigateToCurrentHistoryPosition();
         return true;
-    },
+    }
 
     /**
     * Go back in the history and return that NavigationState
@@ -135,19 +124,16 @@ History.prototype = {
     * @param {Number} [steps=1] The number of steps to go back in history
     * @return {navigatorjs.NavigationState} The found state or null if no state was found
     */
-    getPreviousState(steps) {
+    getPreviousState(steps: number = 1): ?NavigationState {
         // Cannot go beyond the first entry in history
         if (this._history.length === 0 || this._historyPosition === Math.max(0, this._history.length - 1)) {
             return null;
         }
 
-        // Set to 1 by default
-        steps = steps || 1;
-
         // Fetch the requested state in history
         const position = Math.min(this._history.length - 1, Math.max(0, this._historyPosition + steps));
         return this._history[position];
-    },
+    }
 
     /**
     * Go forward in the history and return that NavigationState
@@ -155,7 +141,7 @@ History.prototype = {
     * @param {Number} [steps=1] The number of steps to go back in history
     * @return {navigatorjs.NavigationState} The found state or null if no state was found
     */
-    getNextState(steps) {
+    getNextState(steps: number = 1): ?NavigationState {
         // Cannot look into the future
         if (this._history.length === 0 || this._historyPosition === 0) {
             return null;
@@ -167,46 +153,43 @@ History.prototype = {
         // Fetch the requested state in history
         const position = Math.max(0, this._historyPosition - steps);
         return this._history[position];
-    },
-
+    }
     /**
     * Fetch the current NavigationState
     *
     * @return {navigatorjs.NavigationState}
     */
-    getCurrentState() {
+    getCurrentState(): ?NavigationState {
         return this._history[this._historyPosition] || null;
-    },
+    }
 
     /**
     * Clear the navigation history
     */
-    clearHistory() {
+    clearHistory(): void {
         this._history = [];
         this._historyPosition = 1;
-    },
-
+    }
     /**
     * Get the full history
     *
     * @return {Array} List of navigatorjs.NavigationStates
     */
-    all() {
+    all(): NavigationState[] {
         return this._history;
-    },
-
+    }
     /**
     * Get the state by historyposition
     *
     * @param {Number} position The position in history
     * @return {navigatorjs.NavigationState} The found state or null if no state was found
     */
-    getStateByPosition(position) {
+    getStateByPosition(position: number): ?NavigationState {
         if (position < 0 || position > this._history.length - 1) {
             return null;
         }
         return this._history[position];
-    },
+    }
 
     /**
     * Get the first occurence of a state in the history
@@ -214,10 +197,9 @@ History.prototype = {
     * @param {navigatorjs.NavigationState} state The NavigationState in history
     * @return {Number} The found position or false if not found
     */
-    getPositionByState(state) {
+    getPositionByState(state: NavigationState): number | false {
         return this.getPositionByPath(state.getPath());
-    },
-
+    }
     /**
     * Find the first occurence of the path in the history
     *
@@ -232,24 +214,24 @@ History.prototype = {
             }
         }
         return false;
-    },
+    }
 
     /**
     * Get the number of items in the history
     *
     * @return {Number}
     */
-    getLength() {
+    getLength(): number {
         return this._history.length;
-    },
+    }
 
     /**
     * Tell the navigator to go the current historyPosition
     */
-    _navigateToCurrentHistoryPosition() {
+    _navigateToCurrentHistoryPosition(): void {
         const newState = this._history[this._historyPosition];
         this._navigator.request(newState);
-    },
+    }
 
     /**
     * Check what to do with the new state
@@ -257,9 +239,22 @@ History.prototype = {
     * @param {Object} event
     * @param {Object} update
     */
-    _handleStateChange(event, update) {
-        const state = update.state;
+    _handleStateChange: (event: Event, update: { state: NavigationState}) => void;
+}
 
+/**
+* Instance properties
+*/
+Object.assign(History.prototype, {
+
+    /**
+    * Check what to do with the new state
+    *
+    * @param {Object} event
+    * @param {Object} update
+    */
+    _handleStateChange(event: Event, update: { state: NavigationState}) {
+        const state = update.state;
         switch (this._navigationDirection) {
 
             case History.DIRECTION_BACK:
@@ -286,7 +281,7 @@ History.prototype = {
                 break;
         }
     }
-};
+});
 
 // Copy the History object to the navigatorjs namespace
 export default History;
