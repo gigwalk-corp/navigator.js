@@ -31,11 +31,8 @@ const BackboneRecipe = {
     },
 
     isMounted() {
-        return this.isInstantiated() &&
-      $.contains(
-        document.documentElement,
-        this.getViewInstance().$el[0]
-      );
+        const element = document.documentElement;
+        return element ? this.isInstantiated() && $.contains(element, this.getViewInstance().$el[0]) : false;
     },
 
     getRootEl() {
