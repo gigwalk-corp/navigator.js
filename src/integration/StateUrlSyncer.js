@@ -91,9 +91,8 @@ class StateUrlSyncer {
     getRawUrl(): string {
         if (_usingPushState) {
             return this.parsePushStateUrl(window.location.pathname);
-        } else {
-            return this.parseHashUrl(window.location.hash);
         }
+        return this.parseHashUrl(window.location.hash);
     }
 
     getUrlState() {

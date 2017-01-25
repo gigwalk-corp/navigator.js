@@ -47,11 +47,11 @@ class NavigationState {
             } else if (segment === '*') {
                 // match anything expect slashes and end with a slash (1 segment only).
                 // eg: bla/ but not /bla/ or bla/bla/
-                regexPath = `${regexPath}([^/]*)\/`;
+                regexPath = `${regexPath}([^/]*)/`;
             } else {
                 // Either the segment, a wildcard or double wildcard and ends with a forward slash (1 segment only).
                 // eg: segment/ or */ or **/
-                regexPath = `${regexPath}(${segment}|\\*|\\*\\*)\/`;
+                regexPath = `${regexPath}(${segment}|\\*|\\*\\*)\\/`;
             }
         }
 
@@ -97,9 +97,7 @@ class NavigationState {
         const nativeSegments = this.getSegments();
         const foreignMatch = this.getPath().match(foreignState.getPathRegex());
         const nativeMatch = foreignState.getPath().match(this.getPathRegex());
-        // $FlowFixMe should return the corrent type
         const isForeignMatch = foreignMatch && foreignMatch.index === 0 ? true : false; // eslint-disable-line no-unneeded-ternary
-        // $FlowFixMe should return the corrent type
         const isNativeMatch = nativeMatch && nativeMatch.index === 0 ? true : false; // eslint-disable-line no-unneeded-ternary
         const foreignSegmentDoubleWildcardsMatch = foreignState.getPath().match(/\*\*/g);
         const doubleWildcardsLength = foreignSegmentDoubleWildcardsMatch ? foreignSegmentDoubleWildcardsMatch.length : 0;
