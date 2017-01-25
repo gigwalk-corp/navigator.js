@@ -327,7 +327,7 @@ _flow.startTransition = () => {
         _flow.performUpdates();
     }
 };
-// $FlowFixMe need to fix this
+
 _flow.transitionOut = function () {
     const respondersToShow = _getRespondersToShow();
     let responderID;
@@ -351,8 +351,9 @@ _flow.transitionOut = function () {
 
                     // use namespace transition;
                     // console.log('_flow -> transitionOut', responder);
+                const navigator = this instanceof Navigator ? this : null;
                 responder.transitionOut(
-                    new TransitionCompleteDelegate(responder, TransitionStatus.HIDDEN, NavigationBehaviors.HIDE, this, _transition).call
+                    new TransitionCompleteDelegate(responder, TransitionStatus.HIDDEN, NavigationBehaviors.HIDE, navigator, _transition).call
                 );
             } else {
                     // already hidden or hiding
@@ -415,7 +416,7 @@ _flow.startTransitionIn = () => {
         _flow.startSwapOut();
     }
 };
-// $FlowFixMe should allow for this call
+
 _flow.transitionIn = function () {
     const respondersToShow = _getRespondersToShow();
     const respondersToWaitFor = [];
@@ -437,8 +438,9 @@ _flow.transitionIn = function () {
             respondersToWaitFor.push(responder);
 
                 // use namespace transition;
+            const navigator = this instanceof Navigator ? this : null;
             responder.transitionIn(
-                new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SHOW, this, _transition).call
+                new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SHOW, navigator, _transition).call
             );
         }
     }
@@ -468,7 +470,7 @@ _flow.startSwapOut = () => {
         _flow.swapIn();
     }
 };
-// $FlowFixMe should allow for this call
+
 _flow.swapOut = function () {
     _appearingAsynchResponders.reset();
 
@@ -503,8 +505,9 @@ _flow.swapOut = function () {
                     waitForResponders.push(responder);
 
                         // use namespace transition;
+                    const navigator = this instanceof Navigator ? this : null;
                     responder.swapOut(
-                        new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SWAP, this, _transition).call
+                        new TransitionCompleteDelegate(responder, TransitionStatus.SHOWN, NavigationBehaviors.SWAP, navigator, _transition).call
                     );
                 }
             }

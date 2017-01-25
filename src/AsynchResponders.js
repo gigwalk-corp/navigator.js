@@ -23,8 +23,9 @@ class AsynchResponders {
     }
 
     addResponders(additionalRespondersArray: mixed): void {
-        if (Array.isArray(additionalRespondersArray) && additionalRespondersArray.length) {
-            this._responders = this._responders.concat(additionalRespondersArray);
+        if (Array.isArray(additionalRespondersArray)) {
+            const arr = additionalRespondersArray.filter((responder: mixed): boolean => typeof responder === 'object' && responder != null);
+            this._responders = this._responders.concat(arr);
         }
     }
 

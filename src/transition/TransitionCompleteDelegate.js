@@ -6,7 +6,7 @@ interface NotifyComplete {
 }
 
 export default class TransitionCompleteDelegate {
-    constructor(responder: any, status: ValidationStatus, behavior: any, navigator: Navigator, transitionNamespace: NotifyComplete) {
+    constructor(responder: any, status: ValidationStatus, behavior: any, navigator: ?Navigator, transitionNamespace: NotifyComplete) {
         this._responder = responder;
         this._status = status;
         this._behavior = behavior;
