@@ -16,10 +16,8 @@ function StateViewMap(navigator, $root) {
 
   // PUBLIC API
 StateViewMap.prototype = {
-    mapState() {
-        let allArgumentsAsOneFlatArray = [];
-        allArgumentsAsOneFlatArray = allArgumentsAsOneFlatArray.concat.apply(allArgumentsAsOneFlatArray, arguments); // eslint-disable-line
-        return this._addRecipe(allArgumentsAsOneFlatArray);
+    mapState(...args: any[]) {
+        return this._addRecipe([...args]);
     },
 
     get$Root: function get$Root() {
