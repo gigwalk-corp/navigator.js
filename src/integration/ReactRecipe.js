@@ -102,7 +102,8 @@ const ReactRecipe = {
   // DOM node of the component reference
 
     getRootEl: function getRootEl() {
-        return $(ReactDOM.findDOMNode(this._ref));
+        const node = ReactDOM.findDOMNode(this._ref);
+        return node ? $(node) : $();
     },
 
   // Component is mounted if is not 'null'
